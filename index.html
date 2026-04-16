@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Acacia Mail — Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+html{
+    font-family: 'Cambria', serif !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+  }
+
+b, strong {
+  font-weight: bold;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+}
+
+thead {
+  background-color: #f8f8f8;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+</style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<header class="bg-blue-900 text-white px-6 py-3 flex justify-between items-center">
+  <h1 class="text-xl font-bold">💬 Acacia Mail</h1>
+  <span id="userInfo" class="text-sm"></span>
+</header>
+
+<div id="appWrapper" class="flex h-[calc(100vh-56px)] overflow-auto">
+
+<aside class="w-22 bg-black text-white shadow p-4 flex flex-col">
+  <img src="acaciabooks-logo.png" alt="Logo" class="w-24 mb-4 mx-auto" />
+
+  <ul class="space-y-3 text-sm flex-1">
+    <li><button onclick="showSection('inbox')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg"> 📥 Inbox</button></li>
+    <li><button onclick="showSection('sent')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">📤 Sent</button></li>
+    <li><button onclick="showSection('drafts')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">📝 Drafts</button></li>
+    <li><button onclick="showSection('trash')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">🗑 Trash</button></li>
+    <li><button onclick="showSection('compose')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">✉ Compose</button></li>
+    <li><button onclick="showSection('calendar')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">📅 Calendar</button></li>
+    <li><button onclick="showSection('notes')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">📝 Notes</button></li>
+    <li><button onclick="showSection('todo')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">✅ Todo</button></li>
+    <li><button onclick="showSection('reminder')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">⏰ Reminder</button></li>
+    <li><button onclick="showSection('settings')" class="w-full text-left p-2 rounded transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-lg">⚙️ Settings</button></li>
+  
+  <div class="mt-auto bg-black text-white border border-gray-800 rounded p-1 text-sm text-left">
+    @Acacia books 2025<br>
+    developer Joseph Kimani
+  </div>
+</aside>
+ 
+<main class="flex-1 p-6 overflow-auto">
+<h2 class="text-xl font-italic mb-1 text-left flex items-center gap-2">
+  <img id="userAvatar" src="https://via.placeholder.com/32" alt="User Avatar" class="w-8 h-8 rounded-full" onclick="triggerFileInput()">
+  Welcome, <span id="currentUser">User</span>
+</h2>
+
+<input type="file" id="fileInput" class="hidden" accept="image/*" onchange="previewImage(event)">
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const session = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+  if (!session) return;
+
+  const username = session.username;
+
+  document.getElementById("currentUser").textContent = username;
+
+  const savedAvatar = localStorage.getItem(`userAvatar_${username}`);
+  if (savedAvatar) {
+    document.getElementById("userAvatar").src = savedAvatar;
+  }
+});
+
+function triggerFileInput() {
+  document.getElementById("fileInput").click();
+}
+
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const session = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+  if (!session) return;
+
+  const username = session.username;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const imageUrl = e.target.result;
+    document.getElementById("userAvatar").src = imageUrl;
+    localStorage.setItem(`userAvatar_${username}`, imageUrl);
+  };
+
+  reader.readAsDataURL(file);
+}
+</script>
+    <div id="compose" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Compose Email</h2>
+      <div class="space-y-2 bg-white p-6 rounded shadow">
+        <input id="toEmail" placeholder="To" class="w-full border p-2 rounded">
+        <input id="ccEmail" placeholder="CC" class="w-full border p-2 rounded">
+        <input id="bccEmail" placeholder="BCC" class="w-full border p-2 rounded">
+        <input id="subject" placeholder="Subject" class="w-full border p-2 rounded font-semibold">
+        <textarea id="message" placeholder="Type your message..." class="w-full border p-2 rounded h-40"></textarea>
+
+        <input type="file" id="attachments" multiple class="border rounded p-2 w-full"/>
+        <div id="attachmentList" class="flex flex-col mt-2 gap-1"></div>
+
+        <div class="flex gap-2 mt-3">
+          <button onclick="sendMail()" class="bg-blue-900 text-white px-1 py-1 rounded mr-2 hover:bg-blue-800">Send</button>
+          <button onclick="saveDraft()" class="bg-blue-900 text-white px-1 py-1 rounded mr-2 hover:bg-blue-800">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="inbox">
+      <h2 class="text-2xl font-bold mb-4">Inbox</h2>
+      <table class="w-full text-sm bg-white rounded shadow">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 text-left">From</th>
+            <th class="p-2 text-left">To</th>
+            <th class="p-2 text-left">Subject</th>
+            <th class="p-2">Date</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inboxList"></tbody>
+      </table>
+    </div>
+
+    <div id="sent" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Sent</h2>
+      <table class="w-full text-sm bg-white rounded shadow">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 text-left">To</th>
+            <th class="p-2 text-left">CC/BCC</th>
+            <th class="p-2 text-left">Subject</th>
+            <th class="p-2">Date</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="sentList"></tbody>
+      </table>
+    </div>
+
+    <div id="drafts" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Drafts</h2>
+      <table class="w-full text-sm bg-white rounded shadow">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 text-left">To</th>
+            <th class="p-2 text-left">Subject</th>
+            <th class="p-2">Date</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="draftsList"></tbody>
+      </table>
+    </div>
+
+    <div id="trash" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Trash</h2>
+      <table class="w-full text-sm bg-white rounded shadow">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 text-left">To</th>
+            <th class="p-2 text-left">Subject</th>
+            <th class="p-2">Date</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="trashList"></tbody>
+      </table>
+    </div>
+
+<div id="settings" class="hidden">
+  <h2 class="text-2xl font-bold mb-4">Settings</h2>
+  <div class="bg-white p-6 rounded shadow space-y-4">
+    <label class="flex flex-col">
+      Name:
+      <input type="text" id="settingsName" class="border p-2 rounded mt-1">
+    </label>
+    <label class="flex flex-col">
+      Company:
+      <input type="text" id="settingsCompany" class="border p-2 rounded mt-1">
+    </label>
+    <label class="flex flex-col">
+      Email:
+      <input type="email" id="settingsEmail" class="border p-2 rounded mt-1">
+    </label>
+    <label class="flex flex-col">
+      Phone:
+      <input type="text" id="settingsPhone" class="border p-2 rounded mt-1">
+    </label>
+    <label class="flex flex-col">
+      Signature:
+      <textarea id="settingsSignature" class="border p-2 rounded mt-1"></textarea>
+    </label>
+
+    <div class="flex flex-col">
+      <label class="block mb-1 font-medium">Theme</label>
+      <select id="themePreference"
+              class="border p-2 rounded w-full dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="system">System Default</option>
+        <option value="amoled">AMOLED Black</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="rose">Rose</option>
+        <option value="purple">Purple</option>
+        <option value="solar-light">Solarized Light</option>
+        <option value="solar-dark">Solarized Dark</option>
+      </select>
+    </div>
+
+    <button onclick="saveSettings()" class="bg-blue-900 text-white px-1 py-1 rounded hover:bg-blue-800">Save Settings</button>
+  </div>
+</div>
+   
+    <div id="calendar" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Calendar</h2>
+
+      <div class="bg-white p-4 rounded shadow space-y-2">
+        <input type="date" id="calendarDate" class="border p-2 rounded w-full">
+        <input type="text" id="calendarEvent" placeholder="Event description" class="border p-2 rounded w-full">
+        <button onclick="addCalendarEvent()" class="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-800">Add Event</button>
+      </div>
+
+      <ul id="calendarList" class="mt-4 space-y-2"></ul>
+    </div>
+
+<div id="notes" class="hidden">
+  <h2 class="text-2xl font-bold mb-4">📝 Notes</h2>
+
+  <div class="bg-white p-4 rounded shadow space-y-2">
+    <input id="noteTitle" type="text" placeholder="Title" class="border p-2 rounded w-full" />
+    <input id="noteSubtitle" type="text" placeholder="Subtitle" class="border p-2 rounded w-full" />
+    <input id="noteDate" type="date" class="border p-2 rounded w-full" />
+    <textarea id="noteContent" placeholder="Write your note..." class="border p-2 rounded w-full"></textarea>
+
+    <div class="flex gap-2 mt-2">
+      <button id="noteAddBtn" onclick="addNote()" class="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-800">Add Note</button>
+      <button onclick="clearAllNotes()" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-500">Clear All</button>
+    </div>
+  </div>
+
+  <table class="mt-4 w-full table-auto border-collapse border border-gray-300">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="border px-2 py-1">Title</th>
+        <th class="border px-2 py-1">Subtitle</th>
+        <th class="border px-2 py-1">Date</th>
+        <th class="border px-2 py-1">Content</th>
+        <th class="border px-2 py-1">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="notesTableBody"></tbody>
+  </table>
+</div>
+
+<div id="todo" class="hidden">
+  <h2 class="text-2xl font-bold mb-4">Todo List</h2>
+
+  <div class="bg-white p-4 rounded shadow space-y-2">
+    <input id="todoTitle" type="text" placeholder="Task..." class="border p-2 rounded w-full">
+    <input id="todoDueDate" type="date" class="border p-2 rounded w-full mt-1">
+
+    <select id="todoPriority" class="border p-2 rounded w-full mt-1">
+      <option value="">Priority</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+
+    <button id="todoAddBtn" onclick="addTodo()" 
+      class="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-800 mt-2">
+      Add Task
+    </button>
+  </div>
+
+  <table class="mt-4 w-full table-auto border-collapse border border-gray-300">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="border px-2 py-1">Title</th>
+        <th class="border px-2 py-1">Due Date</th>
+        <th class="border px-2 py-1">Priority</th>
+        <th class="border px-2 py-1">Status</th>
+        <th class="border px-2 py-1">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="todoTableBody"></tbody>
+  </table>
+
+  <h3 class="text-xl font-bold mt-6">Todo Overview</h3>
+  <canvas id="todoChart" width="400" height="200"></canvas>
+</div>   
+
+<div id="reminder" class="hidden">
+  <h2 class="text-2xl font-bold mb-4">Reminders</h2>
+
+  <div class="bg-white p-4 rounded shadow space-y-2">
+    <input id="reminderTitle" type="text" placeholder="Title" class="border p-2 rounded w-full">
+    <input id="reminderSubtitle" type="text" placeholder="Subtitle" class="border p-2 rounded w-full mt-1">
+    <input id="reminderDateTime" type="datetime-local" class="border p-2 rounded w-full mt-1">
+    <input id="reminderText" type="text" placeholder="Reminder description" class="border p-2 rounded w-full mt-1">
+    <button id="reminderAddBtn" class="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-800 mt-2">Add Reminder</button>
+  </div>
+
+  <table class="border mt-4 w-full text-left">
+    <thead>
+      <tr>
+        <th class="border px-2 py-1">Title</th>
+        <th class="border px-2 py-1">Subtitle</th>
+        <th class="border px-2 py-1">Date/Time</th>
+        <th class="border px-2 py-1">Description</th>
+        <th class="border px-2 py-1">Status</th>
+        <th class="border px-2 py-1">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="reminderTableBody"></tbody>
+  </table>
+
+  <div class="mt-4">
+    <canvas id="reminderChart" width="400" height="200"></canvas>
+  </div>
+</div>
+
+</main>
+</div>
+<script>
+
+let inbox = [], sent = [], drafts = [], trash = [], attachments = [];
+let userSettings = { name:"", company:"", email:"", phone:"", signature:"", theme:"light" };
+
+function generateId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+function loadCompanyDetailsToMail() {
+  const company = JSON.parse(localStorage.getItem("orgInfo"));
+  if (!company) return;
+
+  userSettings.company = company.name || userSettings.company;
+  userSettings.email = company.email || userSettings.email;
+  userSettings.phone = company.phone || userSettings.phone;
+
+  userSettings.signature =
+    `${company.name || ""}\n` +
+    `${company.address || ""}\n` +
+    `Phone: ${company.phone || ""}\n` +
+    `Email: ${company.email || ""}`;
+
+  saveStorage();
+  applySettingsToUI();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadStorage();
+  loadCompanyDetailsToMail();
+});
+
+function loadStorage(){
+    inbox = JSON.parse(localStorage.getItem("demo_inbox") || "[]");
+    sent = JSON.parse(localStorage.getItem("demo_sent") || "[]");
+    drafts = JSON.parse(localStorage.getItem("demo_drafts") || "[]");
+    trash = JSON.parse(localStorage.getItem("demo_trash") || "[]");
+    userSettings = JSON.parse(localStorage.getItem("user_settings") || JSON.stringify(userSettings));
+    applySettingsToUI();
+    renderAll();
+}
+function saveStorage(){
+    localStorage.setItem("demo_inbox", JSON.stringify(inbox));
+    localStorage.setItem("demo_sent", JSON.stringify(sent));
+    localStorage.setItem("demo_drafts", JSON.stringify(drafts));
+    localStorage.setItem("demo_trash", JSON.stringify(trash));
+    localStorage.setItem("user_settings", JSON.stringify(userSettings));
+}
+
+function applySettingsToUI(){
+    document.getElementById("settingsName").value = userSettings.name;
+    document.getElementById("settingsCompany").value = userSettings.company;
+    document.getElementById("settingsEmail").value = userSettings.email;
+    document.getElementById("settingsPhone").value = userSettings.phone;
+    document.getElementById("settingsSignature").value = userSettings.signature;
+    document.getElementById("themePreference").value = userSettings.theme;
+
+document.documentElement.classList.remove("dark");
+document.body.classList.remove("bg-gray-900","text-white");
+document.body.style.backgroundColor = "";
+
+if(userSettings.theme === "dark" || userSettings.theme === "amoled") {
+    document.documentElement.classList.add("dark");
+    document.body.classList.add("bg-gray-900","text-white");
+} else if(userSettings.theme === "blue") {
+    document.body.style.backgroundColor = "#3B82F6";
+} else if(userSettings.theme === "green") {
+    document.body.style.backgroundColor = "#10B981";
+} else if(userSettings.theme === "rose") {
+    document.body.style.backgroundColor = "#F43F5E";
+} else if(userSettings.theme === "purple") {
+    document.body.style.backgroundColor = "#8B5CF6";
+} else if(userSettings.theme === "solar-light") {
+    document.body.style.backgroundColor = "#FDF6E3";
+} else if(userSettings.theme === "solar-dark") {
+    document.body.style.backgroundColor = "#002B36";
+}
+
+    document.getElementById("userInfo").textContent = 
+        (userSettings.name || "") + (userSettings.company ? " – "+userSettings.company : "");
+
+    if(userSettings.darkMode){
+        document.documentElement.classList.add("dark");
+        document.body.classList.add("bg-gray-900","text-white");
+    } else {
+        document.documentElement.classList.remove("dark");
+        document.body.classList.remove("bg-gray-900","text-white");
+    }
+}
+function saveSettings(){
+    userSettings.name = document.getElementById("settingsName").value.trim();
+    userSettings.company = document.getElementById("settingsCompany").value.trim();
+    userSettings.email = document.getElementById("settingsEmail").value.trim();
+    userSettings.phone = document.getElementById("settingsPhone").value.trim();
+    userSettings.signature = document.getElementById("settingsSignature").value.trim();
+    userSettings.theme = document.getElementById("themePreference").value;
+    saveStorage();
+    applySettingsToUI();
+    alert("Settings saved ✅");
+}
+
+document.getElementById("attachments").addEventListener("change", function(e){
+    attachments = Array.from(e.target.files);
+    renderAttachments();
+});
+function renderAttachments(){
+    const div = document.getElementById("attachmentList");
+    div.innerHTML = attachments.map((f,i)=>`
+        <div class="flex justify-between bg-gray-200 p-2 rounded">
+            <span>${f.name}</span>
+            <button type="button" onclick="attachments.splice(${i},1);renderAttachments()" class="text-red-500">✖</button>
+        </div>`).join("");
+}
+function clearCompose(){
+    ["toEmail","ccEmail","bccEmail","subject","message"].forEach(id => document.getElementById(id).value="");
+    attachments=[];
+    renderAttachments();
+}
+
+function showSection(id){
+    ["inbox","sent","drafts","trash","compose","settings","calendar","notes","todo","reminder"]
+        .forEach(s => document.getElementById(s).classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+}
+
+function sendMail(){
+    const mail = {
+        id: generateId(),
+        from: userSettings.email || "",
+        to: document.getElementById("toEmail").value.trim(),
+        cc: document.getElementById("ccEmail").value.trim(),
+        bcc: document.getElementById("bccEmail").value.trim(),
+        subject: document.getElementById("subject").value.trim(),
+        message: document.getElementById("message").value.trim() +
+                 (userSettings.signature ? "\n\n"+userSettings.signature : ""),
+        date: new Date().toLocaleString(),
+        attachments: attachments.map(f=>f.name)
+    };
+    if(!mail.to || !mail.subject) return alert("Recipient and Subject required");
+
+    sent.unshift(mail);
+    inbox.unshift({...mail});
+
+    saveStorage();
+    renderAll();
+    clearCompose();
+    showSection("inbox");
+    alert("Mail Sent ✔️");
+}
+
+function saveDraft(){
+    const draft = {
+        id: generateId(),
+        to: document.getElementById("toEmail").value.trim(),
+        cc: document.getElementById("ccEmail").value.trim(),
+        bcc: document.getElementById("bccEmail").value.trim(),
+        subject: document.getElementById("subject").value.trim(),
+        message: document.getElementById("message").value.trim(),
+        date: new Date().toLocaleString(),
+        attachments: attachments.map(f=>f.name)
+    };
+    drafts.unshift(draft);
+    saveStorage();
+    renderAll();
+    clearCompose();
+    showSection("drafts");
+    alert("Draft Saved 💾");
+}
+
+function renderAll(){
+    renderTable(inbox,"inboxList",["from","to","subject","date"]);
+    renderTable(sent,"sentList",["to","cc/bcc","subject","date"]);
+    renderTable(drafts,"draftsList",["to","subject","date"]);
+    renderTable(trash,"trashList",["to","subject","date"]);
+}
+function renderTable(data,tableId,cols){
+    const tbody = document.getElementById(tableId);
+    tbody.innerHTML="";
+    data.forEach(m=>{
+        const tr = document.createElement("tr");
+        let html="";
+        cols.forEach(c=>{
+            if(c==="from") html+=`<td class="p-2">${m.from||""}</td>`;
+            else if(c==="to") html+=`<td class="p-2">${m.to||""}</td>`;
+            else if(c==="cc/bcc") html+=`<td class="p-2">${m.cc||""} / ${m.bcc||""}</td>`;
+            else if(c==="subject") html+=`<td class="p-2">${m.subject||""}</td>`;
+            else if(c==="date") html+=`<td class="p-2 text-center">${m.date||""}</td>`;
+        });
+
+        const safeId = String(m.id).replace(/"/g,"&quot;");
+        const isSent = tableId==="sentList";
+
+        html+=`
+<td class="p-2 text-center flex justify-center gap-1">
+<button class="bg-blue-900 text-white px-1 py-1 rounded" onclick="viewEmail('${safeId}','${tableId}')">View</button>
+${tableId==="draftsList" ? `<button class="bg-green-700 text-white px-1 py-1 rounded" onclick="editEmail('${safeId}')">Edit</button>` : ""}
+${isSent ? `<button class="bg-indigo-700 text-white px-1 py-1 rounded" onclick="editEmailAsNew('${safeId}','${tableId}')">Edit as New</button>
+<button class="bg-orange-700 text-white px-1 py-1 rounded" onclick="recallEmail('${safeId}','${tableId}')">Recall</button>` : ""}
+<button class="bg-red-700 text-white px-1 py-1 rounded" onclick="deleteEmail('${safeId}','${tableId}')">Delete</button>
+</td>`;
+        tr.innerHTML=html;
+        tbody.appendChild(tr);
+    });
+}
+
+function getDataArray(tableId){
+    switch(tableId){
+        case "inboxList": return inbox;
+        case "sentList": return sent;
+        case "draftsList": return drafts;
+        case "trashList": return trash;
+        default: return [];
+    }
+}
+function findEmailById(id,tableId){
+    return getDataArray(tableId).find(e=>e.id===id);
+}
+
+let currentEmailId=null, currentEmailTable=null;
+function viewEmail(id,tableId){
+    const mail = findEmailById(id,tableId);
+    if(!mail) return alert("Email not found");
+
+    currentEmailId=id;
+    currentEmailTable=tableId;
+
+    document.getElementById("modalSubject").textContent = mail.subject;
+    document.getElementById("modalFrom").textContent = mail.from || userSettings.email;
+    document.getElementById("modalTo").textContent = mail.to;
+    document.getElementById("modalCC").textContent = mail.cc;
+    document.getElementById("modalBCC").textContent = mail.bcc;
+    document.getElementById("modalMessage").textContent = mail.message;
+
+    document.getElementById("modalAttachments").innerHTML=
+        (mail.attachments||[]).map(a=>`
+        <div class="flex justify-between bg-gray-200 p-1 rounded">
+            <span>${a}</span>
+            <button class="text-blue-600" onclick="downloadAttachment('${a}')">Download</button>
+        </div>`).join("");
+
+    document.getElementById("emailModal").classList.remove("hidden");
+}
+function closeModal(){ document.getElementById("emailModal").classList.add("hidden"); }
+
+
+function deleteEmail(id,tableId){
+    const arr = getDataArray(tableId);
+    const index = arr.findIndex(e=>e.id===id);
+    if(index===-1) return;
+    trash.unshift(arr[index]);
+    arr.splice(index,1);
+    saveStorage();
+    renderAll();
+    closeModal();
+}
+function recallEmail(id,tableId){
+    if(tableId!=="sentList") return;
+    const index = sent.findIndex(e=>e.id===id);
+    if(index===-1) return;
+    if(!confirm("Recall this sent email?")) return;
+    const mail = sent[index];
+    sent.splice(index,1);
+    inbox=inbox.filter(m=>m.id!==id);
+    saveStorage();
+    renderAll();
+    closeModal();
+    alert("Email recalled ✔️");
+}
+
+
+function editEmail(id){
+    const mail=findEmailById(id,"draftsList");
+    if(!mail) return;
+    showSection("compose");
+    clearCompose();
+    closeModal();
+    document.getElementById("toEmail").value=mail.to;
+    document.getElementById("ccEmail").value=mail.cc;
+    document.getElementById("bccEmail").value=mail.bcc;
+    document.getElementById("subject").value=mail.subject;
+    document.getElementById("message").value=mail.message;
+    attachments=(mail.attachments||[]).map(a=>({name:a}));
+    renderAttachments();
+
+    const index=drafts.findIndex(e=>e.id===id);
+    document.getElementById("composeForm").onsubmit=function(e){
+        e.preventDefault();
+        const updated={
+            id: mail.id,
+            to: document.getElementById("toEmail").value.trim(),
+            cc: document.getElementById("ccEmail").value.trim(),
+            bcc: document.getElementById("bccEmail").value.trim(),
+            subject: document.getElementById("subject").value.trim(),
+            message: document.getElementById("message").value.trim(),
+            attachments: attachments.map(a=>a.name),
+            date: new Date().toLocaleString()
+        };
+        drafts.splice(index,1,updated);
+        saveStorage();
+        renderAll();
+        clearCompose();
+        showSection("drafts");
+    }
+}
+
+function editEmailAsNew(id,tableId){
+    const mail=findEmailById(id,tableId);
+    if(!mail) return;
+    showSection("compose");
+    clearCompose();
+    closeModal();
+    document.getElementById("toEmail").value=mail.to;
+    document.getElementById("ccEmail").value=mail.cc;
+    document.getElementById("bccEmail").value=mail.bcc;
+    document.getElementById("subject").value=mail.subject;
+    document.getElementById("message").value=mail.message;
+    attachments=(mail.attachments||[]).map(a=>({name:a}));
+    renderAttachments();
+    currentEmailId=null;
+    document.getElementById("composeForm").onsubmit=function(e){
+        e.preventDefault();
+        sendMail();
+    }
+}
+
+function downloadAttachment(filename){
+    const blob=new Blob([`Demo content for ${filename}`],{type:"text/plain"});
+    const link=document.createElement("a");
+    link.href=URL.createObjectURL(blob);
+    link.download=filename;
+    link.click();
+}
+
+function logout(){
+    if(confirm("Reset demo data and logout?")){
+        inbox=sent=drafts=trash=attachments=[];
+        saveStorage();
+        renderAll();
+        showSection("inbox");
+    }
+}
+
+loadStorage();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+let todoChart;
+
+function addTodo(editIndex = null) {
+  const title = document.getElementById("todoTitle").value.trim();
+  const dueDate = document.getElementById("todoDueDate").value;
+  const priority = document.getElementById("todoPriority").value;
+
+  if (!title) return alert("Please enter a task title");
+  if (!dueDate) return alert("Please select a due date");
+  if (!priority) return alert("Please select a priority");
+
+  const task = { title, dueDate, priority, status: "Pending" };
+
+  if (editIndex !== null) {
+   
+    todos[editIndex] = task;
+
+    document.getElementById("todoAddBtn").textContent = "Add Task";
+    document.getElementById("todoAddBtn").onclick = () => addTodo();
+  } else {
+   
+    todos.push(task);
+  }
+
+  saveTodos();
+  renderTodos();
+  updateChart();
+
+  // Clear fields
+  document.getElementById("todoTitle").value = "";
+  document.getElementById("todoDueDate").value = "";
+  document.getElementById("todoPriority").value = "";
+}
+
+function saveTodos() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function renderTodos() {
+  const tbody = document.getElementById("todoTableBody");
+  tbody.innerHTML = "";
+
+  todos.forEach((task, i) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="border px-2 py-1">${task.title}</td>
+      <td class="border px-2 py-1">${task.dueDate}</td>
+      <td class="border px-2 py-1">${task.priority}</td>
+
+      <td class="border px-2 py-1">
+        <input type="checkbox" ${task.status === "Completed" ? "checked" : ""}
+               onclick="toggleStatus(${i})">
+        ${task.status}
+      </td>
+
+      <td class="border px-2 py-1">
+        <button onclick="editTodo(${i})" class="text-green-600 mr-2">Edit</button>
+        <button onclick="deleteTodo(${i})" class="text-red-600">Delete</button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleStatus(index) {
+  todos[index].status = todos[index].status === "Pending" ? "Completed" : "Pending";
+  saveTodos();
+  renderTodos();
+  updateChart();
+}
+
+function editTodo(index) {
+  const task = todos[index];
+
+  document.getElementById("todoTitle").value = task.title;
+  document.getElementById("todoDueDate").value = task.dueDate;
+  document.getElementById("todoPriority").value = task.priority;
+
+  document.getElementById("todoAddBtn").textContent = "Update Task";
+  document.getElementById("todoAddBtn").onclick = () => addTodo(index);
+}
+
+function deleteTodo(index) {
+  if (confirm("Delete this task?")) {
+    todos.splice(index, 1);
+    saveTodos();
+    renderTodos();
+    updateChart();
+  }
+}
+
+function updateChart() {
+  const pending = todos.filter(t => t.status === "Pending").length;
+  const completed = todos.filter(t => t.status === "Completed").length;
+
+  const ctx = document.getElementById("todoChart").getContext("2d");
+
+  if (todoChart) todoChart.destroy();
+
+  todoChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Pending", "Completed"],
+      datasets: [{
+        data: [pending, completed],
+        backgroundColor: ["#f59e0b", "#10b981"]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" }
+      }
+    }
+  });
+}
+
+renderTodos();
+updateChart();
+</script>
+<script>
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+function addNote(editIndex = null) {
+  const title = document.getElementById("noteTitle").value.trim();
+  const subtitle = document.getElementById("noteSubtitle").value.trim();
+  const date = document.getElementById("noteDate").value;
+  const content = document.getElementById("noteContent").value.trim();
+
+  if (!title && !content) return alert("Please enter at least a title or content.");
+
+  const noteObj = {
+    title: title || "No Title",
+    subtitle: subtitle || "",
+    date: date || new Date().toLocaleDateString(),
+    content
+  };
+
+  if (editIndex !== null) {
+    notes[editIndex] = noteObj;
+    document.getElementById("noteAddBtn").textContent = "Add Note";
+    document.getElementById("noteAddBtn").onclick = () => addNote();
+  } else {
+    notes.push(noteObj);
+  }
+
+  saveNotes();
+  renderNotes();
+  clearNoteInputs();
+}
+
+function renderNotes() {
+  const tbody = document.getElementById("notesTableBody");
+  tbody.innerHTML = "";
+
+  notes.forEach((n, i) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="border px-2 py-1 font-bold">${n.title}</td>
+      <td class="border px-2 py-1">${n.subtitle || ""}</td>
+      <td class="border px-2 py-1">${n.date}</td>
+      <td class="border px-2 py-1">${n.content}</td>
+
+      <td class="border px-2 py-1">
+        <button onclick="editNote(${i})" class="text-green-600 mr-2">Edit</button>
+        <button onclick="deleteNote(${i})" class="text-red-600">Delete</button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function editNote(i) {
+  const n = notes[i];
+
+  document.getElementById("noteTitle").value = n.title;
+  document.getElementById("noteSubtitle").value = n.subtitle;
+  document.getElementById("noteDate").value = n.date;
+  document.getElementById("noteContent").value = n.content;
+
+  document.getElementById("noteAddBtn").textContent = "Update Note";
+  document.getElementById("noteAddBtn").onclick = () => addNote(i);
+}
+
+function deleteNote(i) {
+  if (confirm("Delete this note?")) {
+    notes.splice(i, 1);
+    saveNotes();
+    renderNotes();
+  }
+}
+
+function clearAllNotes() {
+  if (confirm("Delete all notes?")) {
+    notes = [];
+    saveNotes();
+    renderNotes();
+  }
+}
+
+function saveNotes() {
+  localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+function clearNoteInputs() {
+  document.getElementById("noteTitle").value = "";
+  document.getElementById("noteSubtitle").value = "";
+  document.getElementById("noteDate").value = "";
+  document.getElementById("noteContent").value = "";
+
+  document.getElementById("noteAddBtn").textContent = "Add Note";
+  document.getElementById("noteAddBtn").onclick = () => addNote();
+}
+
+renderNotes();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+let reminderChart;
+
+function addReminder(editIndex = null) {
+  const title = document.getElementById("reminderTitle").value.trim();
+  const subtitle = document.getElementById("reminderSubtitle").value.trim();
+  const dateTime = document.getElementById("reminderDateTime").value;
+  const text = document.getElementById("reminderText").value.trim();
+
+  if(!title || !dateTime || !text) return alert("Please fill Title, Date & Description");
+
+  const reminder = { title, subtitle, dateTime, text, status: "Pending" };
+
+  if(editIndex !== null) reminders[editIndex] = reminder;
+  else reminders.push(reminder);
+
+  localStorage.setItem("reminders", JSON.stringify(reminders));
+  renderReminders();
+  resetForm();
+}
+
+function resetForm() {
+  document.getElementById("reminderTitle").value = "";
+  document.getElementById("reminderSubtitle").value = "";
+  document.getElementById("reminderDateTime").value = "";
+  document.getElementById("reminderText").value = "";
+  document.getElementById("reminderAddBtn").textContent = "Add Reminder";
+  document.getElementById("reminderAddBtn").onclick = () => addReminder();
+}
+
+function renderReminders() {
+  const tbody = document.getElementById("reminderTableBody");
+  tbody.innerHTML = "";
+  reminders.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="border px-2 py-1">${r.title}</td>
+      <td class="border px-2 py-1">${r.subtitle}</td>
+      <td class="border px-2 py-1">${new Date(r.dateTime).toLocaleString()}</td>
+      <td class="border px-2 py-1">${r.text}</td>
+      <td class="border px-2 py-1">
+        <input type="checkbox" ${r.status==="Done"?"checked":""} onclick="toggleReminderStatus(${i})"> ${r.status}
+      </td>
+      <td class="border px-2 py-1">
+        <button onclick="editReminder(${i})" class="text-green-600 mr-2">Edit</button>
+        <button onclick="deleteReminder(${i})" class="text-red-600">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  renderReminderChart();
+}
+
+function toggleReminderStatus(index) {
+  reminders[index].status = reminders[index].status === "Pending" ? "Done" : "Pending";
+  localStorage.setItem("reminders", JSON.stringify(reminders));
+  renderReminders();
+}
+
+function editReminder(index) {
+  const r = reminders[index];
+  document.getElementById("reminderTitle").value = r.title;
+  document.getElementById("reminderSubtitle").value = r.subtitle;
+  document.getElementById("reminderDateTime").value = r.dateTime;
+  document.getElementById("reminderText").value = r.text;
+  document.getElementById("reminderAddBtn").textContent = "Update Reminder";
+  document.getElementById("reminderAddBtn").onclick = () => addReminder(index);
+}
+
+function deleteReminder(index) {
+  if(confirm("Delete this reminder?")) {
+    reminders.splice(index, 1);
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    renderReminders();
+  }
+}
+
+function renderReminderChart() {
+  const pending = reminders.filter(r => r.status === "Pending").length;
+  const done = reminders.filter(r => r.status === "Done").length;
+
+  const ctx = document.getElementById("reminderChart").getContext("2d");
+
+  if(reminderChart) reminderChart.destroy();
+
+  reminderChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Pending', 'Done'],
+      datasets: [{
+        data: [pending, done],
+        backgroundColor: ['#f59e0b', '#10b981']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+}
+
+document.getElementById("reminderAddBtn").onclick = () => addReminder();
+renderReminders();
+</script>
+
+<div id="emailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white rounded p-6 w-11/12 md:w-2/3 lg:w-1/2 relative shadow-lg">
+    <button onclick="closeModal()" class="absolute top-2 right-2 text-red-600 font-bold text-lg">✖</button>
+    <h2 id="modalSubject" class="text-xl font-bold mb-2"></h2>
+    <p><b>From:</b> <span id="modalFrom"></span></p>
+    <p><b>To:</b> <span id="modalTo"></span></p>
+    <p><b>CC:</b> <span id="modalCC"></span></p>
+    <p><b>BCC:</b> <span id="modalBCC"></span></p>
+    <p class="mt-3 whitespace-pre-line" id="modalMessage"></p>
+    <div id="modalAttachments" class="mt-3"></div>
+  </div>
+</div>
+</body>
+</html>
