@@ -5,25 +5,58 @@
 <title>Acacia Mail — Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
-
 <style>
-
-html{
-    font-family: 'Cambria', serif !important;
-    font-style: normal !important;
-    font-weight: normal !important;
-  }
-
-b, strong {
-  font-weight: bold;
+body {
+  font-family: 'Comic Sans MS', serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-table, th, td {
-  border: 1px solid #ccc;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+b,
+strong,
+th,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+
+input,
+select,
+textarea,
+button,
+::placeholder {
+  font-family: 'Comic Sans MS', serif;
+}
+
+table {
+  width: 100%;
   border-collapse: collapse;
 }
 
-th, td {
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
   padding: 8px;
 }
 
@@ -33,6 +66,152 @@ thead {
 
 tbody tr:nth-child(even) {
   background-color: #fafafa;
+}
+
+.footer {
+  background: #111;
+  color: white;
+  padding: 40px;
+  margin-top: 40px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 180px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  margin-bottom: 10px;
+}
+
+.footer-section p {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #444;
+  padding-top: 10px;
+  font-size: 13px;
+}
+
+img,
+iframe,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  content-visibility: auto;
+}
+
+iframe {
+  border: none;
+}
+
+.smooth {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  will-change: transform;
+}
+
+.drag-item {
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+.fast-render {
+  contain: content;
+}
+
+.shadow,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl,
+.heavy-shadow {
+  will-change: auto;
+}
+
+.transition,
+.hover\:shadow-xl,
+.hover\:-translate-y-2,
+.hover\:scale-105 {
+  transition-duration: 0.15s !important;
+}
+
+.card,
+.modal,
+.section-box {
+  transform: translateZ(0);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.lazy-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
+
+@media (max-width: 768px) {
+  .heavy-shadow,
+  .shadow,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+
+  .mobile-full {
+    width: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+input,
+textarea,
+select {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+table {
+  contain: content;
+}
+
+.heavy-table {
+  content-visibility: auto;
+}
+
+.modal,
+.card,
+.section-box {
+  contain: layout style paint;
 }
 </style>
 </head>
