@@ -1,1983 +1,622 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Acacia Books Mail Center</title>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Acacia Mail — Secure Business Workspace</title>
+<meta name="description" content="Acacia Mail — a fast, secure workspace with mail, calendar, reports, and an AI assistant." />
 <script src="https://cdn.tailwindcss.com"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'cambria',sans-serif;
-}
-
-body{
-background:#f3f4f6;
-color:#1f2937;
-overflow-x:hidden;
-}
-
-::-webkit-scrollbar{
-width:8px;
-}
-
-::-webkit-scrollbar-thumb{
-background:#1d4ed8;
-border-radius:10px;
-}
-
-.sidebar{
-position:fixed;
-left:0;
-top:0;
-width:250px;
-height:100vh;
-background:#062b69;
-color:#fff;
-overflow-y:auto;
-z-index:100;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-padding:20px;
-border-bottom:1px solid rgba(255,255,255,.15);
-}
-
-.logo img{
-width:45px;
-height:45px;
-}
-
-.logo h2{
-font-size:22px;
-font-weight:800;
-}
-
-.logo p{
-font-size:12px;
-opacity:.8;
-}
-
-.sidebar ul{
-list-style:none;
-padding:12px;
-}
-
-.sidebar li{
-margin-bottom:6px;
-}
-
-.sidebar a{
-display:flex;
-align-items:center;
-gap:12px;
-padding:12px 15px;
-color:#fff;
-text-decoration:none;
-border-radius:10px;
-transition:.3s;
-}
-
-.sidebar a:hover{
-background:#2563eb;
-}
-
-.sidebar a.active{
-background:#2563eb;
-}
-
-.main{
-margin-left:250px;
-min-height:100vh;
-}
-
-.header{
-height:78px;
-background:#fff;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 30px;
-box-shadow:0 2px 10px rgba(0,0,0,.08);
-position:sticky;
-top:0;
-z-index:50;
-}
-
-.title h1{
-font-size:30px;
-font-weight:800;
-color:#062b69;
-}
-
-.title p{
-font-size:14px;
-color:#6b7280;
-}
-
-.headerRight{
-display:flex;
-align-items:center;
-gap:15px;
-}
-
-.search{
-position:relative;
-}
-
-.search span{
-position:absolute;
-left:14px;
-top:11px;
-}
-
-.search input{
-width:350px;
-padding:11px 15px 11px 45px;
-border:1px solid #d1d5db;
-border-radius:10px;
-outline:none;
-}
-
-.btn{
-background:#062b69;
-color:#fff;
-padding:11px 18px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:600;
-}
-
-.content{
-padding:25px;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:20px;
-margin-bottom:25px;
-}
-
-.card{
-background:#fff;
-border-radius:15px;
-padding:20px;
-display:flex;
-align-items:center;
-gap:15px;
-box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.icon{
-width:58px;
-height:58px;
-border-radius:14px;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:25px;
-color:#fff;
-}
-
-.blue{background:#2563eb;}
-.green{background:#16a34a;}
-.orange{background:#ea580c;}
-.red{background:#dc2626;}
-.purple{background:#7c3aed;}
-
-.card small{
-display:block;
-font-size:13px;
-color:#6b7280;
-margin-bottom:5px;
-}
-
-.card h2{
-font-size:28px;
-font-weight:800;
-}
-
-.layout{
-display:grid;
-grid-template-columns:280px 1fr;
-gap:20px;
-}
-
-.panel{
-background:#fff;
-border-radius:15px;
-padding:20px;
-box-shadow:0 2px 10px rgba(0,0,0,.08);
-margin-bottom:20px;
-}
-
-.panel h3{
-font-size:22px;
-font-weight:800;
-color:#062b69;
-margin-bottom:15px;
-}
-
-.folderList{
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-.folderList button{
-padding:12px;
-border:none;
-background:#f3f4f6;
-border-radius:10px;
-text-align:left;
-cursor:pointer;
-font-weight:600;
-}
-
-.folderList button:hover{
-background:#2563eb;
-color:#fff;
-}
-
-.tableWrap{
-overflow:auto;
-border-radius:12px;
-border:1px solid #e5e7eb;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-thead{
-background:#062b69;
-color:#fff;
-}
-
-th,td{
-padding:12px;
-border:1px solid #e5e7eb;
-text-align:left;
-font-size:14px;
-}
-
-tbody tr:hover{
-background:#f8fafc;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="sidebar">
-
-<div class="logo">
-
-<img src="acaciabooks-logo.png">
-
-<div>
-
-<h2>Acacia Books</h2>
-
-<p>Mail Center</p>
-
-</div>
-
-</div>
-
-<ul>
-
-<li><a class="active" href="#">📥 Inbox</a></li>
-
-<li><a href="#">✉ Compose</a></li>
-
-<li><a href="#">📤 Sent</a></li>
-
-<li><a href="#">📝 Drafts</a></li>
-
-<li><a href="#">⭐ Starred</a></li>
-
-<li><a href="#">📁 Archive</a></li>
-
-<li><a href="#">🚫 Spam</a></li>
-
-<li><a href="#">🗑 Trash</a></li>
-
-<li><a href="#">👥 Contacts</a></li>
-
-<li><a href="#">📎 Attachments</a></li>
-
-<li><a href="#">📅 Calendar</a></li>
-
-<li><a href="#">✅ Tasks</a></li>
-
-<li><a href="#">📊 Reports</a></li>
-
-<li><a href="#">🤖 AI Assistant</a></li>
-
-<li><a href="#">⚙ Settings</a></li>
-
-</ul>
-
-</div>
-
-<div class="main">
-
-<div class="header">
-
-<div class="title">
-
-<h1>📧 Mail Center</h1>
-
-<p>Business Email Management</p>
-
-</div>
-
-<div class="headerRight">
-
-<div class="search">
-
-<span>🔍</span>
-
-<input type="text" id="mailSearch" placeholder="Search emails">
-
-</div>
-
-<button class="btn" id="composeMail">
-
-Compose Email
-
-</button>
-
-</div>
-
-</div>
-
-<div class="content">
-
-<div class="cards">
-
-<div class="card">
-
-<div class="icon blue">📥</div>
-
-<div>
-
-<small>Inbox</small>
-
-<h2 id="inboxCount">0</h2>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="icon green">📤</div>
-
-<div>
-
-<small>Sent</small>
-
-<h2 id="sentCount">0</h2>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="icon orange">📝</div>
-
-<div>
-
-<small>Drafts</small>
-
-<h2 id="draftCount">0</h2>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="icon red">🚫</div>
-
-<div>
-
-<small>Spam</small>
-
-<h2 id="spamCount">0</h2>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="icon purple">⭐</div>
-
-<div>
-
-<small>Starred</small>
-
-<h2 id="starCount">0</h2>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="layout">
-<div>
-
-<div class="panel">
-
-<h3>Folders</h3>
-
-<div class="folderList">
-
-<button id="inboxFolder">📥 Inbox</button>
-
-<button id="sentFolder">📤 Sent</button>
-
-<button id="draftFolder">📝 Drafts</button>
-
-<button id="starFolder">⭐ Starred</button>
-
-<button id="archiveFolder">📁 Archive</button>
-
-<button id="spamFolder">🚫 Spam</button>
-
-<button id="trashFolder">🗑 Trash</button>
-
-<button id="contactsFolder">👥 Contacts</button>
-
-<button id="attachmentsFolder">📎 Attachments</button>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Quick Actions</h3>
-
-<div class="folderList">
-
-<button id="newMailBtn">✉ New Email</button>
-
-<button id="replyMailBtn">↩ Reply</button>
-
-<button id="replyAllBtn">🔁 Reply All</button>
-
-<button id="forwardMailBtn">➡ Forward</button>
-
-<button id="deleteMailBtn">🗑 Delete</button>
-
-<button id="markReadBtn">✔ Mark Read</button>
-
-<button id="markUnreadBtn">📩 Mark Unread</button>
-
-<button id="refreshMailBtn">🔄 Refresh</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div>
-
-<div class="panel">
-
-<h3>Compose Email</h3>
-
-<div class="form">
-
-<div class="group">
-
-<label>From</label>
-
-<input type="email" id="mailFrom">
-
-</div>
-
-<div class="group">
-
-<label>To</label>
-
-<input type="email" id="mailTo">
-
-</div>
-
-<div class="group">
-
-<label>CC</label>
-
-<input type="email" id="mailCC">
-
-</div>
-
-<div class="group">
-
-<label>BCC</label>
-
-<input type="email" id="mailBCC">
-
-</div>
-
-<div class="group">
-
-<label>Subject</label>
-
-<input type="text" id="mailSubject">
-
-</div>
-
-<div class="group">
-
-<label>Priority</label>
-
-<select id="mailPriority">
-
-<option value="Normal">Normal</option>
-
-<option value="High">High</option>
-
-<option value="Low">Low</option>
-
-</select>
-
-</div>
-
-<div class="group">
-
-<label>Attachment</label>
-
-<input type="file" id="mailAttachment" multiple>
-
-</div>
-
-<div class="group">
-
-<label>Message</label>
-
-<textarea id="mailBody" rows="10"></textarea>
-
-</div>
-
-<div class="actions">
-
-<button class="btn" id="sendMailBtn">
-
-Send
-
-</button>
-
-<button class="btn" id="saveDraftBtn">
-
-Save Draft
-
-</button>
-
-<button class="btn" id="clearMailBtn">
-
-Clear
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Inbox</h3>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th></th>
-
-<th>From</th>
-
-<th>Subject</th>
-
-<th>Attachment</th>
-
-<th>Date</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="mailTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-<div class="panel">
-
-<h3>Contacts</h3>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Name</th>
-
-<th>Email</th>
-
-<th>Phone</th>
-
-<th>Company</th>
-
-<th>Department</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="contactsTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Attachments</h3>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>File</th>
-
-<th>Email</th>
-
-<th>Type</th>
-
-<th>Size</th>
-
-<th>Date</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="attachmentTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Email Templates</h3>
-
-<div class="actions">
-
-<button class="btn" id="newTemplateBtn">
-
-New Template
-
-</button>
-
-<button class="btn" id="loadTemplateBtn">
-
-Load Template
-
-</button>
-
-<button class="btn" id="deleteTemplateBtn">
-
-Delete Template
-
-</button>
-
-</div>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Name</th>
-
-<th>Category</th>
-
-<th>Last Updated</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="templateTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Mail Calendar</h3>
-
-<div id="calendarContainer">
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Scheduled Emails</h3>
-
-<div class="tableWrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Recipient</th>
-
-<th>Subject</th>
-
-<th>Scheduled Date</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="scheduledMailTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Email Analytics</h3>
-
-<canvas id="mailAnalyticsChart"></canvas>
-
-</div>
-
-<div class="panel">
-
-<h3>Storage Usage</h3>
-
-<canvas id="storageChart"></canvas>
-
-</div>
-
-<div class="panel">
-
-<h3>AI Mail Assistant</h3>
-
-<div id="mailAI">
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>Notifications</h3>
-
-<div id="mailNotifications">
-
-</div>
-
-</div>
-
-<footer style="margin-top:30px;padding:20px;text-align:center;color:#6b7280;">
-
-© 2026 Acacia Books Mail Center
-
-</footer>
-
-</div>
-
-</div>
-
-<script src="mail.js"></script>
 <script>
-    const MAIL={
-
-inbox:[],
-
-sent:[],
-
-drafts:[],
-
-spam:[],
-
-trash:[],
-
-starred:[],
-
-contacts:[],
-
-attachments:[],
-
-templates:[],
-
-scheduled:[],
-
-editing:null,
-
-init(){
-
-this.load();
-
-this.cache();
-
-this.bind();
-
-this.renderInbox();
-
-this.renderContacts();
-
-this.renderAttachments();
-
-this.renderTemplates();
-
-this.renderScheduled();
-
-this.dashboard();
-
-this.analytics();
-
-},
-
-cache(){
-
-this.mailTable=document.getElementById("mailTable");
-
-this.contactsTable=document.getElementById("contactsTable");
-
-this.attachmentTable=document.getElementById("attachmentTable");
-
-this.templateTable=document.getElementById("templateTable");
-
-this.scheduledTable=document.getElementById("scheduledMailTable");
-
-},
-
-bind(){
-
-document.getElementById("sendMailBtn").onclick=()=>this.sendMail();
-
-document.getElementById("saveDraftBtn").onclick=()=>this.saveDraft();
-
-document.getElementById("clearMailBtn").onclick=()=>this.clearForm();
-
-document.getElementById("mailSearch").onkeyup=e=>this.search(e.target.value);
-
-},
-
-load(){
-
-this.inbox=JSON.parse(localStorage.getItem("mailInbox")||"[]");
-
-this.sent=JSON.parse(localStorage.getItem("mailSent")||"[]");
-
-this.drafts=JSON.parse(localStorage.getItem("mailDrafts")||"[]");
-
-this.spam=JSON.parse(localStorage.getItem("mailSpam")||"[]");
-
-this.trash=JSON.parse(localStorage.getItem("mailTrash")||"[]");
-
-this.starred=JSON.parse(localStorage.getItem("mailStarred")||"[]");
-
-this.contacts=JSON.parse(localStorage.getItem("mailContacts")||"[]");
-
-this.attachments=JSON.parse(localStorage.getItem("mailAttachments")||"[]");
-
-this.templates=JSON.parse(localStorage.getItem("mailTemplates")||"[]");
-
-this.scheduled=JSON.parse(localStorage.getItem("scheduledMail")||"[]");
-
-},
-
-save(){
-
-localStorage.setItem("mailInbox",JSON.stringify(this.inbox));
-
-localStorage.setItem("mailSent",JSON.stringify(this.sent));
-
-localStorage.setItem("mailDrafts",JSON.stringify(this.drafts));
-
-localStorage.setItem("mailSpam",JSON.stringify(this.spam));
-
-localStorage.setItem("mailTrash",JSON.stringify(this.trash));
-
-localStorage.setItem("mailStarred",JSON.stringify(this.starred));
-
-localStorage.setItem("mailContacts",JSON.stringify(this.contacts));
-
-localStorage.setItem("mailAttachments",JSON.stringify(this.attachments));
-
-localStorage.setItem("mailTemplates",JSON.stringify(this.templates));
-
-localStorage.setItem("scheduledMail",JSON.stringify(this.scheduled));
-
-},
-
-dashboard(){
-
-document.getElementById("inboxCount").textContent=this.inbox.length;
-
-document.getElementById("sentCount").textContent=this.sent.length;
-
-document.getElementById("draftCount").textContent=this.drafts.length;
-
-document.getElementById("spamCount").textContent=this.spam.length;
-
-document.getElementById("starCount").textContent=this.starred.length;
-
-},
-sendMail(){
-
-const mail={
-
-id:Date.now(),
-
-from:mailFrom.value.trim(),
-
-to:mailTo.value.trim(),
-
-cc:mailCC.value.trim(),
-
-bcc:mailBCC.value.trim(),
-
-subject:mailSubject.value.trim(),
-
-priority:mailPriority.value,
-
-body:mailBody.value,
-
-attachments:[...mailAttachment.files].map(file=>({
-
-name:file.name,
-
-size:file.size,
-
-type:file.type
-
-})),
-
-date:new Date().toLocaleString(),
-
-status:"Sent",
-
-read:false,
-
-starred:false
-
-};
-
-if(!mail.to||!mail.subject){
-
-alert("Recipient and Subject are required.");
-
-return;
-
-}
-
-this.sent.unshift(mail);
-
-this.save();
-
-this.renderSent();
-
-this.dashboard();
-
-this.clearForm();
-
-},
-
-saveDraft(){
-
-const draft={
-
-id:Date.now(),
-
-from:mailFrom.value.trim(),
-
-to:mailTo.value.trim(),
-
-cc:mailCC.value.trim(),
-
-bcc:mailBCC.value.trim(),
-
-subject:mailSubject.value.trim(),
-
-priority:mailPriority.value,
-
-body:mailBody.value,
-
-attachments:[...mailAttachment.files].map(file=>({
-
-name:file.name,
-
-size:file.size,
-
-type:file.type
-
-})),
-
-date:new Date().toLocaleString(),
-
-status:"Draft"
-
-};
-
-this.drafts.unshift(draft);
-
-this.save();
-
-this.dashboard();
-
-this.clearForm();
-
-},
-
-clearForm(){
-
-mailFrom.value="";
-
-mailTo.value="";
-
-mailCC.value="";
-
-mailBCC.value="";
-
-mailSubject.value="";
-
-mailPriority.value="Normal";
-
-mailBody.value="";
-
-mailAttachment.value="";
-
-},
-
-renderInbox(list=this.inbox){
-
-this.mailTable.innerHTML="";
-
-list.forEach(mail=>{
-
-this.mailTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>
-
-<input type="checkbox" value="${mail.id}">
-
-</td>
-
-<td>${mail.from}</td>
-
-<td>${mail.subject}</td>
-
-<td>${mail.attachments.length}</td>
-
-<td>${mail.date}</td>
-
-<td>${mail.read?"Read":"Unread"}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.openMail(${mail.id})">
-
-Open
-
-</button>
-
-<button class="btn"
-
-onclick="MAIL.deleteMail(${mail.id})">
-
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-
-renderSent(){
-
-this.mailTable.innerHTML="";
-
-this.sent.forEach(mail=>{
-
-this.mailTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>
-
-<input type="checkbox">
-
-</td>
-
-<td>${mail.to}</td>
-
-<td>${mail.subject}</td>
-
-<td>${mail.attachments.length}</td>
-
-<td>${mail.date}</td>
-
-<td>${mail.status}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.openSent(${mail.id})">
-
-Open
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-openMail(id){
-
-const mail=this.inbox.find(m=>m.id===id);
-
-if(!mail)return;
-
-mail.read=true;
-
-this.save();
-
-this.renderInbox();
-
-mailFrom.value=mail.from||"";
-
-mailTo.value=mail.to||"";
-
-mailCC.value=mail.cc||"";
-
-mailBCC.value=mail.bcc||"";
-
-mailSubject.value=mail.subject||"";
-
-mailPriority.value=mail.priority||"Normal";
-
-mailBody.value=mail.body||"";
-
-},
-
-openSent(id){
-
-const mail=this.sent.find(m=>m.id===id);
-
-if(!mail)return;
-
-mailFrom.value=mail.from||"";
-
-mailTo.value=mail.to||"";
-
-mailCC.value=mail.cc||"";
-
-mailBCC.value=mail.bcc||"";
-
-mailSubject.value=mail.subject||"";
-
-mailPriority.value=mail.priority||"Normal";
-
-mailBody.value=mail.body||"";
-
-},
-
-deleteMail(id){
-
-if(!confirm("Delete this email?"))return;
-
-const index=this.inbox.findIndex(m=>m.id===id);
-
-if(index===-1)return;
-
-const mail=this.inbox.splice(index,1)[0];
-
-mail.status="Trash";
-
-this.trash.unshift(mail);
-
-this.save();
-
-this.renderInbox();
-
-this.dashboard();
-
-},
-
-starMail(id){
-
-const mail=this.inbox.find(m=>m.id===id);
-
-if(!mail)return;
-
-mail.starred=!mail.starred;
-
-if(mail.starred){
-
-this.starred.unshift(mail);
-
-}else{
-
-this.starred=this.starred.filter(m=>m.id!==id);
-
-}
-
-this.save();
-
-this.dashboard();
-
-this.renderInbox();
-
-},
-
-search(keyword){
-
-keyword=keyword.toLowerCase();
-
-const results=this.inbox.filter(mail=>
-
-(mail.from||"").toLowerCase().includes(keyword)||
-
-(mail.to||"").toLowerCase().includes(keyword)||
-
-(mail.subject||"").toLowerCase().includes(keyword)||
-
-(mail.body||"").toLowerCase().includes(keyword)
-
-);
-
-this.renderInbox(results);
-
-},
-
-renderContacts(){
-
-if(!this.contactsTable)return;
-
-this.contactsTable.innerHTML="";
-
-this.contacts.forEach(contact=>{
-
-this.contactsTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>${contact.name||""}</td>
-
-<td>${contact.email||""}</td>
-
-<td>${contact.phone||""}</td>
-
-<td>${contact.company||""}</td>
-
-<td>${contact.department||""}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.useContact(${contact.id})">
-
-Use
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-
-useContact(id){
-
-const contact=this.contacts.find(c=>c.id===id);
-
-if(!contact)return;
-
-mailTo.value=contact.email||"";
-
-},
-renderAttachments(){
-
-if(!this.attachmentTable)return;
-
-this.attachmentTable.innerHTML="";
-
-this.attachments.forEach(file=>{
-
-this.attachmentTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>${file.name||""}</td>
-
-<td>${file.email||""}</td>
-
-<td>${file.type||""}</td>
-
-<td>${this.formatSize(file.size||0)}</td>
-
-<td>${file.date||""}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.downloadAttachment(${file.id})">
-
-Download
-
-</button>
-
-<button class="btn"
-
-onclick="MAIL.removeAttachment(${file.id})">
-
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-
-downloadAttachment(id){
-
-const file=this.attachments.find(a=>a.id===id);
-
-if(!file)return;
-
-if(file.url){
-
-window.open(file.url,"_blank");
-
-}
-
-},
-
-removeAttachment(id){
-
-if(!confirm("Delete attachment?"))return;
-
-this.attachments=this.attachments.filter(a=>a.id!==id);
-
-this.save();
-
-this.renderAttachments();
-
-},
-
-renderTemplates(){
-
-if(!this.templateTable)return;
-
-this.templateTable.innerHTML="";
-
-this.templates.forEach(template=>{
-
-this.templateTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>${template.name||""}</td>
-
-<td>${template.category||""}</td>
-
-<td>${template.updated||""}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.loadTemplate(${template.id})">
-
-Load
-
-</button>
-
-<button class="btn"
-
-onclick="MAIL.deleteTemplate(${template.id})">
-
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-
-loadTemplate(id){
-
-const template=this.templates.find(t=>t.id===id);
-
-if(!template)return;
-
-mailSubject.value=template.subject||"";
-
-mailBody.value=template.body||"";
-
-},
-
-deleteTemplate(id){
-
-if(!confirm("Delete template?"))return;
-
-this.templates=this.templates.filter(t=>t.id!==id);
-
-this.save();
-
-this.renderTemplates();
-
-},
-
-saveTemplate(name,category){
-
-this.templates.push({
-
-id:Date.now(),
-
-name,
-
-category,
-
-subject:mailSubject.value,
-
-body:mailBody.value,
-
-updated:new Date().toLocaleDateString()
-
-});
-
-this.save();
-
-this.renderTemplates();
-
-},
-
-formatSize(bytes){
-
-if(bytes<1024)return bytes+" B";
-
-if(bytes<1048576)return (bytes/1024).toFixed(1)+" KB";
-
-if(bytes<1073741824)return (bytes/1048576).toFixed(1)+" MB";
-
-return (bytes/1073741824).toFixed(2)+" GB";
-
-},
-renderScheduled(){
-
-if(!this.scheduledTable)return;
-
-this.scheduledTable.innerHTML="";
-
-this.scheduled.forEach(mail=>{
-
-this.scheduledTable.insertAdjacentHTML("beforeend",`
-
-<tr>
-
-<td>${mail.to||""}</td>
-
-<td>${mail.subject||""}</td>
-
-<td>${mail.scheduleDate||""}</td>
-
-<td>${mail.status||"Scheduled"}</td>
-
-<td>
-
-<button class="btn"
-
-onclick="MAIL.editScheduled(${mail.id})">
-
-Edit
-
-</button>
-
-<button class="btn"
-
-onclick="MAIL.cancelScheduled(${mail.id})">
-
-Cancel
-
-</button>
-
-</td>
-
-</tr>
-
-`);
-
-});
-
-},
-
-scheduleMail(date,time){
-
-const mail={
-
-id:Date.now(),
-
-from:mailFrom.value.trim(),
-
-to:mailTo.value.trim(),
-
-cc:mailCC.value.trim(),
-
-bcc:mailBCC.value.trim(),
-
-subject:mailSubject.value.trim(),
-
-body:mailBody.value,
-
-priority:mailPriority.value,
-
-scheduleDate:date,
-
-scheduleTime:time,
-
-status:"Scheduled"
-
-};
-
-this.scheduled.unshift(mail);
-
-this.save();
-
-this.renderScheduled();
-
-this.clearForm();
-
-},
-
-editScheduled(id){
-
-const mail=this.scheduled.find(m=>m.id===id);
-
-if(!mail)return;
-
-mailFrom.value=mail.from||"";
-
-mailTo.value=mail.to||"";
-
-mailCC.value=mail.cc||"";
-
-mailBCC.value=mail.bcc||"";
-
-mailSubject.value=mail.subject||"";
-
-mailPriority.value=mail.priority||"Normal";
-
-mailBody.value=mail.body||"";
-
-},
-
-cancelScheduled(id){
-
-if(!confirm("Cancel scheduled email?"))return;
-
-this.scheduled=this.scheduled.filter(m=>m.id!==id);
-
-this.save();
-
-this.renderScheduled();
-
-},
-
-analytics(){
-
-const analytics=document.getElementById("mailAnalyticsChart");
-
-if(analytics){
-
-new Chart(analytics,{
-
-type:"bar",
-
-data:{
-
-labels:["Inbox","Sent","Drafts","Spam","Trash"],
-
-datasets:[{
-
-label:"Emails",
-
-data:[
-
-this.inbox.length,
-
-this.sent.length,
-
-this.drafts.length,
-
-this.spam.length,
-
-this.trash.length
-
-]
-
-}]
-
-},
-
-options:{
-
-responsive:true,
-
-maintainAspectRatio:false
-
-}
-
-});
-
-}
-
-const storage=document.getElementById("storageChart");
-
-if(storage){
-
-new Chart(storage,{
-
-type:"doughnut",
-
-data:{
-
-labels:["Used","Available"],
-
-datasets:[{
-
-data:[
-
-this.attachments.length,
-
-100
-
-]
-
-}]
-
-},
-
-options:{
-
-responsive:true,
-
-maintainAspectRatio:false
-
-}
-
-});
-
-}
-
-},
-notifications(){
-
-const panel=document.getElementById("mailNotifications");
-
-if(!panel)return;
-
-panel.innerHTML="";
-
-const items=[];
-
-this.scheduled.forEach(mail=>{
-
-items.push({
-
-date:mail.scheduleDate,
-
-message:"Scheduled email to "+mail.to
-
-});
-
-});
-
-this.drafts.forEach(mail=>{
-
-items.push({
-
-date:mail.date,
-
-message:"Draft saved: "+mail.subject
-
-});
-
-});
-
-items.sort((a,b)=>new Date(b.date)-new Date(a.date));
-
-items.forEach(item=>{
-
-panel.insertAdjacentHTML("beforeend",`
-
-<div class="panel">
-
-<strong>${item.date}</strong>
-
-<div>${item.message}</div>
-
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          acacia: {
+            50:'#eef7ff',100:'#d9ecff',200:'#b6d9ff',300:'#83bfff',
+            400:'#4a9dff',500:'#1f7aef',600:'#0f5fd1',700:'#0d4ca8',
+            800:'#103f85',900:'#12376b'
+          }
+        },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
+      }
+    }
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{height:100%}
+  body{font-family:'cambria',system-ui,sans-serif;background:#f4f6fa}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#c7d0dc;border-radius:6px}
+  ::-webkit-scrollbar-thumb:hover{background:#a3b0c2}
+  .mail-row.unread{background:#fff;font-weight:600}
+  .mail-row.read{background:#f8fafc;color:#475569;font-weight:400}
+  .mail-row.selected{background:#eaf3ff !important;box-shadow:inset 3px 0 0 #1f7aef}
+  .fade-in{animation:fadeIn .18s ease-out}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .compose-shadow{box-shadow:0 20px 50px -12px rgba(15,95,209,.35),0 8px 20px -8px rgba(0,0,0,.2)}
+  [contenteditable][placeholder]:empty:before{content:attr(placeholder);color:#94a3b8}
+  .nav-btn.active{background:#0d4ca8;color:#fff}
+  .nav-btn.active .nav-label{color:#fff}
+</style>
+</head>
+<body class="text-slate-800">
+
+<div id="authScreen" class="hidden fixed inset-0 z-40 bg-gradient-to-br from-acacia-800 via-acacia-700 to-acacia-900 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div class="p-6 text-center border-b border-slate-100">
+      <div class="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white font-bold text-2xl">A</div>
+      <h1 class="mt-3 text-xl font-bold text-slate-800">Welcome to Acacia</h1>
+      <p class="text-sm text-slate-500">Sign in or create your workspace account.</p>
+    </div>
+    <div class="flex border-b border-slate-100">
+      <button id="tabSignIn" onclick="switchAuthTab('signin')" class="flex-1 py-3 text-sm font-semibold text-acacia-700 border-b-2 border-acacia-600">Sign In</button>
+      <button id="tabSignUp" onclick="switchAuthTab('signup')" class="flex-1 py-3 text-sm font-semibold text-slate-500 border-b-2 border-transparent">Create Account</button>
+    </div>
+
+    <form id="signinForm" onsubmit="doSignIn(event)" class="p-6 space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Email</label>
+        <input id="siEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Password</label>
+        <input id="siPass" type="password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
+      </div>
+      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Sign In</button>
+      <p id="siError" class="text-xs text-red-500 hidden">Invalid credentials.</p>
+    </form>
+
+    <form id="signupForm" onsubmit="doSignUp(event)" class="hidden p-6 space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs font-semibold text-slate-600">First name</label>
+          <input id="suFirst" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
+        <div><label class="text-xs font-semibold text-slate-600">Last name</label>
+          <input id="suLast" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Choose your email</label>
+        <div class="flex mt-1">
+          <input id="suUser" required class="flex-1 h-10 px-3 rounded-l-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm" placeholder="username"/>
+          <span class="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-slate-300 bg-slate-50 text-sm text-slate-500">@acaciamail.co</span>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Password</label>
+        <input id="suPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/>
+      </div>
+      <label class="flex items-start gap-2 text-xs text-slate-500">
+        <input type="checkbox" required class="mt-0.5"/>I agree to the Acacia Terms & Privacy Policy.
+      </label>
+      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Create Account</button>
+    </form>
+  </div>
 </div>
 
-`);
+<div id="app" class="hidden flex-col h-screen">
 
-});
+  
+  <header class="flex items-center justify-between px-4 h-14 bg-white border-b border-slate-200 shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white font-bold">A</div>
+      <div class="leading-tight">
+        <div class="font-bold text-acacia-800">Acacia</div>
+        <div class="text-[10px] uppercase tracking-wider text-slate-400">Workspace</div>
+      </div>
+    </div>
 
-},
+    <div class="flex-1 max-w-2xl mx-6 hidden md:block">
+      <div class="relative">
+        <input id="searchInput" type="search" placeholder="Search…"
+          class="w-full pl-10 pr-4 h-10 rounded-full bg-slate-100 border border-transparent focus:bg-white focus:border-acacia-400 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" />
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      </div>
+    </div>
 
-aiAssistant(){
+    <div class="flex items-center gap-2">
+      <button title="Sign out" onclick="signOut()" class="text-sm text-slate-500 hover:text-acacia-700 px-3">Sign out</button>
+      <div id="userAvatar" class="w-9 h-9 rounded-full bg-acacia-700 text-white flex items-center justify-center font-semibold text-sm">?</div>
+    </div>
+  </header>
 
-const panel=document.getElementById("mailAI");
+  <div class="flex flex-1 overflow-hidden">
 
-if(!panel)return;
+    <nav class="w-20 bg-acacia-900 flex flex-col items-center py-3 gap-1 shrink-0">
+      <button data-view="mail"      onclick="switchView('mail')"      class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span class="nav-label text-[10px]">Mail</span>
+      </button>
+      <button data-view="calendar"  onclick="switchView('calendar')"  class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/></svg>
+        <span class="nav-label text-[10px]">Calendar</span>
+      </button>
+      <button data-view="reports"   onclick="switchView('reports')"   class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>
+        <span class="nav-label text-[10px]">Reports</span>
+      </button>
+      <button data-view="ai"        onclick="switchView('ai')"        class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M12 7a5 5 0 00-5 5v3l-1 2h12l-1-2v-3a5 5 0 00-5-5zM9 19a3 3 0 006 0"/></svg>
+        <span class="nav-label text-[10px]">AI</span>
+      </button>
+      <div class="flex-1"></div>
+      <button data-view="settings"  onclick="switchView('settings')"  class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317a1 1 0 011.35 0l.94.86a1 1 0 00.85.24l1.26-.2a1 1 0 011.12.74l.31 1.24a1 1 0 00.62.68l1.19.42a1 1 0 01.62 1.24l-.42 1.19a1 1 0 000 .68l.42 1.19a1 1 0 01-.62 1.24l-1.19.42a1 1 0 00-.62.68l-.31 1.24a1 1 0 01-1.12.74l-1.26-.2a1 1 0 00-.85.24l-.94.86a1 1 0 01-1.35 0l-.94-.86a1 1 0 00-.85-.24l-1.26.2a1 1 0 01-1.12-.74l-.31-1.24a1 1 0 00-.62-.68l-1.19-.42a1 1 0 01-.62-1.24l.42-1.19a1 1 0 000-.68l-.42-1.19a1 1 0 01.62-1.24l1.19-.42a1 1 0 00.62-.68l.31-1.24a1 1 0 011.12-.74l1.26.2a1 1 0 00.85-.24l.94-.86z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
+        <span class="nav-label text-[10px]">Settings</span>
+      </button>
+    </nav>
 
-panel.innerHTML="";
-
-const unread=this.inbox.filter(mail=>!mail.read).length;
-
-const high=this.inbox.filter(mail=>mail.priority==="High").length;
-
-const drafts=this.drafts.length;
-
-const scheduled=this.scheduled.length;
-
-const suggestions=[];
-
-suggestions.push("Unread Emails: "+unread);
-
-suggestions.push("High Priority Emails: "+high);
-
-suggestions.push("Draft Emails: "+drafts);
-
-suggestions.push("Scheduled Emails: "+scheduled);
-
-if(high>0){
-
-suggestions.push("Review high-priority emails first.");
-
-}
-
-if(unread>10){
-
-suggestions.push("Your inbox has many unread emails.");
-
-}
-
-if(drafts>5){
-
-suggestions.push("Complete or remove old drafts.");
-
-}
-
-suggestions.forEach(text=>{
-
-panel.insertAdjacentHTML("beforeend",`
-
-<div class="panel">
-
-${text}
-
+    <div id="workspace" class="flex-1 flex overflow-hidden"></div>
+  </div>
 </div>
 
-`);
+<div id="composeWrap" class="hidden fixed bottom-4 right-4 w-[560px] max-w-[95vw] h-[520px] max-h-[90vh] bg-white rounded-xl compose-shadow flex flex-col overflow-hidden z-50 fade-in">
+  <div class="flex items-center justify-between px-4 h-11 bg-acacia-800 text-white">
+    <div class="font-semibold text-sm">New Message</div>
+    <button onclick="closeCompose()" class="p-1.5 hover:bg-white/10 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+  </div>
+  <div class="p-4 flex flex-col gap-2 flex-1 overflow-hidden">
+    <input id="cTo" placeholder="To" class="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-acacia-400"/>
+    <input id="cSubj" placeholder="Subject" class="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-acacia-400"/>
+    <div id="cBody" contenteditable="true" placeholder="Write your message…" class="flex-1 overflow-y-auto py-2 text-sm outline-none"></div>
+  </div>
+  <div class="flex items-center justify-between px-4 h-14 border-t border-slate-200 bg-slate-50">
+    <button onclick="sendMail()" class="h-9 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Send</button>
+    <button onclick="closeCompose()" class="p-2 hover:bg-slate-200 rounded text-slate-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M8 6V4h8v2m-9 0v14a2 2 0 002 2h6a2 2 0 002-2V6"/></svg></button>
+  </div>
+</div>
 
-});
+<script>
 
-},
+const USERS_KEY = 'acacia_users';
+const SESSION_KEY = 'acacia_session';
+const DATA_KEY_PREFIX = 'acacia_data_';
 
-refresh(){
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{return[]} }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function currentUser(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch{return null} }
 
-this.dashboard();
-
-this.renderInbox();
-
-this.renderSent();
-
-this.renderContacts();
-
-this.renderAttachments();
-
-this.renderTemplates();
-
-this.renderScheduled();
-
-this.analytics();
-
-this.notifications();
-
-this.aiAssistant();
-
-},
-
-reset(){
-
-if(!confirm("Clear all Mail Center data?"))return;
-
-this.inbox=[];
-
-this.sent=[];
-
-this.drafts=[];
-
-this.spam=[];
-
-this.trash=[];
-
-this.starred=[];
-
-this.contacts=[];
-
-this.attachments=[];
-
-this.templates=[];
-
-this.scheduled=[];
-
-this.save();
-
-this.refresh();
-
-},
-
-start(){
-
-this.init();
-
-this.refresh();
-
+function switchAuthTab(t){
+  const inSel = t==='signin';
+  document.getElementById('tabSignIn').classList.toggle('text-acacia-700',inSel);
+  document.getElementById('tabSignIn').classList.toggle('border-acacia-600',inSel);
+  document.getElementById('tabSignIn').classList.toggle('text-slate-500',!inSel);
+  document.getElementById('tabSignIn').classList.toggle('border-transparent',!inSel);
+  document.getElementById('tabSignUp').classList.toggle('text-acacia-700',!inSel);
+  document.getElementById('tabSignUp').classList.toggle('border-acacia-600',!inSel);
+  document.getElementById('tabSignUp').classList.toggle('text-slate-500',inSel);
+  document.getElementById('tabSignUp').classList.toggle('border-transparent',inSel);
+  document.getElementById('signinForm').classList.toggle('hidden',!inSel);
+  document.getElementById('signupForm').classList.toggle('hidden',inSel);
 }
 
-};
+function doSignIn(e){
+  e.preventDefault();
+  const email = document.getElementById('siEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('siPass').value;
+  const u = loadUsers().find(x=>x.email===email && x.pass===pass);
+  if(!u){ document.getElementById('siError').classList.remove('hidden'); return; }
+  localStorage.setItem(SESSION_KEY, JSON.stringify({email:u.email, name:u.name}));
+  bootApp();
+}
+function doSignUp(e){
+  e.preventDefault();
+  const first=document.getElementById('suFirst').value.trim();
+  const last =document.getElementById('suLast').value.trim();
+  const user =document.getElementById('suUser').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');
+  const pass =document.getElementById('suPass').value;
+  if(!user){ alert('Choose a valid username.'); return; }
+  const email = user+'@acaciamail.co';
+  const users = loadUsers();
+  if(users.some(x=>x.email===email)){ alert('That email already exists.'); return; }
+  const rec = {email, pass, name:(first+' '+last).trim(), created:Date.now()};
+  users.push(rec); saveUsers(users);
+  localStorage.setItem(SESSION_KEY, JSON.stringify({email:rec.email, name:rec.name}));
+  bootApp();
+}
+function signOut(){ localStorage.removeItem(SESSION_KEY); location.reload(); }
 
-window.addEventListener("load",()=>{
 
-MAIL.start();
+let store = { mails:[], events:[], aiChat:[] };
+function dataKey(){ const u=currentUser(); return DATA_KEY_PREFIX + (u?.email||'anon'); }
+function loadStore(){
+  try{ store = JSON.parse(localStorage.getItem(dataKey())) || {mails:[],events:[],aiChat:[]}; }
+  catch{ store = {mails:[],events:[],aiChat:[]}; }
+  store.mails ??= []; store.events ??= []; store.aiChat ??= [];
+}
+function saveStore(){ localStorage.setItem(dataKey(), JSON.stringify(store)); }
 
-});
+
+function bootApp(){
+  const u = currentUser();
+  if(!u){
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('app').classList.remove('flex');
+    return;
+  }
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('app').classList.add('flex');
+  document.getElementById('userAvatar').textContent = initials(u.name||u.email);
+  loadStore();
+  switchView('mail');
+}
+
+let currentView='mail';
+function switchView(v){
+  currentView=v;
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  const ws=document.getElementById('workspace');
+  if(v==='mail') renderMailView(ws);
+  else if(v==='calendar') renderCalendarView(ws);
+  else if(v==='reports') renderReportsView(ws);
+  else if(v==='ai') renderAiView(ws);
+  else if(v==='settings') renderSettingsView(ws);
+}
+
+
+const FOLDERS = [
+  { id:'inbox', name:'Inbox', icon:'M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z'},
+  { id:'starred', name:'Starred', icon:'M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z'},
+  { id:'sent', name:'Sent', icon:'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z'},
+  { id:'drafts', name:'Drafts', icon:'M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z'},
+  { id:'trash', name:'Trash', icon:'M3 6h18M8 6V4h8v2m-9 0v14a2 2 0 002 2h6a2 2 0 002-2V6'},
+];
+let mailCurrent = { folder:'inbox', id:null };
+
+function renderMailView(root){
+  root.innerHTML = `
+    <aside class="w-56 bg-white border-r border-slate-200 flex flex-col shrink-0">
+      <div class="p-3"><button onclick="openCompose()" class="w-full h-11 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Compose</button>
+      </div>
+      <nav id="folderNav" class="flex-1 overflow-y-auto px-2 pb-3 text-sm"></nav>
+    </aside>
+    <section class="w-[380px] bg-white border-r border-slate-200 flex flex-col shrink-0">
+      <div class="flex items-center justify-between px-4 h-12 border-b border-slate-200">
+        <div><h2 id="folderTitle" class="font-semibold text-slate-800">Inbox</h2>
+          <div id="folderMeta" class="text-[11px] text-slate-500">0 messages</div></div>
+      </div>
+      <div id="mailList" class="flex-1 overflow-y-auto"></div>
+    </section>
+    <section id="readingPane" class="flex-1 flex flex-col bg-slate-50 min-w-0"></section>
+  `;
+  const first = store.mails.filter(m=>folderMatch(m,mailCurrent.folder))[0];
+  mailCurrent.id = first?.id || null;
+  renderFolders(); renderList(); renderReading();
+}
+function folderMatch(m,fid){ if(fid==='starred') return m.starred && m.folder!=='trash'; return m.folder===fid; }
+function renderFolders(){
+  const unread = store.mails.filter(m=>!m.read && m.folder==='inbox').length;
+  document.getElementById('folderNav').innerHTML = FOLDERS.map(f=>{
+    const count = store.mails.filter(m=>folderMatch(m,f.id)).length;
+    const active = mailCurrent.folder===f.id;
+    const badge = f.id==='inbox'&&unread ? `<span class="ml-auto text-[11px] bg-acacia-600 text-white rounded-full px-2 py-0.5">${unread}</span>`
+                 : (count ? `<span class="ml-auto text-xs text-slate-400">${count}</span>`:'');
+    return `<button onclick="selectFolder('${f.id}')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left ${active?'bg-acacia-50 text-acacia-800 font-semibold':'text-slate-700 hover:bg-slate-100'}">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${f.icon}"/></svg>${f.name}${badge}
+    </button>`;
+  }).join('');
+}
+function selectFolder(id){ mailCurrent.folder=id; const first=store.mails.filter(m=>folderMatch(m,id))[0]; mailCurrent.id=first?.id||null; renderFolders(); renderList(); renderReading(); }
+function renderList(){
+  const list = store.mails.filter(m=>folderMatch(m,mailCurrent.folder)).sort((a,b)=>b.time-a.time);
+  document.getElementById('folderTitle').textContent = FOLDERS.find(f=>f.id===mailCurrent.folder).name;
+  document.getElementById('folderMeta').textContent = `${list.length} message${list.length!==1?'s':''}`;
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const items=q?list.filter(m=>(m.subject+m.from+m.preview).toLowerCase().includes(q)):list;
+  document.getElementById('mailList').innerHTML = items.length ? items.map(m=>`
+    <div onclick="selectMail('${m.id}')" class="mail-row ${m.read?'read':'unread'} ${mailCurrent.id===m.id?'selected':''} border-b border-slate-100 px-4 py-3 cursor-pointer hover:bg-acacia-50/60">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style="background:${avatarColor(m.from)}">${initials(m.from)}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between"><span class="truncate text-sm">${escapeHtml(m.from)}</span><span class="text-[11px] text-slate-400 ml-2 shrink-0">${timeAgo(m.time)}</span></div>
+          <div class="truncate text-sm">${escapeHtml(m.subject)}</div>
+          <div class="truncate text-xs text-slate-500">${escapeHtml(m.preview)}</div>
+        </div>
+        <button onclick="event.stopPropagation();toggleStar('${m.id}')" class="ml-1 text-slate-300 hover:text-amber-400">
+          <svg class="w-4 h-4" fill="${m.starred?'#f59e0b':'none'}" stroke="${m.starred?'#f59e0b':'currentColor'}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+        </button>
+      </div>
+    </div>`).join('') : emptyState('No messages','Compose your first message to get started.');
+}
+function renderReading(){
+  const m=store.mails.find(x=>x.id===mailCurrent.id);
+  const pane=document.getElementById('readingPane');
+  if(!m){ pane.innerHTML=emptyPane('Select a message','Choose a message from the list to read it here.'); return; }
+  m.read=true; saveStore();
+  pane.innerHTML = `
+    <div class="flex items-center gap-1 px-5 h-12 border-b border-slate-200 bg-white">
+      <button onclick="openReply()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Reply</button>
+      <button onclick="openForward()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Forward</button>
+      <button onclick="trashMail()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Delete</button>
+      <div class="ml-auto text-xs text-slate-400">${new Date(m.time).toLocaleString()}</div>
+    </div>
+    <div class="flex-1 overflow-y-auto"><div class="max-w-3xl mx-auto p-6 fade-in">
+      <h1 class="text-2xl font-semibold text-slate-900">${escapeHtml(m.subject)}</h1>
+      <div class="flex items-center gap-3 mt-5">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background:${avatarColor(m.from)}">${initials(m.from)}</div>
+        <div class="flex-1"><div class="text-sm"><span class="font-semibold">${escapeHtml(m.from)}</span> <span class="text-slate-400">&lt;${escapeHtml(m.email||'')}&gt;</span></div><div class="text-xs text-slate-500">to me</div></div>
+      </div>
+      <article class="max-w-none mt-6 text-slate-700 leading-relaxed text-sm">${m.body}</article>
+    </div></div>`;
+  renderList();
+}
+function selectMail(id){ mailCurrent.id=id; renderReading(); }
+function toggleStar(id){ const m=store.mails.find(x=>x.id===id); if(m){ m.starred=!m.starred; saveStore(); renderList(); } }
+function trashMail(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(m){ m.folder='trash'; mailCurrent.id=null; saveStore(); renderFolders(); renderList(); renderReading(); } }
+function openCompose(pref){ document.getElementById('composeWrap').classList.remove('hidden'); document.getElementById('cTo').value=pref?.to||''; document.getElementById('cSubj').value=pref?.subject||''; document.getElementById('cBody').innerHTML=pref?.body||''; document.getElementById('cTo').focus(); }
+function closeCompose(){ document.getElementById('composeWrap').classList.add('hidden'); }
+function openReply(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(!m) return; openCompose({to:m.email,subject:'Re: '+m.subject,body:`<br><br><blockquote style="border-left:2px solid #cbd5e1;padding-left:10px;color:#64748b">On ${new Date(m.time).toLocaleString()}, ${escapeHtml(m.from)} wrote:<br>${m.body}</blockquote>`}); }
+function openForward(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(!m) return; openCompose({subject:'Fwd: '+m.subject,body:`<br><br>---- Forwarded ----<br>From: ${escapeHtml(m.from)}<br>${m.body}`}); }
+function sendMail(){
+  const to=document.getElementById('cTo').value.trim();
+  const subj=document.getElementById('cSubj').value.trim()||'(no subject)';
+  const body=document.getElementById('cBody').innerHTML.trim()||'(empty)';
+  if(!to){ alert('Add a recipient.'); return; }
+  const u=currentUser();
+  store.mails.unshift({id:'m'+Date.now(),from:u.name||u.email,email:u.email,subject:subj,preview:body.replace(/<[^>]*>/g,'').slice(0,90),body,time:Date.now(),read:true,starred:false,folder:'sent'});
+  saveStore(); closeCompose();
+  if(currentView==='mail'){ mailCurrent.folder='sent'; selectFolder('sent'); }
+}
+
+let calCursor = new Date(); calCursor.setDate(1);
+function renderCalendarView(root){
+  root.innerHTML = `
+    <div class="flex-1 flex flex-col bg-white">
+      <div class="flex items-center justify-between px-6 h-14 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-semibold text-slate-800" id="calTitle"></h2>
+          <div class="flex items-center gap-1">
+            <button onclick="calNav(-1)" class="w-8 h-8 rounded hover:bg-slate-100">‹</button>
+            <button onclick="calToday()" class="px-3 h-8 rounded border border-slate-200 hover:bg-slate-100 text-sm">Today</button>
+            <button onclick="calNav(1)" class="w-8 h-8 rounded hover:bg-slate-100">›</button>
+          </div>
+        </div>
+        <button onclick="openEventModal()" class="h-9 px-4 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white font-semibold text-sm">+ New Event</button>
+      </div>
+      <div class="grid grid-cols-7 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+        ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="px-3 py-2">${d}</div>`).join('')}
+      </div>
+      <div id="calGrid" class="flex-1 grid grid-cols-7 grid-rows-6"></div>
+    </div>
+    <aside class="w-80 border-l border-slate-200 bg-slate-50 p-4 overflow-y-auto">
+      <h3 class="font-semibold text-slate-700 mb-3">Upcoming</h3>
+      <div id="upcomingList" class="space-y-2"></div>
+    </aside>
+  `;
+  drawCalendar();
+}
+function calNav(d){ calCursor.setMonth(calCursor.getMonth()+d); drawCalendar(); }
+function calToday(){ calCursor=new Date(); calCursor.setDate(1); drawCalendar(); }
+function drawCalendar(){
+  const y=calCursor.getFullYear(), m=calCursor.getMonth();
+  document.getElementById('calTitle').textContent = calCursor.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  let cells='';
+  for(let i=0;i<42;i++){
+    const dayNum=i-first+1;
+    const inMonth = dayNum>=1 && dayNum<=days;
+    const cellDate = new Date(y,m,dayNum);
+    const isToday = inMonth && cellDate.getTime()===today.getTime();
+    const dayEvents = inMonth ? store.events.filter(e=>sameDay(new Date(e.start), cellDate)) : [];
+    cells += `<div class="border-r border-b border-slate-100 p-1.5 text-xs ${inMonth?'':'bg-slate-50 text-slate-300'} min-h-0 overflow-hidden">
+      <div class="flex justify-end"><span class="${isToday?'bg-acacia-600 text-white':''} w-6 h-6 flex items-center justify-center rounded-full text-[11px]">${inMonth?dayNum:''}</span></div>
+      ${dayEvents.slice(0,3).map(e=>`<div class="mt-1 truncate text-[11px] px-1.5 py-0.5 rounded bg-acacia-100 text-acacia-800">${escapeHtml(e.title)}</div>`).join('')}
+      ${dayEvents.length>3?`<div class="text-[10px] text-slate-400 mt-0.5">+${dayEvents.length-3} more</div>`:''}
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML = cells;
+  const upcoming = store.events.filter(e=>new Date(e.start)>=new Date()).sort((a,b)=>a.start-b.start).slice(0,8);
+  document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(e=>`
+    <div class="bg-white p-3 rounded-lg border border-slate-200">
+      <div class="text-xs text-acacia-600 font-semibold">${new Date(e.start).toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+      <div class="text-sm font-medium mt-0.5">${escapeHtml(e.title)}</div>
+      ${e.notes?`<div class="text-xs text-slate-500 mt-1">${escapeHtml(e.notes)}</div>`:''}
+      <button onclick="deleteEvent('${e.id}')" class="text-[11px] text-red-500 mt-2 hover:underline">Delete</button>
+    </div>`).join('') : `<p class="text-xs text-slate-400">No upcoming events.</p>`;
+}
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function openEventModal(){
+  const title=prompt('Event title:'); if(!title) return;
+  const when=prompt('Start (YYYY-MM-DD HH:MM):', new Date().toISOString().slice(0,16).replace('T',' ')); if(!when) return;
+  const t=Date.parse(when.replace(' ','T')); if(isNaN(t)){ alert('Invalid date'); return; }
+  const notes=prompt('Notes (optional):','')||'';
+  store.events.push({id:'e'+Date.now(),title,start:t,notes}); saveStore(); drawCalendar();
+}
+function deleteEvent(id){ store.events=store.events.filter(e=>e.id!==id); saveStore(); drawCalendar(); }
+
+
+function renderReportsView(root){
+  const total=store.mails.length;
+  const unread=store.mails.filter(m=>!m.read).length;
+  const sent=store.mails.filter(m=>m.folder==='sent').length;
+  const starred=store.mails.filter(m=>m.starred).length;
+  const events=store.events.length;
+  const upcoming=store.events.filter(e=>e.start>=Date.now()).length;
+ 
+  const now=new Date(); now.setHours(0,0,0,0);
+  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(now); d.setDate(d.getDate()-i); days.push(d); }
+  const counts=days.map(d=>store.mails.filter(m=>sameDay(new Date(m.time),d)).length);
+  const max=Math.max(1,...counts);
+  root.innerHTML = `<div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+    <h2 class="text-2xl font-bold text-slate-800">Reports</h2>
+    <p class="text-sm text-slate-500 mb-6">Overview of your workspace activity.</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      ${statCard('Total messages',total,'📬')}
+      ${statCard('Unread',unread,'✉️')}
+      ${statCard('Sent',sent,'📤')}
+      ${statCard('Starred',starred,'⭐')}
+      ${statCard('Total events',events,'📅')}
+      ${statCard('Upcoming events',upcoming,'⏰')}
+    </div>
+    <div class="mt-8 bg-white p-6 rounded-xl border border-slate-200">
+      <h3 class="font-semibold text-slate-800 mb-4">Messages — last 7 days</h3>
+      <div class="flex items-end gap-3 h-48">
+        ${counts.map((c,i)=>`<div class="flex-1 flex flex-col items-center gap-2">
+          <div class="w-full bg-gradient-to-t from-acacia-500 to-acacia-300 rounded-t" style="height:${(c/max)*100}%;min-height:4px"></div>
+          <div class="text-[11px] text-slate-500">${days[i].toLocaleDateString(undefined,{weekday:'short'})}</div>
+          <div class="text-[11px] font-semibold text-slate-700">${c}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+function statCard(label,val,emoji){ return `<div class="bg-white p-5 rounded-xl border border-slate-200">
+  <div class="flex items-center justify-between"><span class="text-sm text-slate-500">${label}</span><span class="text-xl">${emoji}</span></div>
+  <div class="mt-2 text-3xl font-bold text-acacia-800">${val}</div></div>`; }
+
+
+function renderAiView(root){
+  root.innerHTML = `<div class="flex-1 flex flex-col bg-white">
+    <div class="px-6 h-14 flex items-center border-b border-slate-200">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white mr-3">✨</div>
+      <div><div class="font-semibold text-slate-800">Acacia AI Assistant</div><div class="text-xs text-slate-500">Ask about your mail, calendar, or drafts.</div></div>
+      <button onclick="store.aiChat=[];saveStore();switchView('ai')" class="ml-auto text-xs text-slate-500 hover:text-acacia-700">Clear chat</button>
+    </div>
+    <div id="aiMessages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50"></div>
+    <form onsubmit="aiSend(event)" class="p-4 border-t border-slate-200 flex gap-2 bg-white">
+      <input id="aiInput" placeholder="Ask me anything…" class="flex-1 h-11 px-4 rounded-full bg-slate-100 focus:bg-white border border-transparent focus:border-acacia-400 outline-none text-sm"/>
+      <button class="h-11 px-5 rounded-full bg-acacia-600 hover:bg-acacia-700 text-white font-semibold text-sm">Send</button>
+    </form>
+  </div>`;
+  drawAiMessages();
+}
+function drawAiMessages(){
+  const box=document.getElementById('aiMessages');
+  if(!store.aiChat.length){
+    box.innerHTML = `<div class="text-center text-slate-400 mt-8">
+      <div class="text-5xl">✨</div>
+      <p class="mt-3 text-sm">Try asking:</p>
+      <div class="mt-2 flex flex-wrap gap-2 justify-center">
+        ${['Summarize my unread','Draft a follow-up','What is on my calendar today?','How many emails did I send?'].map(s=>`<button onclick="aiQuick('${s}')" class="text-xs bg-white border border-slate-200 rounded-full px-3 py-1 hover:bg-acacia-50">${s}</button>`).join('')}
+      </div></div>`;
+    return;
+  }
+  box.innerHTML = store.aiChat.map(m=>`
+    <div class="flex ${m.role==='user'?'justify-end':'justify-start'}">
+      <div class="max-w-lg px-4 py-2.5 rounded-2xl text-sm ${m.role==='user'?'bg-acacia-600 text-white':'bg-white border border-slate-200 text-slate-700'}">${escapeHtml(m.text).replace(/\n/g,'<br>')}</div>
+    </div>`).join('');
+  box.scrollTop=box.scrollHeight;
+}
+function aiQuick(t){ document.getElementById('aiInput').value=t; aiSend(new Event('submit')); }
+function aiSend(e){
+  e.preventDefault();
+  const input=document.getElementById('aiInput'); const txt=input.value.trim(); if(!txt) return;
+  store.aiChat.push({role:'user',text:txt}); input.value='';
+  const reply = aiRespond(txt);
+  store.aiChat.push({role:'assistant',text:reply}); saveStore(); drawAiMessages();
+}
+function aiRespond(q){
+  const s=q.toLowerCase();
+  if(/summar|unread/.test(s)){
+    const u=store.mails.filter(m=>!m.read);
+    if(!u.length) return "You have no unread messages. Inbox zero — nicely done.";
+    return `You have ${u.length} unread message${u.length>1?'s':''}:\n`+u.slice(0,5).map(m=>`• ${m.from}: ${m.subject}`).join('\n');
+  }
+  if(/today|calendar|schedule/.test(s)){
+    const today=new Date(); today.setHours(0,0,0,0);
+    const e=store.events.filter(ev=>sameDay(new Date(ev.start),today));
+    if(!e.length) return "Nothing on your calendar today.";
+    return "Today's schedule:\n"+e.map(ev=>`• ${new Date(ev.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} — ${ev.title}`).join('\n');
+  }
+  if(/how many|count|sent/.test(s)){
+    return `You've sent ${store.mails.filter(m=>m.folder==='sent').length} message(s) and received ${store.mails.filter(m=>m.folder==='inbox').length}.`;
+  }
+  if(/draft|write|follow.?up|reply/.test(s)){
+    return "Here's a draft you can use:\n\nHi there,\n\nJust following up on our last conversation. Let me know if there's anything I can do to help move this forward.\n\nBest,\n"+(currentUser()?.name||'');
+  }
+  return "I'm your local assistant. I can summarize unread mail, check today's schedule, count sent items, or draft a follow-up. What would you like?";
+}
+
+function renderSettingsView(root){
+  const u=currentUser(); const all=loadUsers();
+  root.innerHTML = `<div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+    <h2 class="text-2xl font-bold text-slate-800">Settings</h2>
+    <p class="text-sm text-slate-500 mb-6">Manage your account and workspace.</p>
+
+    <div class="max-w-3xl space-y-6">
+      <section class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">Your account</h3>
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full bg-acacia-700 text-white flex items-center justify-center font-bold text-xl">${initials(u.name||u.email)}</div>
+          <div><div class="font-semibold text-slate-800">${escapeHtml(u.name||'')}</div><div class="text-sm text-slate-500">${escapeHtml(u.email)}</div></div>
+        </div>
+        <form onsubmit="updateProfile(event)" class="mt-5 grid grid-cols-2 gap-4">
+          <div><label class="text-xs font-semibold text-slate-600">Display name</label>
+            <input id="stName" value="${escapeHtml(u.name||'')}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+          <div><label class="text-xs font-semibold text-slate-600">Email (read-only)</label>
+            <input value="${escapeHtml(u.email)}" disabled class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm"/></div>
+          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Save</button></div>
+        </form>
+      </section>
+
+      <section class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">Change password</h3>
+        <form onsubmit="changePassword(event)" class="grid grid-cols-2 gap-4">
+          <div><label class="text-xs font-semibold text-slate-600">Current password</label>
+            <input id="pwOld" type="password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+          <div><label class="text-xs font-semibold text-slate-600">New password</label>
+            <input id="pwNew" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Update password</button></div>
+        </form>
+      </section>
+
+      <section class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-2">Create additional account</h3>
+        <p class="text-sm text-slate-500 mb-4">Add another workspace account. You can sign in with either.</p>
+        <form onsubmit="createAdditional(event)" class="grid grid-cols-2 gap-4">
+          <div class="col-span-2"><label class="text-xs font-semibold text-slate-600">Full name</label>
+            <input id="caName" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+          <div><label class="text-xs font-semibold text-slate-600">Username</label>
+            <div class="flex mt-1"><input id="caUser" required class="flex-1 h-10 px-3 rounded-l-lg border border-slate-300 outline-none text-sm"/>
+              <span class="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-slate-300 bg-slate-50 text-xs text-slate-500">@acaciamail.co</span></div></div>
+          <div><label class="text-xs font-semibold text-slate-600">Password</label>
+            <input id="caPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Create account</button></div>
+        </form>
+      </section>
+
+      <section class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">Registered accounts (${all.length})</h3>
+        <div class="space-y-2">
+          ${all.map(a=>`<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(a.name||a.email)}</div>
+              <div><div class="text-sm font-medium">${escapeHtml(a.name||'')}</div><div class="text-xs text-slate-500">${escapeHtml(a.email)}</div></div>
+            </div>
+            ${a.email===u.email?'<span class="text-xs text-emerald-600 font-semibold">Current</span>':`<button onclick="deleteAccount('${a.email}')" class="text-xs text-red-500 hover:underline">Delete</button>`}
+          </div>`).join('')}
+        </div>
+      </section>
+
+      <section class="bg-white p-6 rounded-xl border border-red-200">
+        <h3 class="font-semibold text-red-700 mb-2">Danger zone</h3>
+        <button onclick="clearMyData()" class="h-9 px-4 rounded-md border border-red-300 text-red-600 hover:bg-red-50 text-sm font-semibold">Clear all my data</button>
+      </section>
+    </div>
+  </div>`;
+}
+function updateProfile(e){ e.preventDefault(); const name=document.getElementById('stName').value.trim(); const users=loadUsers(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(rec){rec.name=name; saveUsers(users); localStorage.setItem(SESSION_KEY,JSON.stringify({email:u.email,name})); document.getElementById('userAvatar').textContent=initials(name||u.email);} alert('Profile updated.'); switchView('settings'); }
+function changePassword(e){ e.preventDefault(); const oldP=document.getElementById('pwOld').value; const newP=document.getElementById('pwNew').value; const users=loadUsers(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(!rec||rec.pass!==oldP){ alert('Current password is incorrect.'); return; } rec.pass=newP; saveUsers(users); alert('Password updated.'); switchView('settings'); }
+function createAdditional(e){ e.preventDefault(); const name=document.getElementById('caName').value.trim(); const user=document.getElementById('caUser').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,''); const pass=document.getElementById('caPass').value; const email=user+'@acaciamail.co'; const users=loadUsers(); if(users.some(x=>x.email===email)){ alert('That email already exists.'); return; } users.push({email,pass,name,created:Date.now()}); saveUsers(users); alert('Account created: '+email); switchView('settings'); }
+function deleteAccount(email){ if(!confirm('Delete '+email+'?')) return; saveUsers(loadUsers().filter(x=>x.email!==email)); localStorage.removeItem(DATA_KEY_PREFIX+email); switchView('settings'); }
+function clearMyData(){ if(!confirm('Clear all mail, events and AI chat?')) return; store={mails:[],events:[],aiChat:[]}; saveStore(); switchView(currentView); }
+
+
+function initials(n){ return (n||'?').split(/\s+/).filter(Boolean).map(s=>s[0]).slice(0,2).join('').toUpperCase(); }
+function avatarColor(n){ const c=['#0f5fd1','#0d9488','#7c3aed','#db2777','#f59e0b','#059669','#ea580c','#4f46e5']; let h=0; for(const ch of (n||'')) h=(h*31+ch.charCodeAt(0))>>>0; return c[h%c.length]; }
+function timeAgo(t){ const s=(Date.now()-t)/1000; if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
+function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function emptyState(title,sub){ return `<div class="p-10 text-center text-slate-400 text-sm"><div class="font-semibold text-slate-500">${title}</div><div class="mt-1">${sub}</div></div>`; }
+function emptyPane(title,sub){ return `<div class="flex-1 flex flex-col items-center justify-center text-slate-400"><svg class="w-16 h-16 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg><div class="font-semibold">${title}</div><div class="text-sm mt-1">${sub}</div></div>`; }
+
+document.addEventListener('input',(e)=>{ if(e.target.id==='searchInput' && currentView==='mail') renderList(); });
+
+
+bootApp();
 </script>
 </body>
-
 </html>
