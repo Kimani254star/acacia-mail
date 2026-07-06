@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Acacia Mail — Secure Business Workspace</title>
 <meta name="description" content="Acacia Mail — a fast, secure workspace with mail, calendar, reports, and an AI assistant." />
+<script>
+  // Shared Supabase project (same as Acacia ERP / Expense)
+  window.__SUPA_URL__ = 'https://swgyefbzplelxrjcovef.supabase.co';
+  window.__SUPA_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3Z3llZmJ6cGxlbHhyamNvdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MDU4MzIsImV4cCI6MjA5NzA4MTgzMn0.U2zDNqRfdEgTgldBd7CcEhfsmGXvYZ14yh-4yYC2HlY';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -56,18 +62,28 @@
 
     <form id="signinForm" onsubmit="doSignIn(event)" class="p-6 space-y-3">
       <div>
+        <label class="text-xs font-semibold text-slate-600">Company name</label>
+        <input id="siCompany" type="text" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" placeholder="Exactly as used on Acacia ERP"/>
+      </div>
+      <div>
         <label class="text-xs font-semibold text-slate-600">Email</label>
-        <input id="siEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
+        <input id="siEmail" type="email" autocomplete="username" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" placeholder="you@example.com"/>
       </div>
       <div>
         <label class="text-xs font-semibold text-slate-600">Password</label>
-        <input id="siPass" type="password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
+        <input id="siPass" type="password" autocomplete="current-password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
       </div>
       <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Sign In</button>
-      <p id="siError" class="text-xs text-red-500 hidden">Invalid credentials.</p>
+      <p id="siError" class="text-xs text-red-500 hidden"></p>
+      <p class="text-[11px] text-slate-500 text-center">Use the same <b>Company name</b> and <b>Email</b> you used on Acacia ERP to open that workspace's mail.</p>
+      <div id="siAccounts" class="hidden"><div id="siAccountsList"></div></div>
     </form>
 
     <form id="signupForm" onsubmit="doSignUp(event)" class="hidden p-6 space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Company name</label>
+        <input id="suCompany" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/>
+      </div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="text-xs font-semibold text-slate-600">First name</label>
           <input id="suFirst" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
@@ -75,11 +91,8 @@
           <input id="suLast" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
       </div>
       <div>
-        <label class="text-xs font-semibold text-slate-600">Choose your email</label>
-        <div class="flex mt-1">
-          <input id="suUser" required class="flex-1 h-10 px-3 rounded-l-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm" placeholder="username"/>
-          <span class="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-slate-300 bg-slate-50 text-sm text-slate-500">@acaciamail.co</span>
-        </div>
+        <label class="text-xs font-semibold text-slate-600">Email</label>
+        <input id="suEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm" placeholder="you@example.com"/>
       </div>
       <div>
         <label class="text-xs font-semibold text-slate-600">Password</label>
@@ -89,6 +102,8 @@
         <input type="checkbox" required class="mt-0.5"/>I agree to the Acacia Terms & Privacy Policy.
       </label>
       <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Create Account</button>
+      <p id="suError" class="text-xs text-red-500 hidden"></p>
+      <p class="text-[11px] text-slate-500 text-center">Creating an account here also registers it in Acacia ERP for the given company.</p>
     </form>
   </div>
 </div>
@@ -167,13 +182,31 @@
 
 <script>
 
-const USERS_KEY = 'acacia_users';
+const USERS_KEY = 'users';               // shared with Acacia ERP / Expense
 const SESSION_KEY = 'acacia_session';
 const DATA_KEY_PREFIX = 'acacia_data_';
 
+/* Supabase client (shared project with Acacia ERP) */
+const sb = window.supabase.createClient(window.__SUPA_URL__, window.__SUPA_KEY__);
+
+function toCompanyId(name){ return 'comp_' + String(name||'').toLowerCase().replace(/[^a-z0-9]/g,'_'); }
 function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{return[]} }
-function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function saveUsersLocal(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
 function currentUser(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch{return null} }
+
+async function fetchUsersCloud(){
+  try{
+    const { data } = await sb.from('app_state').select('value').eq('key','users').maybeSingle();
+    if(Array.isArray(data?.value)){ saveUsersLocal(data.value); return data.value; }
+  }catch(e){ console.warn('users fetch failed',e); }
+  return loadUsers();
+}
+async function saveUsersCloud(users){
+  saveUsersLocal(users);
+  try{
+    await sb.from('app_state').upsert({ key:'users', value:users, updated_at:new Date().toISOString() }, { onConflict:'key' });
+  }catch(e){ console.warn('users save failed',e); }
+}
 
 function switchAuthTab(t){
   const inSel = t==='signin';
@@ -189,30 +222,79 @@ function switchAuthTab(t){
   document.getElementById('signupForm').classList.toggle('hidden',inSel);
 }
 
-function doSignIn(e){
+async function doSignIn(e){
   e.preventDefault();
+  const err = document.getElementById('siError');
+  err.classList.add('hidden');
+  const company = document.getElementById('siCompany').value.trim();
   const email = document.getElementById('siEmail').value.trim().toLowerCase();
   const pass  = document.getElementById('siPass').value;
-  const u = loadUsers().find(x=>x.email===email && x.pass===pass);
-  if(!u){ document.getElementById('siError').classList.remove('hidden'); return; }
-  localStorage.setItem(SESSION_KEY, JSON.stringify({email:u.email, name:u.name}));
+  if(!company || !email){ err.textContent='Company name and email are required.'; err.classList.remove('hidden'); return; }
+  const users = await fetchUsersCloud();
+  const compId = toCompanyId(company);
+  const match = users.find(u=>{
+    const uEmail = (u.email||'').toLowerCase();
+    const uCompId = u.companyId || toCompanyId(u.companyName||'');
+    return uEmail===email && uCompId===compId;
+  });
+  if(!match){ err.textContent='No matching Acacia ERP account for that company + email.'; err.classList.remove('hidden'); return; }
+  if(match.password && match.password!==pass){ err.textContent='Incorrect password.'; err.classList.remove('hidden'); return; }
+  const session = { email:match.email, name:match.fullName||match.username||email, companyId:compId, companyName:match.companyName||company };
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   bootApp();
 }
-function doSignUp(e){
-  e.preventDefault();
-  const first=document.getElementById('suFirst').value.trim();
-  const last =document.getElementById('suLast').value.trim();
-  const user =document.getElementById('suUser').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');
-  const pass =document.getElementById('suPass').value;
-  if(!user){ alert('Choose a valid username.'); return; }
-  const email = user+'@acaciamail.co';
+
+function quickSignIn(email, company){
+  document.getElementById('siEmail').value = email;
+  if(company) document.getElementById('siCompany').value = company;
+  document.getElementById('siPass').focus();
+}
+
+function renderAuthAccounts(){
   const users = loadUsers();
-  if(users.some(x=>x.email===email)){ alert('That email already exists.'); return; }
-  const rec = {email, pass, name:(first+' '+last).trim(), created:Date.now()};
-  users.push(rec); saveUsers(users);
-  localStorage.setItem(SESSION_KEY, JSON.stringify({email:rec.email, name:rec.name}));
+  const wrap = document.getElementById('siAccounts');
+  const list = document.getElementById('siAccountsList');
+  if(!wrap || !list) return;
+  if(!users.length){ wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  list.innerHTML = users.map(u=>{
+    const name = u.fullName || u.username || u.email;
+    const comp = u.companyName || '';
+    return `<button type="button" onclick="quickSignIn('${escapeHtml(u.email)}','${escapeHtml(comp)}')" class="w-full flex items-center gap-3 p-2 rounded-lg border border-slate-200 hover:border-acacia-400 hover:bg-acacia-50 text-left">
+      <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(name)}</div>
+      <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${escapeHtml(name)}</div><div class="text-[11px] text-slate-500 truncate">${escapeHtml(u.email)}${comp?' · '+escapeHtml(comp):''}</div></div>
+    </button>`;
+  }).join('');
+}
+
+async function doSignUp(e){
+  e.preventDefault();
+  const err = document.getElementById('suError');
+  err.classList.add('hidden');
+  const company = document.getElementById('suCompany').value.trim();
+  const first = document.getElementById('suFirst').value.trim();
+  const last  = document.getElementById('suLast').value.trim();
+  const email = document.getElementById('suEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('suPass').value;
+  if(!company || !email){ err.textContent='Company name and email are required.'; err.classList.remove('hidden'); return; }
+  const users = await fetchUsersCloud();
+  const compId = toCompanyId(company);
+  if(users.some(u=>(u.email||'').toLowerCase()===email)){
+    err.textContent='Email already registered — use Sign In instead.'; err.classList.remove('hidden'); return;
+  }
+  const rec = {
+    username: email.split('@')[0],
+    email, password: pass,
+    fullName: ((first+' '+last).trim())||email,
+    role:'admin', companyId:compId, companyName:company,
+    registered:new Date().toISOString(), status:'active', modules:[]
+  };
+  users.push(rec);
+  await saveUsersCloud(users);
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ email:rec.email, name:rec.fullName, companyId:compId, companyName:company }));
   bootApp();
 }
+
 function signOut(){ localStorage.removeItem(SESSION_KEY); location.reload(); }
 
 
@@ -232,6 +314,7 @@ function bootApp(){
     document.getElementById('authScreen').classList.remove('hidden');
     document.getElementById('app').classList.add('hidden');
     document.getElementById('app').classList.remove('flex');
+    // Account chips only appear after sign-in (in Settings → Registered accounts)
     return;
   }
   document.getElementById('authScreen').classList.add('hidden');
@@ -251,7 +334,7 @@ function switchView(v){
   else if(v==='calendar') renderCalendarView(ws);
   else if(v==='reports') renderReportsView(ws);
   else if(v==='ai') renderAiView(ws);
-  else if(v==='settings') renderSettingsView(ws);
+  else if(v==='settings'){ renderSettingsView(ws); fetchUsersCloud().then(()=>renderSettingsView(ws)); }
 }
 
 
@@ -589,12 +672,49 @@ function drawCalendar(){
     </div>`).join('') : `<p class="text-xs text-slate-400">No upcoming events.</p>`;
 }
 function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
-function openEventModal(){
-  const title=prompt('Event title:'); if(!title) return;
-  const when=prompt('Start (YYYY-MM-DD HH:MM):', new Date().toISOString().slice(0,16).replace('T',' ')); if(!when) return;
-  const t=Date.parse(when.replace(' ','T')); if(isNaN(t)){ alert('Invalid date'); return; }
-  const notes=prompt('Notes (optional):','')||'';
-  store.events.push({id:'e'+Date.now(),title,start:t,notes}); saveStore(); drawCalendar();
+function openEventModal(preset){
+  const now = preset?.start ? new Date(preset.start) : new Date(Date.now()+60*60*1000);
+  const iso = new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const wrap = document.createElement('div');
+  wrap.id = 'evtModal';
+  wrap.className = 'fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4';
+  wrap.innerHTML = `<div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden fade-in">
+    <div class="flex items-center justify-between px-5 h-12 border-b border-slate-200">
+      <div class="font-semibold text-slate-800">New event</div>
+      <button onclick="closeEventModal()" class="text-slate-400 hover:text-slate-700 text-xl leading-none">×</button>
+    </div>
+    <form onsubmit="saveEvent(event)" class="p-5 space-y-3">
+      <div><label class="text-xs font-semibold text-slate-600">Title</label>
+        <input id="evTitle" required value="${escapeHtml(preset?.title||'')}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs font-semibold text-slate-600">Start</label>
+          <input id="evStart" type="datetime-local" required value="${iso}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
+        <div><label class="text-xs font-semibold text-slate-600">Duration</label>
+          <select id="evDur" class="w-full mt-1 h-10 px-2 rounded-lg border border-slate-300 outline-none text-sm">
+            <option value="30">30 min</option><option value="60" selected>1 hour</option>
+            <option value="90">1.5 hours</option><option value="120">2 hours</option><option value="1440">All day</option>
+          </select></div>
+      </div>
+      <div><label class="text-xs font-semibold text-slate-600">Notes</label>
+        <textarea id="evNotes" rows="3" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 outline-none text-sm">${escapeHtml(preset?.notes||'')}</textarea></div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeEventModal()" class="h-9 px-4 rounded-md border border-slate-300 text-sm">Cancel</button>
+        <button class="h-9 px-4 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Save event</button>
+      </div>
+    </form></div>`;
+  document.body.appendChild(wrap);
+  setTimeout(()=>document.getElementById('evTitle').focus(),50);
+}
+function closeEventModal(){ document.getElementById('evtModal')?.remove(); }
+function saveEvent(e){
+  e.preventDefault();
+  const title=document.getElementById('evTitle').value.trim();
+  const start=Date.parse(document.getElementById('evStart').value);
+  const dur=parseInt(document.getElementById('evDur').value,10);
+  const notes=document.getElementById('evNotes').value.trim();
+  if(!title||isNaN(start)) return;
+  store.events.push({id:'e'+Date.now(),title,start,dur,notes}); saveStore();
+  closeEventModal(); drawCalendar();
 }
 function deleteEvent(id){ store.events=store.events.filter(e=>e.id!==id); saveStore(); drawCalendar(); }
 
@@ -632,6 +752,16 @@ function renderReportsView(root){
         </div>`).join('')}
       </div>
     </div>
+    <div class="mt-6 grid md:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">By folder</h3>
+        ${(()=>{ const folders=['inbox','sent','drafts','starred','trash']; const rows=folders.map(f=>({f,n:f==='starred'?store.mails.filter(m=>m.starred).length:store.mails.filter(m=>m.folder===f).length})); const mx=Math.max(1,...rows.map(r=>r.n)); return rows.map(r=>`<div class="mb-2"><div class="flex justify-between text-xs text-slate-600 mb-1"><span class="capitalize">${r.f}</span><span class="font-semibold">${r.n}</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-acacia-500" style="width:${(r.n/mx)*100}%"></div></div></div>`).join(''); })()}
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-slate-200">
+        <h3 class="font-semibold text-slate-800 mb-4">Top senders</h3>
+        ${(()=>{ const map={}; store.mails.filter(m=>m.folder==='inbox').forEach(m=>{map[m.from]=(map[m.from]||0)+1;}); const top=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5); if(!top.length) return '<p class="text-xs text-slate-400">No messages yet.</p>'; return top.map(([n,c])=>`<div class="flex items-center gap-3 py-1.5"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:${avatarColor(n)}">${initials(n)}</div><div class="flex-1 text-sm truncate">${escapeHtml(n)}</div><div class="text-xs font-semibold text-slate-500">${c}</div></div>`).join(''); })()}
+      </div>
+    </div>
   </div>`;
 }
 function statCard(label,val,emoji){ return `<div class="bg-white p-5 rounded-xl border border-slate-200">
@@ -661,7 +791,7 @@ function drawAiMessages(){
       <div class="text-5xl">✨</div>
       <p class="mt-3 text-sm">Try asking:</p>
       <div class="mt-2 flex flex-wrap gap-2 justify-center">
-        ${['Summarize my unread','Draft a follow-up','What is on my calendar today?','How many emails did I send?'].map(s=>`<button onclick="aiQuick('${s}')" class="text-xs bg-white border border-slate-200 rounded-full px-3 py-1 hover:bg-acacia-50">${s}</button>`).join('')}
+        ${['Summarize my unread','What is on my week','Find invoice','Draft a thank-you','Draft a meeting request','Archive read','Help'].map(s=>`<button onclick="aiQuick('${s.replace(/'/g,"\\'")}')" class="text-xs bg-white border border-slate-200 rounded-full px-3 py-1 hover:bg-acacia-50">${s}</button>`).join('')}
       </div></div>`;
     return;
   }
@@ -680,25 +810,54 @@ function aiSend(e){
   store.aiChat.push({role:'assistant',text:reply}); saveStore(); drawAiMessages();
 }
 function aiRespond(q){
-  const s=q.toLowerCase();
+  const s=q.toLowerCase().trim();
+  const me = currentUser()?.name || 'me';
+
+  if(/^(hi|hello|hey|yo)\b/.test(s)) return `Hi ${me.split(' ')[0]}! I can summarize mail, check your calendar, draft replies, star or clean up messages. Try "what's on my week" or "draft a thank-you".`;
+  if(/help|what can you/.test(s)) return "I can:\n• summarize unread mail\n• show today's or this week's schedule\n• count sent, received, starred\n• find messages ('find X')\n• draft: follow-up, thank-you, meeting request, out-of-office\n• clean inbox ('archive read')";
+
   if(/summar|unread/.test(s)){
-    const u=store.mails.filter(m=>!m.read);
+    const u=store.mails.filter(m=>!m.read && m.folder==='inbox');
     if(!u.length) return "You have no unread messages. Inbox zero — nicely done.";
-    return `You have ${u.length} unread message${u.length>1?'s':''}:\n`+u.slice(0,5).map(m=>`• ${m.from}: ${m.subject}`).join('\n');
+    return `You have ${u.length} unread message${u.length>1?'s':''}:\n`+u.slice(0,6).map(m=>`• ${m.from} — ${m.subject}`).join('\n');
+  }
+  if(/week|next 7|upcoming/.test(s)){
+    const now=Date.now(), end=now+7*86400000;
+    const e=store.events.filter(ev=>ev.start>=now && ev.start<=end).sort((a,b)=>a.start-b.start);
+    if(!e.length) return "Nothing scheduled in the next 7 days.";
+    return "This week:\n"+e.map(ev=>`• ${new Date(ev.start).toLocaleString([],{weekday:'short',hour:'2-digit',minute:'2-digit'})} — ${ev.title}`).join('\n');
   }
   if(/today|calendar|schedule/.test(s)){
     const today=new Date(); today.setHours(0,0,0,0);
-    const e=store.events.filter(ev=>sameDay(new Date(ev.start),today));
+    const e=store.events.filter(ev=>sameDay(new Date(ev.start),today)).sort((a,b)=>a.start-b.start);
     if(!e.length) return "Nothing on your calendar today.";
     return "Today's schedule:\n"+e.map(ev=>`• ${new Date(ev.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} — ${ev.title}`).join('\n');
   }
-  if(/how many|count|sent/.test(s)){
-    return `You've sent ${store.mails.filter(m=>m.folder==='sent').length} message(s) and received ${store.mails.filter(m=>m.folder==='inbox').length}.`;
+  if(/star/.test(s)){
+    const st=store.mails.filter(m=>m.starred);
+    return st.length ? `You have ${st.length} starred message${st.length>1?'s':''}:\n`+st.slice(0,5).map(m=>`• ${m.from} — ${m.subject}`).join('\n') : "No starred messages yet.";
   }
-  if(/draft|write|follow.?up|reply/.test(s)){
-    return "Here's a draft you can use:\n\nHi there,\n\nJust following up on our last conversation. Let me know if there's anything I can do to help move this forward.\n\nBest,\n"+(currentUser()?.name||'');
+  if(/how many|count|stats|sent|received/.test(s)){
+    return `📊 Stats\n• Sent: ${store.mails.filter(m=>m.folder==='sent').length}\n• Inbox: ${store.mails.filter(m=>m.folder==='inbox').length}\n• Unread: ${store.mails.filter(m=>!m.read && m.folder==='inbox').length}\n• Starred: ${store.mails.filter(m=>m.starred).length}\n• Events: ${store.events.length}`;
   }
-  return "I'm your local assistant. I can summarize unread mail, check today's schedule, count sent items, or draft a follow-up. What would you like?";
+  const findMatch = s.match(/(?:find|search|show)\s+(?:mail(?:s)?\s+)?(?:about|from|with)?\s*(.+)/);
+  if(findMatch){
+    const q2=findMatch[1].trim();
+    const hits=store.mails.filter(m=>(m.subject+m.from+m.preview).toLowerCase().includes(q2));
+    return hits.length ? `Found ${hits.length} matching "${q2}":\n`+hits.slice(0,6).map(m=>`• ${m.from} — ${m.subject}`).join('\n') : `No messages match "${q2}".`;
+  }
+  if(/archive read|clean inbox|clean up/.test(s)){
+    const before=store.mails.filter(m=>m.folder==='inbox'&&m.read).length;
+    store.mails.forEach(m=>{ if(m.folder==='inbox'&&m.read) m.folder='archive'; });
+    saveStore();
+    return before ? `Archived ${before} read message${before>1?'s':''} from your inbox.` : "Nothing to archive — no read messages in the inbox.";
+  }
+  if(/thank/.test(s)) return `Draft:\n\nHi,\n\nThank you so much for your time and thoughtful reply — it's very much appreciated. I'll follow up shortly with next steps.\n\nBest,\n${me}`;
+  if(/out.?of.?office|ooo|away/.test(s)) return `Draft (auto-reply):\n\nHello,\n\nThanks for your message. I'm currently out of the office and will respond when I return. For urgent matters, please reach my team.\n\nBest,\n${me}`;
+  if(/meeting|invite|schedule\s+(a|an)/.test(s)) return `Draft:\n\nHi,\n\nCould we grab 30 minutes this week to align? I'm open Tue–Thu afternoons — happy to send an invite once you share a preferred time.\n\nBest,\n${me}`;
+  if(/draft|write|follow.?up|reply/.test(s)) return `Draft:\n\nHi there,\n\nJust following up on our last conversation. Let me know if there's anything I can do to help move this forward.\n\nBest,\n${me}`;
+
+  return "I'm your local assistant. Try: \"summarize unread\", \"what's on my week\", \"find invoice\", \"draft a thank-you\", or \"archive read\".";
 }
 
 function renderSettingsView(root){
@@ -740,9 +899,8 @@ function renderSettingsView(root){
         <form onsubmit="createAdditional(event)" class="grid grid-cols-2 gap-4">
           <div class="col-span-2"><label class="text-xs font-semibold text-slate-600">Full name</label>
             <input id="caName" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div><label class="text-xs font-semibold text-slate-600">Username</label>
-            <div class="flex mt-1"><input id="caUser" required class="flex-1 h-10 px-3 rounded-l-lg border border-slate-300 outline-none text-sm"/>
-              <span class="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-slate-300 bg-slate-50 text-xs text-slate-500">@acaciamail.co</span></div></div>
+          <div><label class="text-xs font-semibold text-slate-600">Email</label>
+            <input id="caUser" type="email" required placeholder="colleague@company.com" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
           <div><label class="text-xs font-semibold text-slate-600">Password</label>
             <input id="caPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
           <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Create account</button></div>
@@ -754,8 +912,8 @@ function renderSettingsView(root){
         <div class="space-y-2">
           ${all.map(a=>`<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(a.name||a.email)}</div>
-              <div><div class="text-sm font-medium">${escapeHtml(a.name||'')}</div><div class="text-xs text-slate-500">${escapeHtml(a.email)}</div></div>
+              <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(a.fullName||a.name||a.email)}</div>
+              <div><div class="text-sm font-medium">${escapeHtml(a.fullName||a.name||'')}</div><div class="text-xs text-slate-500">${escapeHtml(a.email)}${a.companyName?' · '+escapeHtml(a.companyName):''}</div></div>
             </div>
             ${a.email===u.email?'<span class="text-xs text-emerald-600 font-semibold">Current</span>':`<button onclick="deleteAccount('${a.email}')" class="text-xs text-red-500 hover:underline">Delete</button>`}
           </div>`).join('')}
@@ -769,10 +927,10 @@ function renderSettingsView(root){
     </div>
   </div>`;
 }
-function updateProfile(e){ e.preventDefault(); const name=document.getElementById('stName').value.trim(); const users=loadUsers(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(rec){rec.name=name; saveUsers(users); localStorage.setItem(SESSION_KEY,JSON.stringify({email:u.email,name})); document.getElementById('userAvatar').textContent=initials(name||u.email);} alert('Profile updated.'); switchView('settings'); }
-function changePassword(e){ e.preventDefault(); const oldP=document.getElementById('pwOld').value; const newP=document.getElementById('pwNew').value; const users=loadUsers(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(!rec||rec.pass!==oldP){ alert('Current password is incorrect.'); return; } rec.pass=newP; saveUsers(users); alert('Password updated.'); switchView('settings'); }
-function createAdditional(e){ e.preventDefault(); const name=document.getElementById('caName').value.trim(); const user=document.getElementById('caUser').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,''); const pass=document.getElementById('caPass').value; const email=user+'@acaciamail.co'; const users=loadUsers(); if(users.some(x=>x.email===email)){ alert('That email already exists.'); return; } users.push({email,pass,name,created:Date.now()}); saveUsers(users); alert('Account created: '+email); switchView('settings'); }
-function deleteAccount(email){ if(!confirm('Delete '+email+'?')) return; saveUsers(loadUsers().filter(x=>x.email!==email)); localStorage.removeItem(DATA_KEY_PREFIX+email); switchView('settings'); }
+async function updateProfile(e){ e.preventDefault(); const name=document.getElementById('stName').value.trim(); const users=await fetchUsersCloud(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(rec){ rec.fullName=name; await saveUsersCloud(users); localStorage.setItem(SESSION_KEY,JSON.stringify({...u,name})); document.getElementById('userAvatar').textContent=initials(name||u.email);} alert('Profile updated.'); switchView('settings'); }
+async function changePassword(e){ e.preventDefault(); const oldP=document.getElementById('pwOld').value; const newP=document.getElementById('pwNew').value; const users=await fetchUsersCloud(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(!rec||(rec.password||'')!==oldP){ alert('Current password is incorrect.'); return; } rec.password=newP; await saveUsersCloud(users); alert('Password updated.'); switchView('settings'); }
+async function createAdditional(e){ e.preventDefault(); const name=document.getElementById('caName').value.trim(); const email=(document.getElementById('caUser').value.trim().toLowerCase()); const pass=document.getElementById('caPass').value; if(!email.includes('@')){ alert('Enter a full email address.'); return; } const users=await fetchUsersCloud(); if(users.some(x=>(x.email||'').toLowerCase()===email)){ alert('That email already exists.'); return; } const u=currentUser(); users.push({username:email.split('@')[0], email, password:pass, fullName:name||email, role:'user', companyId:u.companyId, companyName:u.companyName, registered:new Date().toISOString(), status:'active', modules:[]}); await saveUsersCloud(users); alert('Account created: '+email); switchView('settings'); }
+async function deleteAccount(email){ if(!confirm('Delete '+email+'?')) return; const users=(await fetchUsersCloud()).filter(x=>x.email!==email); await saveUsersCloud(users); localStorage.removeItem(DATA_KEY_PREFIX+email); switchView('settings'); }
 function clearMyData(){ if(!confirm('Clear all mail, events and AI chat?')) return; store={mails:[],events:[],aiChat:[]}; saveStore(); switchView(currentView); }
 
 
