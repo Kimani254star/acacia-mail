@@ -3,1020 +3,1458 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Acacia Mail — Secure Business Workspace</title>
-<meta name="description" content="Acacia Mail — a fast, secure workspace with mail, calendar, reports, and an AI assistant." />
+<title>Acacia Mail — Enterprise Workspace Webmail</title>
 <script>
-  // Shared Supabase project (same as Acacia ERP / Expense)
   window.__SUPA_URL__ = 'https://swgyefbzplelxrjcovef.supabase.co';
-  window.__SUPA_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3Z3llZmJ6cGxlbHhyamNvdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MDU4MzIsImV4cCI6MjA5NzA4MTgzMn0.U2zDNqRfdEgTgldBd7CcEhfsmGXvYZ14yh-4yYC2HlY';
+  window.__SUPA_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InN3Z3llZmJ6cGxlbHhyamNvdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MDU4MzIsImV4cCI6MjA5NzA4MTgzMn0.U2zDNqRfdEgTgldBd7CcEhfsmGXvYZ14yh-4yYC2HlY';
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          acacia: {
-            50:'#eef7ff',100:'#d9ecff',200:'#b6d9ff',300:'#83bfff',
-            400:'#4a9dff',500:'#1f7aef',600:'#0f5fd1',700:'#0d4ca8',
-            800:'#103f85',900:'#12376b'
-          }
-        },
-        fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
-      }
-    }
-  }
+  tailwind.config = { theme: { extend: {
+    colors: { acacia: {50:'#eef7ff',100:'#d9ecff',200:'#b6d9ff',300:'#83bfff',400:'#4a9dff',500:'#1f7aef',600:'#0f5fd1',700:'#0d4ca8',800:'#103f85',900:'#12376b'}},
+    fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
+  }}}
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  html,body{height:100%}
-  body{font-family:'cambria',system-ui,sans-serif;background:#f4f6fa}
-  ::-webkit-scrollbar{width:8px;height:8px}
-  ::-webkit-scrollbar-thumb{background:#c7d0dc;border-radius:6px}
-  ::-webkit-scrollbar-thumb:hover{background:#a3b0c2}
-  .mail-row.unread{background:#fff;font-weight:600}
-  .mail-row.read{background:#f8fafc;color:#475569;font-weight:400}
-  .mail-row.selected{background:#eaf3ff !important;box-shadow:inset 3px 0 0 #1f7aef}
-  .fade-in{animation:fadeIn .18s ease-out}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .compose-shadow{box-shadow:0 20px 50px -12px rgba(15,95,209,.35),0 8px 20px -8px rgba(0,0,0,.2)}
-  [contenteditable][placeholder]:empty:before{content:attr(placeholder);color:#94a3b8}
-  .nav-btn.active{background:#0d4ca8;color:#fff}
-  .nav-btn.active .nav-label{color:#fff}
+  html,body{height:100%}body{font-family:'cambria',system-ui,sans-serif;background:#f8fafc}
+  ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:6px}
+  .nav-btn.active{background:#0d4ca8;color:#fff;font-weight:600}
+  .settings-tab.active{border-bottom:2px solid #0f5fd1;color:#0f5fd1;font-weight:600}
+  .fade-in{animation:fadeIn .2s ease-out}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 antialiased">
 
+<!-- AUTH SCREEN -->
 <div id="authScreen" class="hidden fixed inset-0 z-40 bg-gradient-to-br from-acacia-800 via-acacia-700 to-acacia-900 flex items-center justify-center p-4">
   <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
     <div class="p-6 text-center border-b border-slate-100">
-      <div class="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white font-bold text-2xl">A</div>
-      <h1 class="mt-3 text-xl font-bold text-slate-800">Welcome to Acacia</h1>
-      <p class="text-sm text-slate-500">Sign in or create your workspace account.</p>
+      <div class="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white font-bold text-2xl shadow-md">A</div>
+      <h1 class="mt-3 text-xl font-bold text-slate-800">Acacia Mail Enterprise</h1>
+      <p class="text-sm text-slate-500">Sign in to your workspace account.</p>
     </div>
     <div class="flex border-b border-slate-100">
       <button id="tabSignIn" onclick="switchAuthTab('signin')" class="flex-1 py-3 text-sm font-semibold text-acacia-700 border-b-2 border-acacia-600">Sign In</button>
       <button id="tabSignUp" onclick="switchAuthTab('signup')" class="flex-1 py-3 text-sm font-semibold text-slate-500 border-b-2 border-transparent">Create Account</button>
     </div>
-
     <form id="signinForm" onsubmit="doSignIn(event)" class="p-6 space-y-3">
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Company name</label>
-        <input id="siCompany" type="text" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" placeholder="Exactly as used on Acacia ERP"/>
-      </div>
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Email</label>
-        <input id="siEmail" type="email" autocomplete="username" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" placeholder="you@example.com"/>
-      </div>
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Password</label>
-        <input id="siPass" type="password" autocomplete="current-password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 focus:ring-2 focus:ring-acacia-100 outline-none text-sm"/>
-      </div>
-      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Sign In</button>
+      <div><label class="text-xs font-semibold text-slate-600">Company name</label>
+        <input id="siCompany" type="text" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500" placeholder="Acacia ERP Company"/></div>
+      <div><label class="text-xs font-semibold text-slate-600">Email</label>
+        <input id="siEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500" placeholder="you@example.com"/></div>
+      <div><label class="text-xs font-semibold text-slate-600">Password</label>
+        <input id="siPass" type="password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500"/></div>
+      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold transition">Sign In</button>
       <p id="siError" class="text-xs text-red-500 hidden"></p>
-      <p class="text-[11px] text-slate-500 text-center">Use the same <b>Company name</b> and <b>Email</b> you used on Acacia ERP to open that workspace's mail.</p>
-      <div id="siAccounts" class="hidden"><div id="siAccountsList" class="space-y-2 mt-3"></div></div>
     </form>
-
     <form id="signupForm" onsubmit="doSignUp(event)" class="hidden p-6 space-y-3">
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Company name</label>
-        <input id="suCompany" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/>
-      </div>
+      <div><label class="text-xs font-semibold text-slate-600">Company name</label>
+        <input id="suCompany" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500"/></div>
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="text-xs font-semibold text-slate-600">First name</label>
-          <input id="suFirst" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
-        <div><label class="text-xs font-semibold text-slate-600">Last name</label>
-          <input id="suLast" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
+        <div><label class="text-xs font-semibold text-slate-600">First name</label><input id="suFirst" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500"/></div>
+        <div><label class="text-xs font-semibold text-slate-600">Last name</label><input id="suLast" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500"/></div>
       </div>
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Email</label>
-        <input id="suEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm" placeholder="you@example.com"/>
-      </div>
-      <div>
-        <label class="text-xs font-semibold text-slate-600">Password</label>
-        <input id="suPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/>
-      </div>
-      <label class="flex items-start gap-2 text-xs text-slate-500">
-        <input type="checkbox" required class="mt-0.5"/>I agree to the Acacia Terms & Privacy Policy.
-      </label>
-      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold">Create Account</button>
+      <div><label class="text-xs font-semibold text-slate-600">Email</label>
+        <input id="suEmail" type="email" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500" placeholder="you@example.com"/></div>
+      <div><label class="text-xs font-semibold text-slate-600">Password</label><input id="suPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm focus:border-acacia-500"/></div>
+      <button type="submit" class="w-full h-10 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold transition">Create Account</button>
       <p id="suError" class="text-xs text-red-500 hidden"></p>
-      <p class="text-[11px] text-slate-500 text-center">Creating an account here also registers it in Acacia ERP for the given company.</p>
     </form>
   </div>
 </div>
 
-<div id="app" class="hidden flex-col h-screen">
+<!-- RECALL BANNER TOAST -->
+<div id="recallToast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-4 text-xs">
+  <span>✉️ Message sent.</span>
+  <button onclick="recallLastEmail()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-3 py-1 rounded-md font-bold transition">Undo / Recall (5s)</button>
+</div>
 
-  <header class="flex items-center justify-between px-4 h-14 bg-white border-b border-slate-200 shrink-0">
+<!-- MAIN APPLICATION -->
+<div id="app" class="hidden flex-col h-screen overflow-hidden">
+  <header class="flex items-center justify-between px-4 h-14 bg-white border-b border-slate-200 shrink-0 z-10">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white font-bold">A</div>
+      <div class="flex items-center gap-2 pr-3 border-r border-slate-200">
+        <div class="w-8 h-8 rounded-lg bg-acacia-700 flex items-center justify-center text-white font-bold text-base shadow">A</div>
+        <div class="font-bold text-[11px] text-slate-700 tracking-wide uppercase leading-tight">
+          Acacia Suite<br><span class="text-acacia-600">Webmail Enterprise</span>
+        </div>
+      </div>
       <div class="leading-tight">
-        <div class="font-bold text-acacia-800">Acacia</div>
-        <div class="text-[10px] uppercase tracking-wider text-slate-400">Workspace</div>
+        <div class="font-bold text-acacia-800 text-sm">Acacia Mail</div>
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 flex items-center gap-1">Workspace · <span id="syncDot" class="inline-block w-2 h-2 rounded-full bg-slate-300"></span> <span id="syncStatus">idle</span></div>
       </div>
     </div>
 
-    <div class="flex-1 max-w-2xl mx-6 hidden md:block">
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-md mx-4">
       <div class="relative">
-        <input id="searchInput" type="search" placeholder="Search…"
-          class="w-full pl-10 pr-4 h-10 rounded-full bg-slate-100 border border-transparent focus:bg-white focus:border-acacia-400 focus:ring-2 focus:ring-acacia-100 outline-none text-sm" />
-        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <input id="mailSearch" type="text" onkeyup="filterMails()" placeholder="Search mail, promotions, spam, tasks, calendar..." class="w-full h-9 pl-9 pr-4 bg-slate-100 hover:bg-slate-50 focus:bg-white text-xs rounded-lg border border-transparent focus:border-acacia-500 outline-none transition" />
+        <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
-      <button title="Sign out" onclick="signOut()" class="text-sm text-slate-500 hover:text-acacia-700 px-3">Sign out</button>
-      <div id="userAvatar" class="w-9 h-9 rounded-full bg-acacia-700 text-white flex items-center justify-center font-semibold text-sm">?</div>
+      <button id="btnAiGuide" onclick="toggleAiGuide()" class="text-xs px-3 py-2 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold border border-purple-300 transition flex items-center gap-1.5 shadow-sm">
+        <span>🤖</span> AI Assistant Guide
+      </button>
+      <button id="btnCompose" onclick="openMail()" class="text-xs px-3.5 py-2 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold shadow-sm transition flex items-center gap-1.5">
+        <span>✏️</span> Compose
+      </button>
+      <button onclick="pullAll()" class="text-xs px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">↻ Sync</button>
+      <div id="userAvatar" class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold shadow-sm"></div>
+      <button onclick="signOut()" class="text-xs px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">Sign out</button>
     </div>
   </header>
 
-  <div class="flex flex-1 overflow-hidden">
+  <div class="flex flex-1 overflow-hidden relative">
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 bg-white border-r border-slate-200 p-3 overflow-y-auto shrink-0 flex flex-col justify-between">
+      <div class="space-y-4">
+        <div>
+          <div class="text-[10px] font-bold uppercase text-slate-400 px-2 mb-2 tracking-wider">Mail Folders</div>
+          <nav id="navList" class="space-y-0.5 text-sm"></nav>
+        </div>
 
-    <nav class="w-20 bg-acacia-900 flex flex-col items-center py-3 gap-1 shrink-0">
-      <button data-view="mail"      onclick="switchView('mail')"      class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        <span class="nav-label text-[10px]">Mail</span>
-      </button>
-      <button data-view="calendar"  onclick="switchView('calendar')"  class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/></svg>
-        <span class="nav-label text-[10px]">Calendar</span>
-      </button>
-      <button data-view="reports"   onclick="switchView('reports')"   class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>
-        <span class="nav-label text-[10px]">Reports</span>
-      </button>
-      <button data-view="ai"        onclick="switchView('ai')"        class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M12 7a5 5 0 00-5 5v3l-1 2h12l-1-2v-3a5 5 0 00-5-5zM9 19a3 3 0 006 0"/></svg>
-        <span class="nav-label text-[10px]">AI</span>
-      </button>
-      <div class="flex-1"></div>
-      <button data-view="settings"  onclick="switchView('settings')"  class="nav-btn w-16 py-3 rounded-lg flex flex-col items-center gap-1 text-acacia-200 hover:bg-acacia-800">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317a1 1 0 011.35 0l.94.86a1 1 0 00.85.24l1.26-.2a1 1 0 011.12.74l.31 1.24a1 1 0 00.62.68l1.19.42a1 1 0 01.62 1.24l-.42 1.19a1 1 0 000 .68l.42 1.19a1 1 0 01-.62 1.24l-1.19.42a1 1 0 00-.62.68l-.31 1.24a1 1 0 01-1.12.74l-1.26-.2a1 1 0 00-.85.24l-.94.86a1 1 0 01-1.35 0l-.94-.86a1 1 0 00-.85-.24l-1.26.2a1 1 0 01-1.12-.74l-.31-1.24a1 1 0 00-.62-.68l-1.19-.42a1 1 0 01-.62-1.24l.42-1.19a1 1 0 000-.68l-.42-1.19a1 1 0 01.62-1.24l1.19-.42a1 1 0 00.62-.68l.31-1.24a1 1 0 011.12-.74l1.26.2a1 1 0 00.85-.24l.94-.86z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
-        <span class="nav-label text-[10px]">Settings</span>
-      </button>
-    </nav>
-
-    <div id="workspace" class="flex-1 flex overflow-hidden"></div>
-
-    <aside id="rightSidebar" class="w-72 border-l border-slate-200 bg-slate-50 flex flex-col shrink-0 overflow-y-auto">
-      <div class="p-4 border-b border-slate-200 bg-white">
-        <h3 class="font-semibold text-slate-800 text-sm">Quick Actions</h3>
-        <div class="mt-3 grid grid-cols-2 gap-2">
-          <button onclick="openCompose()" class="p-2.5 rounded-lg bg-acacia-50 hover:bg-acacia-100 border border-acacia-200 text-left transition">
-            <div class="text-acacia-700 font-semibold text-xs">✉️ New Mail</div>
-            <div class="text-[10px] text-slate-500 mt-0.5">Compose message</div>
-          </button>
-          <button onclick="openEventModal()" class="p-2.5 rounded-lg bg-acacia-50 hover:bg-acacia-100 border border-acacia-200 text-left transition">
-            <div class="text-acacia-700 font-semibold text-xs">📅 New Event</div>
-            <div class="text-[10px] text-slate-500 mt-0.5">Schedule meeting</div>
-          </button>
+        <div>
+          <div class="flex items-center justify-between px-2 mb-1">
+            <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Custom Folders</span>
+            <button onclick="addCustomFolder()" class="text-xs text-acacia-600 hover:font-bold">+ New</button>
+          </div>
+          <div id="customFoldersList" class="space-y-0.5"></div>
         </div>
       </div>
 
-      <div class="p-4 border-b border-slate-200 bg-white">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-slate-800 text-sm">Upcoming Agenda</h3>
-          <button onclick="switchView('calendar')" class="text-xs text-acacia-600 hover:underline">View all</button>
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-700">
+          <span>Workspace Storage</span>
+          <span class="text-[10px] text-acacia-600 font-bold">18%</span>
         </div>
-        <div id="rightSidebarUpcoming" class="space-y-2"></div>
-      </div>
-
-      <div class="p-4 border-b border-slate-200 bg-white">
-        <h3 class="font-semibold text-slate-800 text-sm mb-3">AI Productivity Tools</h3>
-        <div class="space-y-1.5 text-xs">
-          <button onclick="switchView('ai'); setTimeout(() => aiQuick('Summarize my unread'), 100)" class="w-full text-left px-3 py-2 rounded-lg bg-slate-100 hover:bg-acacia-50 hover:text-acacia-700 flex items-center justify-between transition">
-            <span>✨ Summarize Unread</span>
-            <span class="text-slate-400">›</span>
-          </button>
-          <button onclick="switchView('ai'); setTimeout(() => aiQuick('What is on my week'), 100)" class="w-full text-left px-3 py-2 rounded-lg bg-slate-100 hover:bg-acacia-50 hover:text-acacia-700 flex items-center justify-between transition">
-            <span>📅 Week Overview</span>
-            <span class="text-slate-400">›</span>
-          </button>
-          <button onclick="switchView('ai'); setTimeout(() => aiQuick('Draft a thank-you'), 100)" class="w-full text-left px-3 py-2 rounded-lg bg-slate-100 hover:bg-acacia-50 hover:text-acacia-700 flex items-center justify-between transition">
-            <span>📝 Draft Reply</span>
-            <span class="text-slate-400">›</span>
-          </button>
+        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
+          <div class="bg-acacia-600 h-1.5 rounded-full" style="width: 18%"></div>
         </div>
-      </div>
-
-      <div class="p-4 bg-white flex-1">
-        <h3 class="font-semibold text-slate-800 text-sm mb-3">Workspace Overview</h3>
-        <div id="rightSidebarStats" class="space-y-2 text-xs text-slate-600"></div>
+        <div class="text-[10px] text-slate-500 mt-1.5">1.8 GB of 10 GB cloud storage</div>
       </div>
     </aside>
 
+    <!-- MAIN CONTAINER WITH MAIN VIEW AND RIGHT SIDEBAR -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- MAIN VIEW AREA -->
+      <main class="flex-1 overflow-auto p-6 bg-slate-50/50"><div id="view" class="fade-in"></div></main>
+
+      <!-- RIGHT SIDEBAR: QUICK ACTIONS & AI PRODUCTIVITY -->
+      <aside id="rightSidebar" class="w-72 bg-white border-l border-slate-200 p-4 overflow-y-auto shrink-0 space-y-6">
+        <!-- QUICK ACTIONS PANEL -->
+        <div>
+          <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">Quick Actions</h3>
+          <div class="space-y-2">
+            <button onclick="openMail()" class="w-full p-2.5 rounded-xl border border-slate-200 hover:border-acacia-300 hover:bg-acacia-50/50 transition flex items-center gap-3 text-left group">
+              <div class="w-9 h-9 rounded-lg bg-acacia-100 text-acacia-700 flex items-center justify-center font-bold text-lg group-hover:scale-105 transition">✉️</div>
+              <div>
+                <div class="text-xs font-bold text-slate-800">New Mail</div>
+                <div class="text-[10px] text-slate-500">Compose message</div>
+              </div>
+            </button>
+
+            <button onclick="openEventModal()" class="w-full p-2.5 rounded-xl border border-slate-200 hover:border-acacia-300 hover:bg-acacia-50/50 transition flex items-center gap-3 text-left group">
+              <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg group-hover:scale-105 transition">📅</div>
+              <div>
+                <div class="text-xs font-bold text-slate-800">New Event</div>
+                <div class="text-[10px] text-slate-500">Schedule meeting</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- UPCOMING AGENDA PANEL -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider">Upcoming Agenda</h3>
+            <button onclick="go('calendar')" class="text-[10px] font-semibold text-acacia-600 hover:underline">View all</button>
+          </div>
+          <div id="agendaWidget" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+            <!-- Dynamically populated or empty -->
+          </div>
+        </div>
+
+        <!-- AI PRODUCTIVITY TOOLS -->
+        <div>
+          <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">AI Productivity Tools</h3>
+          <div class="bg-gradient-to-br from-purple-50 to-indigo-50/50 p-3 rounded-xl border border-purple-100 space-y-1.5">
+            <button onclick="aiSummarizeUnread()" class="w-full p-2 text-left hover:bg-white/80 rounded-lg transition text-xs font-medium text-purple-900 flex items-center justify-between">
+              <span class="flex items-center gap-2">✨ Summarize Unread</span>
+              <span class="text-purple-400">›</span>
+            </button>
+            <button onclick="aiWeekOverview()" class="w-full p-2 text-left hover:bg-white/80 rounded-lg transition text-xs font-medium text-purple-900 flex items-center justify-between">
+              <span class="flex items-center gap-2">📅 Week Overview</span>
+              <span class="text-purple-400">›</span>
+            </button>
+            <button onclick="aiCategorizeUnsorted()" class="w-full p-2 text-left hover:bg-white/80 rounded-lg transition text-xs font-medium text-purple-900 flex items-center justify-between">
+              <span class="flex items-center gap-2">🏷️ Auto-Filter Spam & Promos</span>
+              <span class="text-purple-400">›</span>
+            </button>
+            <button onclick="openMail(); aiImproveTone();" class="w-full p-2 text-left hover:bg-white/80 rounded-lg transition text-xs font-medium text-purple-900 flex items-center justify-between">
+              <span class="flex items-center gap-2">📝 Draft Reply</span>
+              <span class="text-purple-400">›</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- WORKSPACE OVERVIEW STATS -->
+        <div>
+          <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">Workspace Overview</h3>
+          <div id="workspaceStatsWidget" class="grid grid-cols-1 gap-2">
+            <!-- Dynamically populated stats -->
+          </div>
+        </div>
+      </aside>
+    </div>
   </div>
 </div>
 
-<div id="composeWrap" class="hidden fixed bottom-4 right-4 w-[560px] max-w-[95vw] h-[520px] max-h-[90vh] bg-white rounded-xl compose-shadow flex flex-col overflow-hidden z-50 fade-in">
-  <div class="flex items-center justify-between px-4 h-11 bg-acacia-800 text-white">
-    <div class="font-semibold text-sm">New Message</div>
-    <button onclick="closeCompose()" class="p-1.5 hover:bg-white/10 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+<!-- FLOATING AI ASSISTANT CHATBOT / GUIDE WIDGET -->
+<div id="aiFloatingWidget" class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+  <!-- Interactive Guidance Popup Window -->
+  <div id="aiGuideModal" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col fade-in max-h-[520px]">
+    <div class="p-3.5 bg-gradient-to-r from-purple-700 to-indigo-800 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm">🤖</div>
+        <div>
+          <h3 class="font-bold text-xs">Acacia Onboarding AI</h3>
+          <p class="text-[9px] text-purple-200">Interactive Assistant & Tour Guide</p>
+        </div>
+      </div>
+      <button onclick="toggleAiGuide()" class="text-white/80 hover:text-white text-base">✕</button>
+    </div>
+
+    <!-- Quick Tour Controls -->
+    <div class="p-3 bg-purple-50 border-b border-purple-100 flex items-center justify-between">
+      <span class="text-[11px] font-semibold text-purple-900">New User Tour:</span>
+      <button onclick="startInteractiveTour()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-bold rounded-lg shadow-sm">🚀 Start Interactive Walkthrough</button>
+    </div>
+
+    <!-- AI Chat Response Area -->
+    <div id="aiChatBox" class="flex-1 overflow-y-auto p-3 space-y-3 text-xs bg-slate-50/50 min-h-[220px]">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm text-slate-700 leading-relaxed">
+        👋 Hi! I am your <strong>Acacia Assistant</strong>. Ask me anything about using this webmail, or pick a suggestion below:
+      </div>
+    </div>
+
+    <!-- Quick Action Chip Suggestions -->
+    <div class="p-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto text-[10px]">
+      <button onclick="askAiQuestion('How do I recall a sent email?')" class="px-2 py-1 bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 rounded border border-slate-200 shrink-0">↩️ Recall Email</button>
+      <button onclick="askAiQuestion('Where are my notes and reminders?')" class="px-2 py-1 bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 rounded border border-slate-200 shrink-0">📝 Notes & Tasks</button>
+      <button onclick="askAiQuestion('How to manage Spam and Junk?')" class="px-2 py-1 bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 rounded border border-slate-200 shrink-0">⚠️ Spam & Junk</button>
+    </div>
+
+    <!-- Input Form -->
+    <form onsubmit="handleAiChatSubmit(event)" class="p-2 bg-white border-t border-slate-200 flex gap-2">
+      <input id="aiInput" type="text" placeholder="Type a question for guidance..." class="flex-1 h-8 px-3 text-xs bg-slate-100 rounded-lg outline-none focus:bg-white focus:ring-1 focus:ring-purple-500 border border-slate-200"/>
+      <button type="submit" class="px-3 h-8 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition">Ask</button>
+    </form>
   </div>
-  <div class="p-4 flex flex-col gap-2 flex-1 overflow-hidden">
-    <input id="cTo" placeholder="To" class="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-acacia-400"/>
-    <input id="cSubj" placeholder="Subject" class="w-full border-b border-slate-200 py-2 text-sm outline-none focus:border-acacia-400"/>
-    <div id="cBody" contenteditable="true" placeholder="Write your message…" class="flex-1 overflow-y-auto py-2 text-sm outline-none"></div>
+
+  <!-- Floating Toggle Button -->
+  <button onclick="toggleAiGuide()" class="h-12 px-4 rounded-full bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold shadow-2xl flex items-center gap-2 hover:scale-105 transition transform">
+    <span class="text-lg">🤖</span>
+    <span class="text-xs">AI Guide Assistant</span>
+  </button>
+</div>
+
+<!-- COMPOSE MAIL MODAL -->
+<div id="mailModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-acacia-800 text-white">
+      <div class="font-semibold text-sm flex items-center gap-2">
+        <span>✉️ New Workspace Message</span>
+      </div>
+      <button onclick="closeMail()" class="text-white/80 hover:text-white text-lg">✕</button>
+    </div>
+
+    <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center gap-2 text-xs overflow-x-auto">
+      <span class="font-bold text-acacia-800 flex items-center gap-1 shrink-0">✨ AI Copilot:</span>
+      <button onclick="aiDraft('Professional email requesting project update')" class="px-2.5 py-1 bg-white hover:bg-slate-200 rounded border border-slate-300 font-medium shrink-0">📝 Draft Update Request</button>
+      <button onclick="aiDraft('Formal follow up email regarding invoice payment')" class="px-2.5 py-1 bg-white hover:bg-slate-200 rounded border border-slate-300 font-medium shrink-0">💵 Payment Follow-up</button>
+      <button onclick="aiImproveTone()" class="px-2.5 py-1 bg-acacia-100 hover:bg-acacia-200 text-acacia-800 rounded border border-acacia-300 font-semibold shrink-0">🪄 Polish Tone</button>
+    </div>
+
+    <form onsubmit="sendMailFromApp(event)" class="p-5 space-y-3 overflow-y-auto flex-1">
+      <div>
+        <div class="flex justify-between items-center">
+          <label class="text-xs font-semibold text-slate-600">To</label>
+          <div class="space-x-2 text-xs">
+            <button type="button" onclick="toggleCcBcc('cc')" class="text-acacia-600 hover:underline">Cc</button>
+            <button type="button" onclick="toggleCcBcc('bcc')" class="text-acacia-600 hover:underline">Bcc</button>
+          </div>
+        </div>
+        <input id="mmTo" type="email" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="recipient@example.com"/>
+      </div>
+
+      <div id="ccGroup" class="hidden">
+        <label class="text-xs font-semibold text-slate-600">Cc</label>
+        <input id="mmCc" type="email" class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="cc@example.com"/>
+      </div>
+
+      <div id="bccGroup" class="hidden">
+        <label class="text-xs font-semibold text-slate-600">Bcc</label>
+        <input id="mmBcc" type="email" class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="bcc@example.com"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Subject</label>
+        <input id="mmSubject" type="text" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Message</label>
+        <textarea id="mmBody" rows="6" required class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500"></textarea>
+      </div>
+
+      <div class="border-t border-slate-200 pt-3">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-slate-600 flex items-center gap-1 cursor-pointer hover:text-acacia-600">
+            📎 Attach Files
+            <input type="file" id="mmFileInput" multiple onchange="handleFileAttach(event)" class="hidden"/>
+          </label>
+          <span id="attachCount" class="text-[10px] text-slate-400">0 attachments</span>
+        </div>
+        <div id="attachmentsChips" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeMail()" class="px-4 h-9 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="px-5 h-9 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold shadow-sm transition">Send Message</button>
+      </div>
+    </form>
   </div>
-  <div class="flex items-center justify-between px-4 h-14 border-t border-slate-200 bg-slate-50">
-    <button onclick="sendMail()" class="h-9 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Send</button>
-    <button onclick="closeCompose()" class="p-2 hover:bg-slate-200 rounded text-slate-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M8 6V4h8v2m-9 0v14a2 2 0 002 2h6a2 2 0 002-2V6"/></svg></button>
+</div>
+
+<!-- NEW EVENT MODAL -->
+<div id="eventModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between px-5 py-3 bg-acacia-800 text-white">
+      <span class="font-semibold text-sm">📅 New Calendar Event</span>
+      <button onclick="closeEventModal()" class="text-white/80 hover:text-white">✕</button>
+    </div>
+    <form onsubmit="saveCalendarEvent(event)" class="p-5 space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Event Title</label>
+        <input id="evTitle" type="text" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="e.g. Q3 Strategy Review"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Date</label>
+          <input id="evDate" type="date" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Time</label>
+          <input id="evTime" type="time" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500"/>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Location / Meeting Link</label>
+        <input id="evLoc" type="text" class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="e.g. Google Meet or Room 402"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Description</label>
+        <textarea id="evDesc" rows="3" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="Agenda or notes..."></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeEventModal()" class="px-4 h-9 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="px-5 h-9 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold shadow-sm transition">Save Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NEW REMINDER MODAL -->
+<div id="reminderModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between px-5 py-3 bg-acacia-800 text-white">
+      <span class="font-semibold text-sm">⏰ New Task & Reminder</span>
+      <button onclick="closeReminderModal()" class="text-white/80 hover:text-white">✕</button>
+    </div>
+    <form onsubmit="saveReminderTask(event)" class="p-5 space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Task Title</label>
+        <input id="rmTitle" type="text" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="e.g. Follow up on Q2 Invoice"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Due Date</label>
+          <input id="rmDue" type="date" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Priority Level</label>
+          <select id="rmPriority" class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500">
+            <option value="Normal">Normal</option>
+            <option value="High">High Priority</option>
+            <option value="Low">Low Priority</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Notes</label>
+        <textarea id="rmNotes" rows="2" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="Additional instructions..."></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeReminderModal()" class="px-4 h-9 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="px-5 h-9 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold shadow-sm transition">Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NEW NOTE MODAL -->
+<div id="noteModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between px-5 py-3 bg-acacia-800 text-white">
+      <span class="font-semibold text-sm">📝 New Quick Note</span>
+      <button onclick="closeNoteModal()" class="text-white/80 hover:text-white">✕</button>
+    </div>
+    <form onsubmit="saveNote(event)" class="p-5 space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Note Title</label>
+        <input id="ntTitle" type="text" required class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="e.g. Brainstorming Q4 Marketing"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600">Content</label>
+        <textarea id="ntContent" rows="5" required class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-acacia-500" placeholder="Write your note here..."></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeNoteModal()" class="px-4 h-9 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="px-5 h-9 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold shadow-sm transition">Save Note</button>
+      </div>
+    </form>
   </div>
 </div>
 
 <script>
-
-const USERS_KEY = 'users';               // shared with Acacia ERP / Expense
 const SESSION_KEY = 'acacia_session';
-const DATA_KEY_PREFIX = 'acacia_data_';
+const SETTINGS_KEY = 'acacia_mail_settings';
+const CUSTOM_FOLDERS_KEY = 'acacia_mail_custom_folders';
 
-/* Supabase client (shared project with Acacia ERP) */
-const sb = window.supabase.createClient(window.__SUPA_URL__, window.__SUPA_KEY__);
-
+function currentUser(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
+function initials(n){return (n||'?').split(/\s+/).map(s=>s[0]).slice(0,2).join('').toUpperCase()}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))}
 function toCompanyId(name){ return 'comp_' + String(name||'').toLowerCase().replace(/[^a-z0-9]/g,'_'); }
-function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{return[]} }
-function saveUsersLocal(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
-function currentUser(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch{return null} }
-
-async function fetchUsersCloud(){
-  try{
-    const { data } = await sb.from('app_state').select('value').eq('key','users').maybeSingle();
-    if(Array.isArray(data?.value)){ saveUsersLocal(data.value); return data.value; }
-  }catch(e){ console.warn('users fetch failed',e); }
-  return loadUsers();
-}
-async function saveUsersCloud(users){
-  saveUsersLocal(users);
-  try{
-    await sb.from('app_state').upsert({ key:'users', value:users, updated_at:new Date().toISOString() }, { onConflict:'key' });
-  }catch(e){ console.warn('users save failed',e); }
-}
 
 function switchAuthTab(t){
-  const inSel = t==='signin';
-  document.getElementById('tabSignIn').classList.toggle('text-acacia-700',inSel);
-  document.getElementById('tabSignIn').classList.toggle('border-acacia-600',inSel);
-  document.getElementById('tabSignIn').classList.toggle('text-slate-500',!inSel);
-  document.getElementById('tabSignIn').classList.toggle('border-transparent',!inSel);
-  document.getElementById('tabSignUp').classList.toggle('text-acacia-700',!inSel);
-  document.getElementById('tabSignUp').classList.toggle('border-acacia-600',!inSel);
-  document.getElementById('tabSignUp').classList.toggle('text-slate-500',inSel);
-  document.getElementById('tabSignUp').classList.toggle('border-transparent',inSel);
-  document.getElementById('signinForm').classList.toggle('hidden',!inSel);
-  document.getElementById('signupForm').classList.toggle('hidden',inSel);
+  const s = t === 'signin';
+  tabSignIn.classList.toggle('text-acacia-700',s);tabSignIn.classList.toggle('border-acacia-600',s);
+  tabSignIn.classList.toggle('text-slate-500',!s);tabSignIn.classList.toggle('border-transparent',!s);
+  tabSignUp.classList.toggle('text-acacia-700',!s);tabSignUp.classList.toggle('border-acacia-600',!s);
+  tabSignUp.classList.toggle('text-slate-500',s);tabSignUp.classList.toggle('border-transparent',s);
+  signinForm.classList.toggle('hidden',!s);signupForm.classList.toggle('hidden',s);
+}
+
+const sb = window.supabase.createClient(window.__SUPA_URL__, window.__SUPA_KEY__);
+
+async function fetchUsers(){
+  try{
+    const { data } = await sb.from('app_state').select('value').eq('key','users').maybeSingle();
+    if(Array.isArray(data?.value)) return data.value;
+  }catch(e){ console.warn('users fetch failed',e); }
+  try{ return JSON.parse(localStorage.getItem('users')||'[]'); }catch{ return []; }
 }
 
 async function doSignIn(e){
   e.preventDefault();
-  const err = document.getElementById('siError');
-  err.classList.add('hidden');
-  const company = document.getElementById('siCompany').value.trim();
-  const email = document.getElementById('siEmail').value.trim().toLowerCase();
-  const pass  = document.getElementById('siPass').value;
-  if(!company || !email){ err.textContent='Company name and email are required.'; err.classList.remove('hidden'); return; }
-  const users = await fetchUsersCloud();
-  const compId = toCompanyId(company);
-  const match = users.find(u=>{
-    const uEmail = (u.email||'').toLowerCase();
-    const uCompId = u.companyId || toCompanyId(u.companyName||'');
+  siError.classList.add('hidden');
+  const company=(siCompany.value||'').trim();
+  const email=(siEmail.value||'').trim().toLowerCase();
+  const pass=siPass.value;
+  if(!company||!email){siError.textContent='Company name and email required.';siError.classList.remove('hidden');return}
+  const users=await fetchUsers();
+  const compId=toCompanyId(company);
+  const match=users.find(u=>{
+    const uEmail=(u.email||'').toLowerCase();
+    const uCompId=u.companyId||toCompanyId(u.companyName||'');
     return uEmail===email && uCompId===compId;
   });
-  if(!match){ err.textContent='No matching Acacia ERP account for that company + email.'; err.classList.remove('hidden'); return; }
-  if(match.password && match.password!==pass){ err.textContent='Incorrect password.'; err.classList.remove('hidden'); return; }
-  const session = { email:match.email, name:match.fullName||match.username||email, companyId:compId, companyName:match.companyName||company };
-  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  bootApp();
-}
-
-function quickSignIn(email, company){
-  document.getElementById('siEmail').value = email;
-  if(company) document.getElementById('siCompany').value = company;
-  document.getElementById('siPass').focus();
-}
-
-function renderAuthAccounts(){
-  const users = loadUsers();
-  const wrap = document.getElementById('siAccounts');
-  const list = document.getElementById('siAccountsList');
-  if(!wrap || !list) return;
-  if(!users.length){ wrap.classList.add('hidden'); return; }
-  wrap.classList.remove('hidden');
-  list.innerHTML = users.map(u=>{
-    const name = u.fullName || u.username || u.email;
-    const comp = u.companyName || '';
-    return `<button type="button" onclick="quickSignIn('${escapeHtml(u.email)}','${escapeHtml(comp)}')" class="w-full flex items-center gap-3 p-2 rounded-lg border border-slate-200 hover:border-acacia-400 hover:bg-acacia-50 text-left">
-      <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(name)}</div>
-      <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${escapeHtml(name)}</div><div class="text-[11px] text-slate-500 truncate">${escapeHtml(u.email)}${comp?' · '+escapeHtml(comp):''}</div></div>
-    </button>`;
-  }).join('');
+  if(!match){siError.textContent='No matching account found.';siError.classList.remove('hidden');return}
+  if(match.password && match.password!==pass){siError.textContent='Incorrect password.';siError.classList.remove('hidden');return}
+  const session={ email:match.email, name:match.fullName||match.username||email, companyId:compId, companyName:match.companyName||company };
+  localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+  boot();
 }
 
 async function doSignUp(e){
   e.preventDefault();
-  const err = document.getElementById('suError');
-  err.classList.add('hidden');
-  const company = document.getElementById('suCompany').value.trim();
-  const first = document.getElementById('suFirst').value.trim();
-  const last  = document.getElementById('suLast').value.trim();
-  const email = document.getElementById('suEmail').value.trim().toLowerCase();
-  const pass  = document.getElementById('suPass').value;
-  if(!company || !email){ err.textContent='Company name and email are required.'; err.classList.remove('hidden'); return; }
-  const users = await fetchUsersCloud();
-  const compId = toCompanyId(company);
-  if(users.some(u=>(u.email||'').toLowerCase()===email)){
-    err.textContent='Email already registered — use Sign In instead.'; err.classList.remove('hidden'); return;
-  }
-  const rec = {
-    username: email.split('@')[0],
-    email, password: pass,
-    fullName: ((first+' '+last).trim())||email,
-    role:'admin', companyId:compId, companyName:company,
-    registered:new Date().toISOString(), status:'active', modules:[]
-  };
+  suError.classList.add('hidden');
+  const company=(suCompany.value||'').trim();
+  const email=(suEmail.value||'').trim().toLowerCase();
+  const pass=suPass.value;
+  if(!company||!email){suError.textContent='Company and email required.';suError.classList.remove('hidden');return}
+  const users=await fetchUsers();
+  const compId=toCompanyId(company);
+  const rec={ username:email.split('@')[0], email, password:pass, fullName:((suFirst.value||'')+' '+(suLast.value||'')).trim()||email, role:'admin', companyId:compId, companyName:company };
   users.push(rec);
-  await saveUsersCloud(users);
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ email:rec.email, name:rec.fullName, companyId:compId, companyName:company }));
-  bootApp();
+  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem(SESSION_KEY,JSON.stringify({ email:rec.email, name:rec.fullName, companyId:compId, companyName:company }));
+  boot();
 }
 
-function signOut(){ localStorage.removeItem(SESSION_KEY); location.reload(); }
+function signOut(){localStorage.removeItem(SESSION_KEY);location.reload()}
+function currentCompanyId(){ const u=currentUser(); return u?.companyId || 'default_company'; }
+function scopedKey(k){ return k + '_' + currentCompanyId(); }
 
+/* ALL MODULE DEFINITIONS ENHANCED FOR PROMOTIONS, SOCIAL, UPDATES, SPAM, JUNK, ARCHIVE */
+const MODULES = [
+  { id:'inbox',      label:'📥 Inbox',        key:'mail_inbox' },
+  { id:'unread',     label:'📩 Unread',       key:'mail_inbox' },
+  { id:'starred',    label:'⭐ Starred',      key:'mail_starred' },
+  { id:'sent',       label:'📤 Sent',         key:'mail_sent' },
+  { id:'promotions', label:'🏷️ Promotions',  key:'mail_promotions', badgeBg:'bg-pink-100 text-pink-700', icon:'🏷️' },
+  { id:'social',     label:'👥 Social',       key:'mail_social',     badgeBg:'bg-blue-100 text-blue-700', icon:'👥' },
+  { id:'updates',    label:'🔔 Updates',      key:'mail_updates',    badgeBg:'bg-amber-100 text-amber-700', icon:'🔔' },
+  { id:'forums',     label:'💬 Forums',       key:'mail_forums',     badgeBg:'bg-purple-100 text-purple-700', icon:'💬' },
+  { id:'notes',      label:'📝 Notes',        key:'mail_notes' },
+  { id:'reminders',  label:'⏰ Reminders',    key:'mail_reminders' },
+  { id:'calendar',   label:'📅 Calendar',     key:'mail_calendar' },
+  { id:'drafts',     label:'📝 Drafts',       key:'mail_drafts' },
+  { id:'archive',    label:'📦 Archive',      key:'mail_archive',    badgeBg:'bg-slate-200 text-slate-700', icon:'📦' },
+  { id:'junk',       label:'⚠️ Junk',         key:'mail_junk',       badgeBg:'bg-orange-100 text-orange-800', icon:'⚠️' },
+  { id:'spam',       label:'🚫 Spam',         key:'mail_spam',       badgeBg:'bg-red-100 text-red-700', icon:'🚫' },
+  { id:'trash',      label:'🗑️ Trash',        key:'mail_trash' },
+  { id:'settings',   label:'⚙️ Settings',     key:'mail_settings' },
+];
 
-let store = { mails:[], events:[], aiChat:[] };
-function dataKey(){ const u=currentUser(); return DATA_KEY_PREFIX + (u?.email||'anon'); }
-function loadStore(){
-  try{ store = JSON.parse(localStorage.getItem(dataKey())) || {mails:[],events:[],aiChat:[]}; }
-  catch{ store = {mails:[],events:[],aiChat:[]}; }
-  store.mails ??= []; store.events ??= []; store.aiChat ??= [];
+const store = {};                
+let active = MODULES[0].id;
+let activeSettingsTab = 'general';
+let searchQuery = '';
+let activeMailIndex = null;
+let currentAttachments = [];
+let recallTimer = null;
+let lastSentMail = null;
+
+function setSync(status, tone){
+  syncStatus.textContent = status;
+  const dot = syncDot; dot.className = 'inline-block w-2 h-2 rounded-full ' +
+    ({ok:'bg-emerald-500',busy:'bg-amber-400 animate-pulse',err:'bg-red-500',idle:'bg-slate-300'}[tone]||'bg-slate-300');
 }
-function saveStore(){ localStorage.setItem(dataKey(), JSON.stringify(store)); updateRightSidebar(); }
 
-function updateRightSidebar() {
-  const upEl = document.getElementById('rightSidebarUpcoming');
-  const stEl = document.getElementById('rightSidebarStats');
-  if(!upEl || !stEl) return;
+/* DEMO SEED DATA FOR CATEGORIZED FOLDERS */
+function seedCategoryDefaultsIfEmpty(){
+  if(!store['promotions'] || store['promotions'].length === 0){
+    store['promotions'] = [
+      { from: 'Acacia Deals <offers@acaciasuite.com>', subject: '🎉 50% Off Annual Enterprise Upgrade', body: 'Claim your exclusive 50% discount on Acacia Cloud Enterprise tier before Q3 ends.', preview: 'Claim your exclusive 50% discount on Acacia Cloud...', time: Date.now() - 3600000, read: false, tag: 'promotions' },
+      { from: 'AWS Cloud Services', subject: 'Cloud Credits Voucher Included', body: 'You have $200 in promotional AWS cloud credits available.', preview: 'You have $200 in promotional AWS cloud credits available.', time: Date.now() - 86400000, read: true, tag: 'promotions' }
+    ];
+  }
+  if(!store['social'] || store['social'].length === 0){
+    store['social'] = [
+      { from: 'LinkedIn Notifications', subject: 'Jane Doe mentioned you in a comment', body: 'Jane Doe: "Great progress on the Acacia Mail feature launch!"', preview: 'Jane Doe: "Great progress on the Acacia Mail feature launch!"', time: Date.now() - 7200000, read: false, tag: 'social' }
+    ];
+  }
+  if(!store['updates'] || store['updates'].length === 0){
+    store['updates'] = [
+      { from: 'Acacia ERP System', subject: '🔔 System Maintenance Notice (July 25)', body: 'Scheduled system update on Saturday 02:00 UTC.', preview: 'Scheduled system update on Saturday 02:00 UTC.', time: Date.now() - 12000000, read: true, tag: 'updates' }
+    ];
+  }
+  if(!store['spam'] || store['spam'].length === 0){
+    store['spam'] = [
+      { from: 'Win Prize Online <prize@unknown-domain.xyz>', subject: '🚫 Urgent: You won $10,000 dollars!', body: 'Click here immediately to verify your banking details.', preview: 'Click here immediately to verify your banking details.', time: Date.now() - 20000000, read: false, tag: 'spam' }
+    ];
+  }
+  if(!store['junk'] || store['junk'].length === 0){
+    store['junk'] = [
+      { from: 'Newsletter Bot <no-reply@bulk-sender.net>', subject: '⚠️ Unverified Bulk Dispatch Digest', body: 'Unverified sender newsletter digest.', preview: 'Unverified sender newsletter digest.', time: Date.now() - 40000000, read: false, tag: 'junk' }
+    ];
+  }
+}
 
-  const upcoming = store.events.filter(e => new Date(e.start) >= new Date()).sort((a,b) => a.start - b.start).slice(0, 3);
-  if(upcoming.length) {
-    upEl.innerHTML = upcoming.map(e => `
-      <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-        <div class="text-[11px] font-semibold text-acacia-700">${new Date(e.start).toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
-        <div class="text-xs font-medium text-slate-800 truncate mt-0.5">${escapeHtml(e.title)}</div>
+/* LOCAL STORAGE & DUAL SYNC */
+function loadLocalStore(m){
+  const localData = localStorage.getItem(scopedKey(m.key));
+  if (localData) {
+    try { store[m.id] = JSON.parse(localData); } catch { store[m.id] = []; }
+  } else {
+    store[m.id] = [];
+  }
+}
+
+function saveLocalStore(m){
+  if (m.id === 'settings') return;
+  localStorage.setItem(scopedKey(m.key), JSON.stringify(store[m.id] || []));
+}
+
+async function pullOne(m){
+  if (m.id === 'settings') return;
+  loadLocalStore(m);
+  try {
+    const scoped = scopedKey(m.key);
+    let { data } = await sb.from('app_state').select('value').eq('key', scoped).maybeSingle();
+    if (Array.isArray(data?.value) && data.value.length > 0) {
+      store[m.id] = data.value;
+      saveLocalStore(m);
+    }
+  } catch(e) { console.warn('Supabase fetch failed, relying on localStorage', e); }
+}
+
+async function pullAll(){
+  setSync('syncing…','busy');
+  try{
+    await Promise.all(MODULES.map(pullOne));
+    seedCategoryDefaultsIfEmpty();
+    setSync('synced · '+(currentUser()?.companyName||'workspace'),'ok');
+    renderView();
+    updateRightSidebarWidgets();
+  }catch(e){ setSync('local fallback','idle'); }
+}
+
+async function pushOne(m){
+  if (m.id === 'settings') return true;
+  saveLocalStore(m);
+  setSync('saving…','busy');
+  try {
+    const { error } = await sb.from('app_state').upsert(
+      { key: scopedKey(m.key), value: store[m.id]||[], updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    if(error){ setSync('saved locally','idle'); return false; }
+    setSync('synced · '+(currentUser()?.companyName||'workspace'),'ok'); return true;
+  } catch {
+    setSync('saved locally','idle'); return true;
+  }
+}
+
+function getCustomFolders(){
+  try{ return JSON.parse(localStorage.getItem(CUSTOM_FOLDERS_KEY) || '["Projects", "Invoices"]'); } catch{ return ["Projects", "Invoices"]; }
+}
+
+function addCustomFolder(){
+  const name = prompt("Enter custom folder name:");
+  if(!name) return;
+  const folders = getCustomFolders();
+  folders.push(name);
+  localStorage.setItem(CUSTOM_FOLDERS_KEY, JSON.stringify(folders));
+  renderNav();
+}
+
+function renderNav(){
+  navList.innerHTML = MODULES.map(m=>`
+    <button onclick="go('${m.id}')" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition flex items-center justify-between text-xs ${m.id===active?'active':''}">
+      <span>${m.label}</span>
+      ${store[m.id]?.length ? `<span class="bg-slate-200 text-slate-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold">${store[m.id].length}</span>` : ''}
+    </button>
+  `).join('');
+
+  const cf = getCustomFolders();
+  customFoldersList.innerHTML = cf.map(f=>`
+    <button onclick="goFolder('${escapeHtml(f)}')" class="w-full text-left px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-100 text-xs flex items-center justify-between ${active===f?'bg-slate-200 font-bold':''}">
+      <span>📁 ${escapeHtml(f)}</span>
+    </button>
+  `).join('');
+}
+
+function go(id){ active=id; activeMailIndex=null; renderNav(); renderView(); }
+function goFolder(f){ active=f; activeMailIndex=null; renderNav(); renderView(); }
+
+function filterMails(){
+  searchQuery = document.getElementById('mailSearch').value.toLowerCase();
+  renderView();
+}
+
+/* SMART CATEGORY ACTIONS & RELOCATION */
+async function moveMailToInbox(fromCategory, idx){
+  const sourceList = store[fromCategory];
+  if(!sourceList || !sourceList[idx]) return;
+  const item = sourceList.splice(idx, 1)[0];
+  
+  store['inbox'] = store['inbox'] || [];
+  store['inbox'].unshift(item);
+  
+  await pushOne(MODULES.find(x => x.id === fromCategory));
+  await pushOne(MODULES.find(x => x.id === 'inbox'));
+  
+  alert(`Moved message back to Inbox!`);
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+async function markAsSpam(idx){
+  const sourceList = store[active] || store['inbox'];
+  if(!sourceList || !sourceList[idx]) return;
+  const item = sourceList.splice(idx, 1)[0];
+  
+  store['spam'] = store['spam'] || [];
+  store['spam'].unshift(item);
+
+  await pushOne(MODULES.find(x => x.id === active));
+  await pushOne(MODULES.find(x => x.id === 'spam'));
+
+  alert(`Marked email as Spam.`);
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+/* AI CATEGORIZE HELPER */
+async function aiCategorizeUnsorted(){
+  let moved = 0;
+  const inbox = store['inbox'] || [];
+  const remainingInbox = [];
+
+  inbox.forEach(mail => {
+    const sub = (mail.subject || '').toLowerCase();
+    const body = (mail.body || '').toLowerCase();
+
+    if(sub.includes('off') || sub.includes('discount') || sub.includes('offer') || sub.includes('deal')){
+      store['promotions'] = store['promotions'] || []; store['promotions'].push(mail); moved++;
+    } else if(sub.includes('comment') || sub.includes('linkedin') || sub.includes('twitter') || sub.includes('follower')){
+      store['social'] = store['social'] || []; store['social'].push(mail); moved++;
+    } else if(sub.includes('update') || sub.includes('notice') || sub.includes('scheduled') || sub.includes('system')){
+      store['updates'] = store['updates'] || []; store['updates'].push(mail); moved++;
+    } else if(sub.includes('winner') || sub.includes('prize') || sub.includes('urgent bank')){
+      store['spam'] = store['spam'] || []; store['spam'].push(mail); moved++;
+    } else {
+      remainingInbox.push(mail);
+    }
+  });
+
+  store['inbox'] = remainingInbox;
+  await Promise.all(MODULES.map(pushOne));
+
+  alert(`AI Smart Categorization complete! Organized ${moved} email(s) into Promotions, Social, Updates, and Spam.`);
+  renderNav(); renderView(); updateRightSidebarWidgets();
+}
+
+/* RIGHT SIDEBAR DYNAMIC UPDATES */
+function updateRightSidebarWidgets(){
+  const events = store['calendar'] || [];
+  if(events.length === 0){
+    agendaWidget.innerHTML = `<span class="text-slate-400">No upcoming events.</span>`;
+  } else {
+    agendaWidget.innerHTML = events.slice(0, 2).map(ev => `
+      <div class="mb-2 last:mb-0">
+        <div class="font-bold text-slate-800">${escapeHtml(ev.title)}</div>
+        <div class="text-[10px] text-acacia-600">🗓️ ${escapeHtml(ev.date || 'Today')} ${ev.time ? 'at ' + escapeHtml(ev.time) : ''}</div>
       </div>
     `).join('');
+  }
+
+  const inbox = store['inbox'] || [];
+  const unreadCount = inbox.filter(m => !m.read).length;
+  const starredCount = (store['starred'] || []).length;
+  const totalMessages = inbox.length + (store['sent'] || []).length + (store['promotions']||[]).length + (store['social']||[]).length;
+
+  workspaceStatsWidget.innerHTML = `
+    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+      <span class="text-slate-600 font-medium">Total Messages</span>
+      <span class="font-bold text-slate-800">${totalMessages}</span>
+    </div>
+    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+      <span class="text-slate-600 font-medium">Unread Mail</span>
+      <span class="font-bold text-acacia-600">${unreadCount}</span>
+    </div>
+    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+      <span class="text-slate-600 font-medium">Starred</span>
+      <span class="font-bold text-amber-500">${starredCount}</span>
+    </div>
+  `;
+}
+
+function aiSummarizeUnread(){
+  toggleAiGuide();
+  askAiQuestion("Please summarize my unread messages");
+}
+
+function aiWeekOverview(){
+  toggleAiGuide();
+  askAiQuestion("Give me a week overview of calendar events and tasks");
+}
+
+/* NEW USER AI ASSISTANT & INTERACTIVE ONBOARDING TOUR LOGIC */
+function toggleAiGuide(){
+  aiGuideModal.classList.toggle('hidden');
+}
+
+function handleAiChatSubmit(e){
+  e.preventDefault();
+  const q = aiInput.value.trim();
+  if(!q) return;
+  askAiQuestion(q);
+  aiInput.value = '';
+}
+
+function askAiQuestion(questionText){
+  appendChatMessage(questionText, 'user');
+  
+  let answer = "";
+  const lower = questionText.toLowerCase();
+
+  if(lower.includes('recall') || lower.includes('undo')){
+    answer = "To **Recall an email**, send a message using the ✏️ **Compose** button. A black banner will pop up at the bottom for **5 seconds** with an <strong>Undo / Recall</strong> button. Clicking it brings your draft right back!";
+  } else if(lower.includes('spam') || lower.includes('junk')){
+    answer = "Messages flagged as ⚠️ **Junk** or 🚫 **Spam** are automatically isolated. If a real message lands there, click the <strong>Not Junk / Mark Safe</strong> button on the mail card to move it directly back to your Inbox!";
+  } else if(lower.includes('unread') || lower.includes('summarize')){
+    const unread = (store['inbox']||[]).filter(m=>!m.read);
+    answer = `You currently have <strong>${unread.length} unread email(s)</strong> in your inbox. Check your main view to read them!`;
+  } else if(lower.includes('week') || lower.includes('overview')){
+    const evCount = (store['calendar']||[]).length;
+    const taskCount = (store['reminders']||[]).length;
+    answer = `<strong>Weekly Overview:</strong> You have <strong>${evCount} scheduled event(s)</strong> and <strong>${taskCount} active task(s)</strong> on your dashboard.`;
+  } else if(lower.includes('note') || lower.includes('reminder') || lower.includes('task')){
+    answer = "Use the 📝 **Notes** or ⏰ **Reminders** modules in the left sidebar. All created notes and tasks are saved directly into your browser's Local Storage and synced to the cloud!";
+  } else if(lower.includes('out of office') || lower.includes('vacation') || lower.includes('auto reply')){
+    answer = "Head over to ⚙️ **Settings** → **✍️ Signature & Out-of-Office** to enable auto-responders and edit your default email signature.";
   } else {
-    upEl.innerHTML = `<p class="text-xs text-slate-400">No upcoming events.</p>`;
+    answer = "You can navigate all folders (Inbox, Promotions, Social, Updates, Spam, Junk, Archive) from the left sidebar or top tab strip. Everything automatically saves locally and syncs to your workspace context.";
   }
 
-  const unreadCount = store.mails.filter(m => !m.read && m.folder === 'inbox').length;
-  const starredCount = store.mails.filter(m => m.starred).length;
-  stEl.innerHTML = `
-    <div class="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
-      <span>Total Messages</span>
-      <span class="font-semibold text-slate-800">${store.mails.length}</span>
+  setTimeout(() => appendChatMessage(answer, 'ai'), 300);
+}
+
+function appendChatMessage(text, role){
+  const div = document.createElement('div');
+  if(role === 'user'){
+    div.className = "bg-purple-600 text-white p-2.5 rounded-xl ml-6 text-right shadow-sm text-xs";
+    div.textContent = text;
+  } else {
+    div.className = "bg-white border border-purple-100 text-slate-700 p-3 rounded-xl mr-4 shadow-sm text-xs leading-relaxed";
+    div.innerHTML = "🤖 " + text;
+  }
+  aiChatBox.appendChild(div);
+  aiChatBox.scrollTop = aiChatBox.scrollHeight;
+}
+
+let tourStep = 0;
+function startInteractiveTour(){ tourStep = 0; nextTourStep(); }
+
+function nextTourStep(){
+  tourStep++;
+  if(tourStep === 1){
+    go('inbox');
+    appendChatMessage("<strong>Tour Step 1:</strong> Here is your 📥 <strong>Inbox</strong>. Use the ✏️ <strong>Compose</strong> button at the top to draft email messages with AI support.", 'ai');
+  } else if(tourStep === 2){
+    go('promotions');
+    appendChatMessage("<strong>Tour Step 2:</strong> Check out 🏷️ <strong>Promotions</strong> and 👥 <strong>Social</strong> tabs to manage promotional offers and network updates.", 'ai');
+  } else if(tourStep === 3){
+    go('spam');
+    appendChatMessage("<strong>Tour Step 3:</strong> In 🚫 <strong>Spam</strong> or ⚠️ <strong>Junk</strong>, click 'Mark Safe' to restore any misclassified mail instantly.", 'ai');
+  } else {
+    appendChatMessage("🎉 Tour completed! Let me know if you have any questions.", 'ai');
+  }
+}
+
+/* AI DRAFTING HELPERS */
+function aiDraft(type){
+  const sig = getSettings().signature;
+  if(type.includes('Update Request')){
+    mmSubject.value = "Project Status Update Request";
+    mmBody.value = "Hi Team,\n\nCould you please provide a brief update on the current milestones for this project?\n\nThanks,\n" + sig;
+  } else {
+    mmSubject.value = "Follow-up: Outstanding Workspace Invoice";
+    mmBody.value = "Dear Finance Team,\n\nI am following up regarding invoice payment status. Kindly confirm when processing will be complete.\n\nBest,\n" + sig;
+  }
+}
+
+function aiImproveTone(){
+  let current = mmBody.value;
+  if(!current.trim()) return;
+  mmBody.value = "Dear Recipient,\n\nI hope this email finds you well.\n" + current + "\n\nWarm regards,";
+}
+
+function toggleCcBcc(type){
+  if(type==='cc') ccGroup.classList.toggle('hidden');
+  if(type==='bcc') bccGroup.classList.toggle('hidden');
+}
+
+function handleFileAttach(e){
+  const files = Array.from(e.target.files);
+  files.forEach(f => {
+    currentAttachments.push({ name: f.name, size: (f.size / 1024).toFixed(1) + ' KB' });
+  });
+  renderAttachmentChips();
+}
+
+function renderAttachmentChips(){
+  attachCount.textContent = `${currentAttachments.length} attachment(s)`;
+  attachmentsChips.innerHTML = currentAttachments.map((f, i) => `
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-300 rounded-lg text-xs font-medium text-slate-700">
+      📄 ${escapeHtml(f.name)} (${f.size})
+      <button type="button" onclick="removeAttach(${i})" class="text-slate-400 hover:text-red-500 font-bold ml-1">✕</button>
+    </span>
+  `).join('');
+}
+
+function removeAttach(i){
+  currentAttachments.splice(i, 1);
+  renderAttachmentChips();
+}
+
+function showRecallBanner(sentRecord){
+  lastSentMail = sentRecord;
+  recallToast.classList.remove('hidden');
+  clearTimeout(recallTimer);
+  recallTimer = setTimeout(() => {
+    recallToast.classList.add('hidden');
+    lastSentMail = null;
+  }, 5000);
+}
+
+async function recallLastEmail(){
+  if (!lastSentMail) return;
+  const sentModule = MODULES.find(x=>x.id==='sent');
+  if (store['sent']) {
+    store['sent'] = store['sent'].filter(m => m.time !== lastSentMail.time);
+    await pushOne(sentModule);
+  }
+  recallToast.classList.add('hidden');
+  openMail();
+  mmTo.value = lastSentMail.to || '';
+  mmSubject.value = lastSentMail.subject || '';
+  mmBody.value = lastSentMail.body || '';
+  alert('Email recalled into composer!');
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+async function sendMailFromApp(e) {
+  e.preventDefault();
+  const to = mmTo.value;
+  const subject = mmSubject.value;
+  const body = mmBody.value;
+
+  const newMail = {
+    from: currentUser()?.email || 'user@acaciasuite.com',
+    to,
+    cc: mmCc.value,
+    bcc: mmBcc.value,
+    subject,
+    body,
+    preview: body.slice(0, 50),
+    attachments: [...currentAttachments],
+    time: Date.now(),
+    read: true
+  };
+
+  store['sent'] = store['sent'] || [];
+  store['sent'].push(newMail);
+  await pushOne(MODULES.find(x => x.id === 'sent'));
+  closeMail();
+  showRecallBanner(newMail);
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+function getSettings(){
+  return JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify({
+    signature: '--\nBest Regards,\n' + (currentUser()?.name || 'Workspace User'),
+    autoReply: false,
+    autoReplyText: 'Thank you for your email. I am currently out of office.',
+    autoReplyStart: '',
+    autoReplyEnd: '',
+    density: 'comfortable',
+    notifyDesktop: true,
+    theme: 'light',
+    spamFilterLevel: 'medium'
+  }));
+}
+
+function saveSettingsForm(e){
+  e.preventDefault();
+  const s = getSettings();
+  s.signature = document.getElementById('settingSig')?.value || s.signature;
+  s.autoReply = document.getElementById('settingAutoReply')?.checked ?? s.autoReply;
+  s.autoReplyText = document.getElementById('settingAutoText')?.value || s.autoReplyText;
+  s.autoReplyStart = document.getElementById('settingAutoStart')?.value || s.autoReplyStart;
+  s.autoReplyEnd = document.getElementById('settingAutoEnd')?.value || s.autoReplyEnd;
+  s.density = document.getElementById('settingDensity')?.value || s.density;
+  s.notifyDesktop = document.getElementById('settingNotify')?.checked ?? s.notifyDesktop;
+  s.spamFilterLevel = document.getElementById('settingSpamLevel')?.value || s.spamFilterLevel;
+
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  alert('Settings saved locally and synced!');
+  renderView();
+}
+
+function exportAccountData(){
+  const dump = { user: currentUser(), settings: getSettings(), mailStore: store };
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Acacia_Mail_Backup_${Date.now()}.json`;
+  a.click();
+}
+
+function clearLocalCache(){
+  if(confirm("Clear local cache? Online database records will remain safely backed up.")){
+    localStorage.removeItem(SETTINGS_KEY);
+    MODULES.forEach(m => localStorage.removeItem(scopedKey(m.key)));
+    alert("Cache cleared!");
+    boot();
+  }
+}
+
+function openReminderModal(){ reminderModal.classList.remove('hidden'); }
+function closeReminderModal(){ reminderModal.classList.add('hidden'); }
+
+async function saveReminderTask(e){
+  e.preventDefault();
+  const title = rmTitle.value;
+  const due = rmDue.value;
+  const priority = rmPriority.value;
+  const notes = rmNotes.value;
+
+  store['reminders'] = store['reminders'] || [];
+  store['reminders'].push({ title, due, priority, notes, done: false, created: Date.now() });
+  
+  await pushOne(MODULES.find(x => x.id === 'reminders'));
+  closeReminderModal();
+  rmTitle.value = ''; rmNotes.value = '';
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+async function toggleReminderDone(idx){
+  if(store['reminders'][idx]){
+    store['reminders'][idx].done = !store['reminders'][idx].done;
+    await pushOne(MODULES.find(x => x.id === 'reminders'));
+    renderView();
+  }
+}
+
+async function deleteReminder(idx){
+  store['reminders'].splice(idx,1);
+  await pushOne(MODULES.find(x => x.id === 'reminders'));
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+function openEventModal(){ eventModal.classList.remove('hidden'); }
+function closeEventModal(){ eventModal.classList.add('hidden'); }
+
+async function saveCalendarEvent(e){
+  e.preventDefault();
+  const title = evTitle.value;
+  const date = evDate.value;
+  const time = evTime.value;
+  const location = evLoc.value;
+  const desc = evDesc.value;
+
+  store['calendar'] = store['calendar'] || [];
+  store['calendar'].push({ title, date, time, location, desc, created: Date.now() });
+
+  await pushOne(MODULES.find(x => x.id === 'calendar'));
+  closeEventModal();
+  evTitle.value = ''; evLoc.value = ''; evDesc.value = '';
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+async function deleteCalendarEvent(idx){
+  store['calendar'].splice(idx,1);
+  await pushOne(MODULES.find(x => x.id === 'calendar'));
+  renderView();
+  updateRightSidebarWidgets();
+}
+
+function openNoteModal(){ noteModal.classList.remove('hidden'); }
+function closeNoteModal(){ noteModal.classList.add('hidden'); }
+
+async function saveNote(e){
+  e.preventDefault();
+  const title = ntTitle.value;
+  const content = ntContent.value;
+
+  store['notes'] = store['notes'] || [];
+  store['notes'].push({ title, content, created: Date.now() });
+
+  await pushOne(MODULES.find(x => x.id === 'notes'));
+  closeNoteModal();
+  ntTitle.value = ''; ntContent.value = '';
+  renderView();
+}
+
+async function deleteNote(idx){
+  store['notes'].splice(idx,1);
+  await pushOne(MODULES.find(x => x.id === 'notes'));
+  renderView();
+}
+
+/* MAIN ROUTER WITH INTEGRATED CATEGORY BAR */
+function renderView(){
+  updateRightSidebarWidgets();
+
+  if (active === 'settings') { renderSettingsView(); return; }
+  if (active === 'reminders') { renderRemindersView(); return; }
+  if (active === 'calendar') { renderCalendarView(); return; }
+  if (active === 'notes') { renderNotesView(); return; }
+
+  if (activeMailIndex !== null) { renderSingleMail(activeMailIndex); return; }
+
+  const m = MODULES.find(x=>x.id===active);
+  let rows = store[m?.id || 'inbox'] || [];
+
+  if (searchQuery) {
+    rows = rows.filter(r => 
+      (r.subject && r.subject.toLowerCase().includes(searchQuery)) ||
+      (r.from && r.from.toLowerCase().includes(searchQuery)) ||
+      (r.preview && r.preview.toLowerCase().includes(searchQuery))
+    );
+  }
+
+  const categoryTabStrip = ['inbox', 'promotions', 'social', 'updates', 'junk', 'spam', 'archive'].includes(active) ? `
+    <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs border-b border-slate-200">
+      <button onclick="go('inbox')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='inbox'?'bg-acacia-700 text-white':'bg-white border text-slate-600 hover:bg-slate-100'}">📥 Primary Inbox</button>
+      <button onclick="go('promotions')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='promotions'?'bg-pink-600 text-white':'bg-white border text-slate-600 hover:bg-pink-50'}">🏷️ Promotions (${(store['promotions']||[]).length})</button>
+      <button onclick="go('social')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='social'?'bg-blue-600 text-white':'bg-white border text-slate-600 hover:bg-blue-50'}">👥 Social (${(store['social']||[]).length})</button>
+      <button onclick="go('updates')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='updates'?'bg-amber-600 text-white':'bg-white border text-slate-600 hover:bg-amber-50'}">🔔 Updates (${(store['updates']||[]).length})</button>
+      <button onclick="go('junk')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='junk'?'bg-orange-600 text-white':'bg-white border text-slate-600 hover:bg-orange-50'}">⚠️ Junk (${(store['junk']||[]).length})</button>
+      <button onclick="go('spam')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='spam'?'bg-red-600 text-white':'bg-white border text-slate-600 hover:bg-red-50'}">🚫 Spam (${(store['spam']||[]).length})</button>
+      <button onclick="go('archive')" class="px-3 py-1.5 rounded-lg font-medium transition ${active==='archive'?'bg-slate-700 text-white':'bg-white border text-slate-600 hover:bg-slate-100'}">📦 Archive (${(store['archive']||[]).length})</button>
     </div>
-    <div class="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
-      <span>Unread Mail</span>
-      <span class="font-semibold text-acacia-600">${unreadCount}</span>
+  ` : '';
+
+  view.innerHTML = `
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <span>${m?.icon || '📁'}</span> ${m?.label || active}
+        </h2>
+        <p class="text-xs text-slate-500">Workspace: ${escapeHtml(currentUser()?.companyName || 'Acacia Mail')}</p>
+      </div>
+      <button onclick="addRow()" class="px-3.5 py-2 text-xs bg-acacia-600 hover:bg-acacia-700 text-white rounded-lg font-semibold shadow-sm transition">+ Quick Add Entry</button>
     </div>
-    <div class="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-200">
-      <span>Starred</span>
-      <span class="font-semibold text-amber-600">${starredCount}</span>
+
+    ${categoryTabStrip}
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="divide-y divide-slate-100">
+        ${rows.length === 0 ? `
+          <div class="text-center text-slate-400 py-16">
+            <div class="text-3xl mb-2">${m?.icon || '📬'}</div>
+            <p class="text-sm font-medium">No messages found in ${escapeHtml(m?.label || active)}</p>
+          </div>
+        ` : rows.map((r, i) => `
+          <div class="p-4 hover:bg-slate-50 transition flex items-center justify-between cursor-pointer border-l-4 ${r.read ? 'border-transparent bg-white' : 'border-acacia-600 bg-acacia-50/20'}" onclick="viewMail(${i})">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <input type="checkbox" onclick="event.stopPropagation()" class="rounded border-slate-300 text-acacia-600"/>
+              <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">
+                ${initials(r.from || r.sender || 'System')}
+              </div>
+              <div class="min-w-0 flex-1 pr-4">
+                <div class="flex items-center justify-between mb-0.5">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(r.from || r.sender || 'Unknown Sender')}</span>
+                    ${m?.badgeBg ? `<span class="px-2 py-0.5 text-[10px] rounded-full font-bold ${m.badgeBg}">${m.label}</span>` : ''}
+                  </div>
+                  <span class="text-[10px] text-slate-400 shrink-0">${r.time ? new Date(r.time).toLocaleDateString() : 'Today'}</span>
+                </div>
+                <div class="text-xs font-semibold text-slate-700 truncate">
+                  ${escapeHtml(r.subject || 'No Subject')}
+                  ${r.attachments?.length ? `<span class="ml-2 text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">📎 ${r.attachments.length}</span>` : ''}
+                </div>
+                <div class="text-xs text-slate-500 truncate">${escapeHtml(r.preview || r.body || '')}</div>
+              </div>
+            </div>
+
+            <!-- ACTION CONTROLS FOR CATEGORIZED MESSAGES -->
+            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+              ${['junk', 'spam'].includes(active) ? `
+                <button onclick="moveMailToInbox('${active}', ${i})" class="px-2.5 py-1 text-[10px] bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-md border border-emerald-300 transition">
+                  ✅ Not Junk / Move to Inbox
+                </button>
+              ` : ''}
+              ${active === 'archive' ? `
+                <button onclick="moveMailToInbox('archive', ${i})" class="px-2.5 py-1 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-md border border-slate-300 transition">
+                  ↩️ Unarchive
+                </button>
+              ` : ''}
+              ${active === 'inbox' ? `
+                <button onclick="markAsSpam(${i})" class="px-2 py-1 text-[10px] bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-md border border-red-200 transition">
+                  🚫 Mark Spam
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
 
-
-function bootApp(){
-  const u = currentUser();
-  if(!u){
-    document.getElementById('authScreen').classList.remove('hidden');
-    document.getElementById('app').classList.add('hidden');
-    document.getElementById('app').classList.remove('flex');
-    renderAuthAccounts();
-    fetchUsersCloud().then(() => renderAuthAccounts());
-    return;
-  }
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  document.getElementById('app').classList.add('flex');
-  document.getElementById('userAvatar').textContent = initials(u.name||u.email);
-  loadStore();
-  switchView('mail');
-  updateRightSidebar();
-}
-
-let currentView='mail';
-function switchView(v){
-  currentView=v;
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
-  const ws=document.getElementById('workspace');
-  if(v==='mail') renderMailView(ws);
-  else if(v==='calendar') renderCalendarView(ws);
-  else if(v==='reports') renderReportsView(ws);
-  else if(v==='ai') renderAiView(ws);
-  else if(v==='settings'){ renderSettingsView(ws); fetchUsersCloud().then(()=>renderSettingsView(ws)); }
-}
-
-
-const FOLDERS = [
-  {
-    id: 'inbox',
-    name: 'Inbox',
-    icon: 'M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z'
-  },
-  {
-    id: 'starred',
-    name: 'Starred',
-    icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z'
-  },
-  {
-    id: 'important',
-    name: 'Important',
-    icon: 'M5 13l4 4L19 7'
-  },
-  {
-    id: 'sent',
-    name: 'Sent',
-    icon: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z'
-  },
-  {
-    id: 'scheduled',
-    name: 'Scheduled',
-    icon: 'M12 8v5l3 3M12 2a10 10 0 100 20 10 10 0 000-20z'
-  },
-  {
-    id: 'outbox',
-    name: 'Outbox',
-    icon: 'M4 12h16M12 4l8 8-8 8'
-  },
-  {
-    id: 'drafts',
-    name: 'Drafts',
-    icon: 'M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z'
-  },
-  {
-    id: 'allmail',
-    name: 'All Mail',
-    icon: 'M4 6h16v12H4zM4 8l8 5 8-5'
-  },
-  {
-    id: 'archive',
-    name: 'Archive',
-    icon: 'M4 4h16v4H4zm2 4v10h12V8M9 12h6'
-  },
-  {
-    id: 'spam',
-    name: 'Spam',
-    icon: 'M12 2L2 7l10 15L22 7 12 2z'
-  },
-  {
-    id: 'junk',
-    name: 'Junk',
-    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'
-  },
-  {
-    id: 'promotions',
-    name: 'Promotions',
-    icon: 'M3 7l9 6 9-6M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z'
-  },
-  {
-    id: 'social',
-    name: 'Social',
-    icon: 'M17 20h5V4H2v16h5m10 0v-4a3 3 0 00-6 0v4m6 0H11'
-  },
-  {
-    id: 'updates',
-    name: 'Updates',
-    icon: 'M12 8v4l3 3M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41'
-  },
-  {
-    id: 'forums',
-    name: 'Forums',
-    icon: 'M8 10h8M8 14h5M4 4h16v16H4z'
-  },
-  {
-    id: 'notes',
-    name: 'Notes',
-    icon: 'M9 12h6M9 16h4M7 4h10a2 2 0 012 2v12l-4-3H7a2 2 0 01-2-2V6a2 2 0 012-2z'
-  },
-  {
-    id: 'trash',
-    name: 'Trash',
-    icon: 'M3 6h18M8 6V4h8v2m-9 0v14a2 2 0 002 2h6a2 2 0 002-2V6'
-  }
-];
-let mailCurrent = { folder:'inbox', id:null };
-
-function renderMailView(root){
-  root.innerHTML = `
-    <aside class="w-56 bg-white border-r border-slate-200 flex flex-col shrink-0">
-      <div class="p-3"><button onclick="openCompose()" class="w-full h-11 rounded-lg bg-acacia-600 hover:bg-acacia-700 text-white font-semibold flex items-center justify-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Compose</button>
-      </div>
-      <nav id="folderNav" class="flex-1 overflow-y-auto px-2 pb-3 text-sm"></nav>
-    </aside>
-    <section class="w-[320px] bg-white border-r border-slate-200 flex flex-col shrink-0">
-      <div class="flex items-center justify-between px-4 h-12 border-b border-slate-200">
-        <div><h2 id="folderTitle" class="font-semibold text-slate-800">Inbox</h2>
-          <div id="folderMeta" class="text-[11px] text-slate-500">0 messages</div></div>
-      </div>
-      <div id="mailList" class="flex-1 overflow-y-auto"></div>
-    </section>
-    <section id="readingPane" class="flex-1 flex flex-col bg-slate-50 min-w-0"></section>
-  `;
-  const first = store.mails.filter(m=>folderMatch(m,mailCurrent.folder))[0];
-  mailCurrent.id = first?.id || null;
-  renderFolders(); renderList(); renderReading();
-}
-function folderMatch(m, fid) {
-
-  switch (fid) {
-
-    case "starred":
-      return m.starred && m.folder !== "trash";
-
-    case "important":
-      return m.important === true && m.folder !== "trash";
-
-    case "archive":
-      return m.folder === "archive";
-
-    case "spam":
-      return m.folder === "spam";
-
-    case "junk":
-      return m.folder === "junk";
-
-    case "scheduled":
-      return m.folder === "scheduled";
-
-    case "outbox":
-      return m.folder === "outbox";
-
-    case "allmail":
-      return m.folder !== "trash";
-
-    case "promotions":
-      return m.category === "promotions" && m.folder !== "trash";
-
-    case "social":
-      return m.category === "social" && m.folder !== "trash";
-
-    case "updates":
-      return m.category === "updates" && m.folder !== "trash";
-
-    case "forums":
-      return m.category === "forums" && m.folder !== "trash";
-
-    case "notes":
-      return m.category === "notes" && m.folder !== "trash";
-
-    default:
-      return m.folder === fid;
-  }
-
-}
-
-function renderFolders() {
-
-  const unread = store.mails.filter(m => !m.read && m.folder === "inbox").length;
-
-  document.getElementById("folderNav").innerHTML = FOLDERS.map(f => {
-
-    const count = store.mails.filter(m => folderMatch(m, f.id)).length;
-
-    const active = mailCurrent.folder === f.id;
-
-    let badge = "";
-
-    if (f.id === "inbox") {
-
-      badge = unread
-        ? `<span class="ml-auto text-[11px] bg-acacia-600 text-white rounded-full px-2 py-0.5">${unread}</span>`
-        : "";
-
-    } else if (count) {
-
-      badge = `<span class="ml-auto text-xs text-slate-400">${count}</span>`;
-
-    }
-
-    return `
-      <button
-        onclick="selectFolder('${f.id}')"
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition ${
-          active
-            ? "bg-acacia-50 text-acacia-800 font-semibold"
-            : "text-slate-700 hover:bg-slate-100"
-        }">
-
-        <svg class="w-4 h-4 shrink-0"
-             fill="none"
-             stroke="currentColor"
-             viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="${f.icon}" />
-        </svg>
-
-        <span class="truncate">${f.name}</span>
-
-        ${badge}
-
-      </button>
-    `;
-
-  }).join("");
-
-}
-function selectFolder(id){ mailCurrent.folder=id; const first=store.mails.filter(m=>folderMatch(m,id))[0]; mailCurrent.id=first?.id||null; renderFolders(); renderList(); renderReading(); }
-function renderList(){
-  const list = store.mails.filter(m=>folderMatch(m,mailCurrent.folder)).sort((a,b)=>b.time-a.time);
-  document.getElementById('folderTitle').textContent = FOLDERS.find(f=>f.id===mailCurrent.folder).name;
-  document.getElementById('folderMeta').textContent = `${list.length} message${list.length!==1?'s':''}`;
-  const q=(document.getElementById('searchInput').value||'').toLowerCase();
-  const items=q?list.filter(m=>(m.subject+m.from+m.preview).toLowerCase().includes(q)):list;
-  document.getElementById('mailList').innerHTML = items.length ? items.map(m=>`
-    <div onclick="selectMail('${m.id}')" class="mail-row ${m.read?'read':'unread'} ${mailCurrent.id===m.id?'selected':''} border-b border-slate-100 px-4 py-3 cursor-pointer hover:bg-acacia-50/60">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style="background:${avatarColor(m.from)}">${initials(m.from)}</div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between"><span class="truncate text-sm">${escapeHtml(m.from)}</span><span class="text-[11px] text-slate-400 ml-2 shrink-0">${timeAgo(m.time)}</span></div>
-          <div class="truncate text-sm">${escapeHtml(m.subject)}</div>
-          <div class="truncate text-xs text-slate-500">${escapeHtml(m.preview)}</div>
+function renderNotesView(){
+  const notes = store['notes'] || [];
+  view.innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">📝 Workspace Quick Notes</h2>
+          <p class="text-xs text-slate-500">Save thoughts, transcripts, and ideas persisted locally & in the cloud.</p>
         </div>
-        <button onclick="event.stopPropagation();toggleStar('${m.id}')" class="ml-1 text-slate-300 hover:text-amber-400">
-          <svg class="w-4 h-4" fill="${m.starred?'#f59e0b':'none'}" stroke="${m.starred?'#f59e0b':'currentColor'}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-        </button>
+        <button onclick="openNoteModal()" class="px-3.5 py-2 text-xs bg-acacia-600 text-white rounded-lg font-semibold hover:bg-acacia-700 shadow-sm">+ New Note</button>
       </div>
-    </div>`).join('') : emptyState('No messages','Compose your first message to get started.');
-}
-function renderReading(){
-  const m=store.mails.find(x=>x.id===mailCurrent.id);
-  const pane=document.getElementById('readingPane');
-  if(!m){ pane.innerHTML=emptyPane('Select a message','Choose a message from the list to read it here.'); return; }
-  m.read=true; saveStore();
-  pane.innerHTML = `
-    <div class="flex items-center gap-1 px-5 h-12 border-b border-slate-200 bg-white">
-      <button onclick="openReply()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Reply</button>
-      <button onclick="openForward()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Forward</button>
-      <button onclick="trashMail()" class="px-3 h-8 text-sm text-slate-600 rounded hover:bg-slate-100">Delete</button>
-      <div class="ml-auto text-xs text-slate-400">${new Date(m.time).toLocaleString()}</div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${notes.length === 0 ? `
+          <div class="col-span-2 text-center text-slate-400 py-16 bg-white border border-slate-200 rounded-xl">
+            <div class="text-3xl mb-2">📄</div>
+            <div>No quick notes saved yet.</div>
+          </div>
+        ` : notes.map((nt, idx) => `
+          <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-200 shadow-sm flex flex-col justify-between space-y-3">
+            <div>
+              <div class="flex justify-between items-start">
+                <h3 class="text-base font-bold text-amber-900">${escapeHtml(nt.title)}</h3>
+                <button onclick="deleteNote(${idx})" class="text-amber-400 hover:text-red-500 text-xs">✕</button>
+              </div>
+              <p class="text-xs text-amber-800 mt-2 whitespace-pre-wrap leading-relaxed">${escapeHtml(nt.content)}</p>
+            </div>
+            <div class="text-[10px] text-amber-600/70 border-t border-amber-200/60 pt-2">
+              📅 ${new Date(nt.created).toLocaleString()}
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </div>
-    <div class="flex-1 overflow-y-auto"><div class="max-w-3xl mx-auto p-6 fade-in">
-      <h1 class="text-2xl font-semibold text-slate-900">${escapeHtml(m.subject)}</h1>
-      <div class="flex items-center gap-3 mt-5">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background:${avatarColor(m.from)}">${initials(m.from)}</div>
-        <div class="flex-1"><div class="text-sm"><span class="font-semibold">${escapeHtml(m.from)}</span> <span class="text-slate-400">&lt;${escapeHtml(m.email||'')}&gt;</span></div><div class="text-xs text-slate-500">to me</div></div>
-      </div>
-      <article class="max-w-none mt-6 text-slate-700 leading-relaxed text-sm">${m.body}</article>
-    </div></div>`;
-  renderList();
-}
-function selectMail(id){ mailCurrent.id=id; renderReading(); }
-function toggleStar(id){ const m=store.mails.find(x=>x.id===id); if(m){ m.starred=!m.starred; saveStore(); renderList(); } }
-function trashMail(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(m){ m.folder='trash'; mailCurrent.id=null; saveStore(); renderFolders(); renderList(); renderReading(); } }
-function openCompose(pref){ document.getElementById('composeWrap').classList.remove('hidden'); document.getElementById('cTo').value=pref?.to||''; document.getElementById('cSubj').value=pref?.subject||''; document.getElementById('cBody').innerHTML=pref?.body||''; document.getElementById('cTo').focus(); }
-function closeCompose(){ document.getElementById('composeWrap').classList.add('hidden'); }
-function openReply(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(!m) return; openCompose({to:m.email,subject:'Re: '+m.subject,body:`<br><br><blockquote style="border-left:2px solid #cbd5e1;padding-left:10px;color:#64748b">On ${new Date(m.time).toLocaleString()}, ${escapeHtml(m.from)} wrote:<br>${m.body}</blockquote>`}); }
-function openForward(){ const m=store.mails.find(x=>x.id===mailCurrent.id); if(!m) return; openCompose({subject:'Fwd: '+m.subject,body:`<br><br>---- Forwarded ----<br>From: ${escapeHtml(m.from)}<br>${m.body}`}); }
-function sendMail(){
-  const to=document.getElementById('cTo').value.trim();
-  const subj=document.getElementById('cSubj').value.trim()||'(no subject)';
-  const body=document.getElementById('cBody').innerHTML.trim()||'(empty)';
-  if(!to){ alert('Add a recipient.'); return; }
-  const u=currentUser();
-  store.mails.unshift({id:'m'+Date.now(),from:u.name||u.email,email:u.email,subject:subj,preview:body.replace(/<[^>]*>/g,'').slice(0,90),body,time:Date.now(),read:true,starred:false,folder:'sent'});
-  saveStore(); closeCompose();
-  if(currentView==='mail'){ mailCurrent.folder='sent'; selectFolder('sent'); }
+  `;
 }
 
-let calCursor = new Date(); calCursor.setDate(1);
-function renderCalendarView(root){
-  root.innerHTML = `
-    <div class="flex-1 flex flex-col bg-white">
-      <div class="flex items-center justify-between px-6 h-14 border-b border-slate-200">
-        <div class="flex items-center gap-3">
-          <h2 class="text-xl font-semibold text-slate-800" id="calTitle"></h2>
-          <div class="flex items-center gap-1">
-            <button onclick="calNav(-1)" class="w-8 h-8 rounded hover:bg-slate-100">‹</button>
-            <button onclick="calToday()" class="px-3 h-8 rounded border border-slate-200 hover:bg-slate-100 text-sm">Today</button>
-            <button onclick="calNav(1)" class="w-8 h-8 rounded hover:bg-slate-100">›</button>
+function switchSettingsTab(tab){ activeSettingsTab = tab; renderSettingsView(); }
+
+function renderSettingsView(){
+  const s = getSettings();
+  const u = currentUser();
+
+  view.innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900">Workspace Settings</h2>
+        <p class="text-xs text-slate-500">Manage preferences, signatures, out-of-office rules, and local storage.</p>
+      </div>
+
+      <div class="flex border-b border-slate-200 gap-6 text-xs font-medium text-slate-500">
+        <button onclick="switchSettingsTab('general')" class="pb-2.5 settings-tab ${activeSettingsTab==='general'?'active':''}">⚙️ General Preferences</button>
+        <button onclick="switchSettingsTab('signature')" class="pb-2.5 settings-tab ${activeSettingsTab==='signature'?'active':''}">✍️ Signature & Out-of-Office</button>
+        <button onclick="switchSettingsTab('security')" class="pb-2.5 settings-tab ${activeSettingsTab==='security'?'active':''}">🔒 Security & Sessions</button>
+        <button onclick="switchSettingsTab('data')" class="pb-2.5 settings-tab ${activeSettingsTab==='data'?'active':''}">💾 Local Storage & Export</button>
+      </div>
+
+      <form onsubmit="saveSettingsForm(event)" class="space-y-6">
+        ${activeSettingsTab === 'general' ? `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Display Customization</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-semibold text-slate-600">Interface Density</label>
+                <select id="settingDensity" class="w-full mt-1 h-9 px-3 rounded-lg border border-slate-300 text-xs">
+                  <option value="comfortable" ${s.density==='comfortable'?'selected':''}>Comfortable</option>
+                  <option value="compact" ${s.density==='compact'?'selected':''}>Compact</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${activeSettingsTab === 'signature' ? `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">✍️ Email Signature</h3>
+            <textarea id="settingSig" rows="4" class="w-full p-3 border border-slate-300 rounded-lg text-xs font-mono">${escapeHtml(s.signature)}</textarea>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">🌴 Out of Office Auto-Responder</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-700">Enable Auto Responder</span>
+              <input id="settingAutoReply" type="checkbox" ${s.autoReply ? 'checked' : ''} class="w-4 h-4 text-acacia-600 rounded"/>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Auto Response Message</label>
+              <textarea id="settingAutoText" rows="3" class="w-full mt-1 p-3 border border-slate-300 rounded-lg text-xs">${escapeHtml(s.autoReplyText)}</textarea>
+            </div>
+          </div>
+        ` : ''}
+
+        ${activeSettingsTab === 'security' ? `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">🔒 User Profile</h3>
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Logged User</label>
+              <input type="text" disabled value="${escapeHtml(u?.name || u?.email)}" class="w-full mt-1 h-9 px-3 rounded-lg bg-slate-100 text-xs border border-slate-200 text-slate-500"/>
+            </div>
+          </div>
+        ` : ''}
+
+        ${activeSettingsTab === 'data' ? `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">💾 Local Data Management</h3>
+            <div class="flex gap-3">
+              <button type="button" onclick="exportAccountData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg text-xs shadow">Export Account Backup (JSON)</button>
+              <button type="button" onclick="clearLocalCache()" class="px-4 py-2 border border-red-300 text-red-600 hover:bg-red-50 font-semibold rounded-lg text-xs">Clear Local Cache</button>
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="flex justify-end pt-2">
+          <button type="submit" class="px-6 py-2.5 bg-acacia-600 text-white font-semibold rounded-lg text-xs shadow-md hover:bg-acacia-700 transition">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+function renderRemindersView(){
+  const items = store['reminders'] || [];
+  view.innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">⏰ Workspace Tasks & Reminders</h2>
+          <p class="text-xs text-slate-500">Persistent task tracker with local storage support.</p>
+        </div>
+        <button onclick="openReminderModal()" class="px-3.5 py-2 text-xs bg-acacia-600 text-white rounded-lg font-semibold hover:bg-acacia-700 shadow-sm">+ Create Task</button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 divide-y divide-slate-100">
+        ${items.length === 0 ? `
+          <div class="text-center text-slate-400 py-16">
+            <div class="text-3xl mb-2">📋</div>
+            <div>No active tasks or reminders.</div>
+          </div>
+        ` : items.map((item, idx) => `
+          <div class="py-3 flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0 flex-1">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleReminderDone(${idx})" class="mt-1 w-4 h-4 text-acacia-600 rounded"/>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold ${item.done ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(item.title)}</span>
+                  ${item.priority === 'High' ? `<span class="px-2 py-0.5 bg-red-100 text-red-700 font-bold text-[10px] rounded">High</span>` : ''}
+                </div>
+                ${item.notes ? `<div class="text-xs text-slate-500 mt-1">${escapeHtml(item.notes)}</div>` : ''}
+                <div class="text-[10px] text-slate-400 mt-1">📅 Due: ${item.due || 'No date'}</div>
+              </div>
+            </div>
+            <button onclick="deleteReminder(${idx})" class="text-slate-400 hover:text-red-500 text-xs font-semibold">Delete</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCalendarView(){
+  const events = store['calendar'] || [];
+  view.innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900">📅 Workspace Calendar</h2>
+          <p class="text-xs text-slate-500">Manage scheduled workspace meetings.</p>
+        </div>
+        <button onclick="openEventModal()" class="px-3.5 py-2 text-xs bg-acacia-600 text-white rounded-lg font-semibold hover:bg-acacia-700 shadow-sm">+ Add Event</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${events.length === 0 ? `
+          <div class="col-span-2 text-center text-slate-400 py-16 bg-white border border-slate-200 rounded-xl">
+            <div class="text-3xl mb-2">📅</div>
+            <div>No upcoming calendar events scheduled.</div>
+          </div>
+        ` : events.map((ev, idx) => `
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-3">
+            <div>
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-acacia-700 bg-acacia-50 px-2.5 py-1 rounded-md border border-acacia-100">
+                  🗓️ ${escapeHtml(ev.date || 'Today')} ${ev.time ? '· ' + escapeHtml(ev.time) : ''}
+                </span>
+                <button onclick="deleteCalendarEvent(${idx})" class="text-slate-400 hover:text-red-500 text-xs">✕</button>
+              </div>
+              <h3 class="text-base font-bold text-slate-800 mt-2">${escapeHtml(ev.title)}</h3>
+              ${ev.desc ? `<p class="text-xs text-slate-600 mt-1">${escapeHtml(ev.desc)}</p>` : ''}
+            </div>
+            <div class="text-xs text-slate-500 border-t border-slate-100 pt-2 flex items-center gap-1">
+              📍 <span>${escapeHtml(ev.location || 'Acacia Suite Meet')}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function viewMail(i) {
+  const m = MODULES.find(x=>x.id===active);
+  if (store[m?.id] && store[m.id][i]) {
+    store[m.id][i].read = true;
+    pushOne(m);
+  }
+  activeMailIndex = i;
+  renderView();
+}
+
+function renderSingleMail(i) {
+  const m = MODULES.find(x=>x.id===active);
+  const email = (store[m?.id || 'inbox'] || [])[i];
+
+  if (!email) { activeMailIndex = null; renderView(); return; }
+
+  view.innerHTML = `
+    <div class="max-w-4xl mx-auto space-y-4">
+      <div class="flex items-center justify-between">
+        <button onclick="activeMailIndex=null; renderView();" class="px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-medium">← Back</button>
+        <button onclick="replyMail('${escapeHtml(email.from||'')}', '${escapeHtml(email.subject||'')}')" class="px-3 py-1.5 text-xs bg-acacia-600 text-white rounded-lg font-semibold hover:bg-acacia-700">Reply</button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6">
+        <div class="border-b pb-4">
+          <h1 class="text-xl font-bold text-slate-900">${escapeHtml(email.subject || 'No Subject')}</h1>
+          <div class="flex items-center justify-between mt-3 text-xs text-slate-500">
+            <div>
+              <span class="font-bold text-slate-800">${escapeHtml(email.from || 'Unknown Sender')}</span>
+            </div>
+            <div>${email.time ? new Date(email.time).toLocaleString() : 'Today'}</div>
           </div>
         </div>
-        <button onclick="openEventModal()" class="h-9 px-4 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white font-semibold text-sm">+ New Event</button>
+
+        <div class="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+          ${escapeHtml(email.body || email.preview || 'No message content.')}
+        </div>
       </div>
-      <div class="grid grid-cols-7 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-        ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="px-3 py-2">${d}</div>`).join('')}
-      </div>
-      <div id="calGrid" class="flex-1 grid grid-cols-7 grid-rows-6"></div>
     </div>
   `;
-  drawCalendar();
-}
-function calNav(d){ calCursor.setMonth(calCursor.getMonth()+d); drawCalendar(); }
-function calToday(){ calCursor=new Date(); calCursor.setDate(1); drawCalendar(); }
-function drawCalendar(){
-  const y=calCursor.getFullYear(), m=calCursor.getMonth();
-  document.getElementById('calTitle').textContent = calCursor.toLocaleDateString(undefined,{month:'long',year:'numeric'});
-  const first=new Date(y,m,1).getDay();
-  const days=new Date(y,m+1,0).getDate();
-  const today=new Date(); today.setHours(0,0,0,0);
-  let cells='';
-  for(let i=0;i<42;i++){
-    const dayNum=i-first+1;
-    const inMonth = dayNum>=1 && dayNum<=days;
-    const cellDate = new Date(y,m,dayNum);
-    const isToday = inMonth && cellDate.getTime()===today.getTime();
-    const dayEvents = inMonth ? store.events.filter(e=>sameDay(new Date(e.start), cellDate)) : [];
-    cells += `<div class="border-r border-b border-slate-100 p-1.5 text-xs ${inMonth?'':'bg-slate-50 text-slate-300'} min-h-0 overflow-hidden">
-      <div class="flex justify-end"><span class="${isToday?'bg-acacia-600 text-white':''} w-6 h-6 flex items-center justify-center rounded-full text-[11px]">${inMonth?dayNum:''}</span></div>
-      ${dayEvents.slice(0,3).map(e=>`<div class="mt-1 truncate text-[11px] px-1.5 py-0.5 rounded bg-acacia-100 text-acacia-800">${escapeHtml(e.title)}</div>`).join('')}
-      ${dayEvents.length>3?`<div class="text-[10px] text-slate-400 mt-0.5">+${dayEvents.length-3} more</div>`:''}
-    </div>`;
-  }
-  document.getElementById('calGrid').innerHTML = cells;
-}
-function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
-function openEventModal(preset){
-  const now = preset?.start ? new Date(preset.start) : new Date(Date.now()+60*60*1000);
-  const iso = new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
-  const wrap = document.createElement('div');
-  wrap.id = 'evtModal';
-  wrap.className = 'fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4';
-  wrap.innerHTML = `<div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden fade-in">
-    <div class="flex items-center justify-between px-5 h-12 border-b border-slate-200">
-      <div class="font-semibold text-slate-800">New event</div>
-      <button onclick="closeEventModal()" class="text-slate-400 hover:text-slate-700 text-xl leading-none">×</button>
-    </div>
-    <form onsubmit="saveEvent(event)" class="p-5 space-y-3">
-      <div><label class="text-xs font-semibold text-slate-600">Title</label>
-        <input id="evTitle" required value="${escapeHtml(preset?.title||'')}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 focus:border-acacia-500 outline-none text-sm"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="text-xs font-semibold text-slate-600">Start</label>
-          <input id="evStart" type="datetime-local" required value="${iso}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-        <div><label class="text-xs font-semibold text-slate-600">Duration</label>
-          <select id="evDur" class="w-full mt-1 h-10 px-2 rounded-lg border border-slate-300 outline-none text-sm">
-            <option value="30">30 min</option><option value="60" selected>1 hour</option>
-            <option value="90">1.5 hours</option><option value="120">2 hours</option><option value="1440">All day</option>
-          </select></div>
-      </div>
-      <div><label class="text-xs font-semibold text-slate-600">Notes</label>
-        <textarea id="evNotes" rows="3" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 outline-none text-sm">${escapeHtml(preset?.notes||'')}</textarea></div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="closeEventModal()" class="h-9 px-4 rounded-md border border-slate-300 text-sm">Cancel</button>
-        <button class="h-9 px-4 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Save event</button>
-      </div>
-    </form></div>`;
-  document.body.appendChild(wrap);
-  setTimeout(()=>document.getElementById('evTitle').focus(),50);
-}
-function closeEventModal(){ document.getElementById('evtModal')?.remove(); }
-function saveEvent(e){
-  e.preventDefault();
-  const title=document.getElementById('evTitle').value.trim();
-  const start=Date.parse(document.getElementById('evStart').value);
-  const dur=parseInt(document.getElementById('evDur').value,10);
-  const notes=document.getElementById('evNotes').value.trim();
-  if(!title||isNaN(start)) return;
-  store.events.push({id:'e'+Date.now(),title,start,dur,notes}); saveStore();
-  closeEventModal(); if(currentView==='calendar') drawCalendar();
-}
-function deleteEvent(id){ store.events=store.events.filter(e=>e.id!==id); saveStore(); if(currentView==='calendar') drawCalendar(); }
-
-
-function renderReportsView(root){
-  const total=store.mails.length;
-  const unread=store.mails.filter(m=>!m.read).length;
-  const sent=store.mails.filter(m=>m.folder==='sent').length;
-  const starred=store.mails.filter(m=>m.starred).length;
-  const events=store.events.length;
-  const upcoming=store.events.filter(e=>e.start>=Date.now()).length;
- 
-  const now=new Date(); now.setHours(0,0,0,0);
-  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(now); d.setDate(d.getDate()-i); days.push(d); }
-  const counts=days.map(d=>store.mails.filter(m=>sameDay(new Date(m.time),d)).length);
-  const max=Math.max(1,...counts);
-  root.innerHTML = `<div class="flex-1 overflow-y-auto p-8 bg-slate-50">
-    <h2 class="text-2xl font-bold text-slate-800">Reports</h2>
-    <p class="text-sm text-slate-500 mb-6">Overview of your workspace activity.</p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      ${statCard('Total messages',total,'📬')}
-      ${statCard('Unread',unread,'✉️')}
-      ${statCard('Sent',sent,'📤')}
-      ${statCard('Starred',starred,'⭐')}
-      ${statCard('Total events',events,'📅')}
-      ${statCard('Upcoming events',upcoming,'⏰')}
-    </div>
-    <div class="mt-8 bg-white p-6 rounded-xl border border-slate-200">
-      <h3 class="font-semibold text-slate-800 mb-4">Messages — last 7 days</h3>
-      <div class="flex items-end gap-3 h-48">
-        ${counts.map((c,i)=>`<div class="flex-1 flex flex-col items-center gap-2">
-          <div class="w-full bg-gradient-to-t from-acacia-500 to-acacia-300 rounded-t" style="height:${(c/max)*100}%;min-height:4px"></div>
-          <div class="text-[11px] text-slate-500">${days[i].toLocaleDateString(undefined,{weekday:'short'})}</div>
-          <div class="text-[11px] font-semibold text-slate-700">${c}</div>
-        </div>`).join('')}
-      </div>
-    </div>
-    <div class="mt-6 grid md:grid-cols-2 gap-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-4">By folder</h3>
-        ${(()=>{ const folders=['inbox','sent','drafts','starred','trash']; const rows=folders.map(f=>({f,n:f==='starred'?store.mails.filter(m=>m.starred).length:store.mails.filter(m=>m.folder===f).length})); const mx=Math.max(1,...rows.map(r=>r.n)); return rows.map(r=>`<div class="mb-2"><div class="flex justify-between text-xs text-slate-600 mb-1"><span class="capitalize">${r.f}</span><span class="font-semibold">${r.n}</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-acacia-500" style="width:${(r.n/mx)*100}%"></div></div></div>`).join(''); })()}
-      </div>
-      <div class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-4">Top senders</h3>
-        ${(()=>{ const map={}; store.mails.filter(m=>m.folder==='inbox').forEach(m=>{map[m.from]=(map[m.from]||0)+1;}); const top=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5); if(!top.length) return '<p class="text-xs text-slate-400">No messages yet.</p>'; return top.map(([n,c])=>`<div class="flex items-center gap-3 py-1.5"><div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:${avatarColor(n)}">${initials(n)}</div><div class="flex-1 text-sm truncate">${escapeHtml(n)}</div><div class="text-xs font-semibold text-slate-500">${c}</div></div>`).join(''); })()}
-      </div>
-    </div>
-  </div>`;
-}
-function statCard(label,val,emoji){ return `<div class="bg-white p-5 rounded-xl border border-slate-200">
-  <div class="flex items-center justify-between"><span class="text-sm text-slate-500">${label}</span><span class="text-xl">${emoji}</span></div>
-  <div class="mt-2 text-3xl font-bold text-acacia-800">${val}</div></div>`; }
-
-
-function renderAiView(root){
-  root.innerHTML = `<div class="flex-1 flex flex-col bg-white">
-    <div class="px-6 h-14 flex items-center border-b border-slate-200">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-acacia-500 to-acacia-700 flex items-center justify-center text-white mr-3">✨</div>
-      <div><div class="font-semibold text-slate-800">Acacia AI Assistant</div><div class="text-xs text-slate-500">Ask about your mail, calendar, or drafts.</div></div>
-      <button onclick="store.aiChat=[];saveStore();switchView('ai')" class="ml-auto text-xs text-slate-500 hover:text-acacia-700">Clear chat</button>
-    </div>
-    <div id="aiMessages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50"></div>
-    <form onsubmit="aiSend(event)" class="p-4 border-t border-slate-200 flex gap-2 bg-white">
-      <input id="aiInput" placeholder="Ask me anything…" class="flex-1 h-11 px-4 rounded-full bg-slate-100 focus:bg-white border border-transparent focus:border-acacia-400 outline-none text-sm"/>
-      <button class="h-11 px-5 rounded-full bg-acacia-600 hover:bg-acacia-700 text-white font-semibold text-sm">Send</button>
-    </form>
-  </div>`;
-  drawAiMessages();
-}
-function drawAiMessages(){
-  const box=document.getElementById('aiMessages');
-  if(!store.aiChat.length){
-    box.innerHTML = `<div class="text-center text-slate-400 mt-8">
-      <div class="text-5xl">✨</div>
-      <p class="mt-3 text-sm">Try asking:</p>
-      <div class="mt-2 flex flex-wrap gap-2 justify-center">
-        ${['Summarize my unread','What is on my week','Find invoice','Draft a thank-you','Draft a meeting request','Archive read','Help'].map(s=>`<button onclick="aiQuick('${s.replace(/'/g,"\\'")}')" class="text-xs bg-white border border-slate-200 rounded-full px-3 py-1 hover:bg-acacia-50">${s}</button>`).join('')}
-      </div></div>`;
-    return;
-  }
-  box.innerHTML = store.aiChat.map(m=>`
-    <div class="flex ${m.role==='user'?'justify-end':'justify-start'}">
-      <div class="max-w-lg px-4 py-2.5 rounded-2xl text-sm ${m.role==='user'?'bg-acacia-600 text-white':'bg-white border border-slate-200 text-slate-700'}">${escapeHtml(m.text).replace(/\n/g,'<br>')}</div>
-    </div>`).join('');
-  box.scrollTop=box.scrollHeight;
-}
-function aiQuick(t){ document.getElementById('aiInput').value=t; aiSend(new Event('submit')); }
-function aiSend(e){
-  e.preventDefault();
-  const input=document.getElementById('aiInput'); const txt=input.value.trim(); if(!txt) return;
-  store.aiChat.push({role:'user',text:txt}); input.value='';
-  const reply = aiRespond(txt);
-  store.aiChat.push({role:'assistant',text:reply}); saveStore(); drawAiMessages();
-}
-function aiRespond(q){
-  const s=q.toLowerCase().trim();
-  const me = currentUser()?.name || 'me';
-
-  if(/^(hi|hello|hey|yo)\b/.test(s)) return `Hi ${me.split(' ')[0]}! I can summarize mail, check your calendar, draft replies, star or clean up messages. Try "what's on my week" or "draft a thank-you".`;
-  if(/help|what can you/.test(s)) return "I can:\n• summarize unread mail\n• show today's or this week's schedule\n• count sent, received, starred\n• find messages ('find X')\n• draft: follow-up, thank-you, meeting request, out-of-office\n• clean inbox ('archive read')";
-
-  if(/summar|unread/.test(s)){
-    const u=store.mails.filter(m=>!m.read && m.folder==='inbox');
-    if(!u.length) return "You have no unread messages. Inbox zero — nicely done.";
-    return `You have ${u.length} unread message${u.length>1?'s':''}:\n`+u.slice(0,6).map(m=>`• ${m.from} — ${m.subject}`).join('\n');
-  }
-  if(/week|next 7|upcoming/.test(s)){
-    const now=Date.now(), end=now+7*86400000;
-    const e=store.events.filter(ev=>ev.start>=now && ev.start<=end).sort((a,b)=>a.start-b.start);
-    if(!e.length) return "Nothing scheduled in the next 7 days.";
-    return "This week:\n"+e.map(ev=>`• ${new Date(ev.start).toLocaleString([],{weekday:'short',hour:'2-digit',minute:'2-digit'})} — ${ev.title}`).join('\n');
-  }
-  if(/today|calendar|schedule/.test(s)){
-    const today=new Date(); today.setHours(0,0,0,0);
-    const e=store.events.filter(ev=>sameDay(new Date(ev.start),today)).sort((a,b)=>a.start-b.start);
-    if(!e.length) return "Nothing on your calendar today.";
-    return "Today's schedule:\n"+e.map(ev=>`• ${new Date(ev.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} — ${ev.title}`).join('\n');
-  }
-  if(/star/.test(s)){
-    const st=store.mails.filter(m=>m.starred);
-    return st.length ? `You have ${st.length} starred message${st.length>1?'s':''}:\n`+st.slice(0,5).map(m=>`• ${m.from} — ${m.subject}`).join('\n') : "No starred messages yet.";
-  }
-  if(/how many|count|stats|sent|received/.test(s)){
-    return `📊 Stats\n• Sent: ${store.mails.filter(m=>m.folder==='sent').length}\n• Inbox: ${store.mails.filter(m=>m.folder==='inbox').length}\n• Unread: ${store.mails.filter(m=>!m.read && m.folder==='inbox').length}\n• Starred: ${store.mails.filter(m=>m.starred).length}\n• Events: ${store.events.length}`;
-  }
-  const findMatch = s.match(/(?:find|search|show)\s+(?:mail(?:s)?\s+)?(?:about|from|with)?\s*(.+)/);
-  if(findMatch){
-    const q2=findMatch[1].trim();
-    const hits=store.mails.filter(m=>(m.subject+m.from+m.preview).toLowerCase().includes(q2));
-    return hits.length ? `Found ${hits.length} matching "${q2}":\n`+hits.slice(0,6).map(m=>`• ${m.from} — ${m.subject}`).join('\n') : `No messages match "${q2}".`;
-  }
-  if(/archive read|clean inbox|clean up/.test(s)){
-    const before=store.mails.filter(m=>m.folder==='inbox'&&m.read).length;
-    store.mails.forEach(m=>{ if(m.folder==='inbox'&&m.read) m.folder='archive'; });
-    saveStore();
-    return before ? `Archived ${before} read message${before>1?'s':''} from your inbox.` : "Nothing to archive — no read messages in the inbox.";
-  }
-  if(/thank/.test(s)) return `Draft:\n\nHi,\n\nThank you so much for your time and thoughtful reply — it's very much appreciated. I'll follow up shortly with next steps.\n\nBest,\n${me}`;
-  if(/out.?of.?office|ooo|away/.test(s)) return `Draft (auto-reply):\n\nHello,\n\nThanks for your message. I'm currently out of the office and will respond when I return. For urgent matters, please reach my team.\n\nBest,\n${me}`;
-  if(/meeting|invite|schedule\s+(a|an)/.test(s)) return `Draft:\n\nHi,\n\nCould we grab 30 minutes this week to align? I'm open Tue–Thu afternoons — happy to send an invite once you share a preferred time.\n\nBest,\n${me}`;
-  if(/draft|write|follow.?up|reply/.test(s)) return `Draft:\n\nHi there,\n\nJust following up on our last conversation. Let me know if there's anything I can do to help move this forward.\n\nBest,\n${me}`;
-
-  return "I'm your local assistant. Try: \"summarize unread\", \"what's on my week\", \"find invoice\", \"draft a thank-you\", or \"archive read\".";
 }
 
-function renderSettingsView(root){
-  const u=currentUser(); const all=loadUsers();
-  root.innerHTML = `<div class="flex-1 overflow-y-auto p-8 bg-slate-50">
-    <h2 class="text-2xl font-bold text-slate-800">Settings</h2>
-    <p class="text-sm text-slate-500 mb-6">Manage your account and workspace.</p>
-
-    <div class="max-w-3xl space-y-6">
-      <section class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-4">Your account</h3>
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-acacia-700 text-white flex items-center justify-center font-bold text-xl">${initials(u.name||u.email)}</div>
-          <div><div class="font-semibold text-slate-800">${escapeHtml(u.name||'')}</div><div class="text-sm text-slate-500">${escapeHtml(u.email)}</div></div>
-        </div>
-        <form onsubmit="updateProfile(event)" class="mt-5 grid grid-cols-2 gap-4">
-          <div><label class="text-xs font-semibold text-slate-600">Display name</label>
-            <input id="stName" value="${escapeHtml(u.name||'')}" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div><label class="text-xs font-semibold text-slate-600">Email (read-only)</label>
-            <input value="${escapeHtml(u.email)}" disabled class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm"/></div>
-          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Save</button></div>
-        </form>
-      </section>
-
-      <section class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-4">Change password</h3>
-        <form onsubmit="changePassword(event)" class="grid grid-cols-2 gap-4">
-          <div><label class="text-xs font-semibold text-slate-600">Current password</label>
-            <input id="pwOld" type="password" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div><label class="text-xs font-semibold text-slate-600">New password</label>
-            <input id="pwNew" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-acacia-600 hover:bg-acacia-700 text-white text-sm font-semibold">Update password</button></div>
-        </form>
-      </section>
-
-      <section class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-2">Create additional account</h3>
-        <p class="text-sm text-slate-500 mb-4">Add another workspace account. You can sign in with either.</p>
-        <form onsubmit="createAdditional(event)" class="grid grid-cols-2 gap-4">
-          <div class="col-span-2"><label class="text-xs font-semibold text-slate-600">Full name</label>
-            <input id="caName" required class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div><label class="text-xs font-semibold text-slate-600">Email</label>
-            <input id="caUser" type="email" required placeholder="colleague@company.com" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div><label class="text-xs font-semibold text-slate-600">Password</label>
-            <input id="caPass" type="password" required minlength="6" class="w-full mt-1 h-10 px-3 rounded-lg border border-slate-300 outline-none text-sm"/></div>
-          <div class="col-span-2"><button class="h-10 px-5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">Create account</button></div>
-        </form>
-      </section>
-
-      <section class="bg-white p-6 rounded-xl border border-slate-200">
-        <h3 class="font-semibold text-slate-800 mb-4">Registered accounts (${all.length})</h3>
-        <div class="space-y-2">
-          ${all.map(a=>`<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-acacia-700 text-white flex items-center justify-center text-xs font-bold">${initials(a.fullName||a.name||a.email)}</div>
-              <div><div class="text-sm font-medium">${escapeHtml(a.fullName||a.name||'')}</div><div class="text-xs text-slate-500">${escapeHtml(a.email)}${a.companyName?' · '+escapeHtml(a.companyName):''}</div></div>
-            </div>
-            ${a.email===u.email?'<span class="text-xs text-emerald-600 font-semibold">Current</span>':`<button onclick="deleteAccount('${a.email}')" class="text-xs text-red-500 hover:underline">Delete</button>`}
-          </div>`).join('')}
-        </div>
-      </section>
-
-      <section class="bg-white p-6 rounded-xl border border-red-200">
-        <h3 class="font-semibold text-red-700 mb-2">Danger zone</h3>
-        <button onclick="clearMyData()" class="h-9 px-4 rounded-md border border-red-300 text-red-600 hover:bg-red-50 text-sm font-semibold">Clear all my data</button>
-      </section>
-    </div>
-  </div>`;
+function replyMail(to, subject) {
+  openMail();
+  mmTo.value = to;
+  mmSubject.value = subject.startsWith('Re:') ? subject : 'Re: ' + subject;
 }
-async function updateProfile(e){ e.preventDefault(); const name=document.getElementById('stName').value.trim(); const users=await fetchUsersCloud(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(rec){ rec.fullName=name; await saveUsersCloud(users); localStorage.setItem(SESSION_KEY,JSON.stringify({...u,name})); document.getElementById('userAvatar').textContent=initials(name||u.email);} alert('Profile updated.'); switchView('settings'); }
-async function changePassword(e){ e.preventDefault(); const oldP=document.getElementById('pwOld').value; const newP=document.getElementById('pwNew').value; const users=await fetchUsersCloud(); const u=currentUser(); const rec=users.find(x=>x.email===u.email); if(!rec||(rec.password||'')!==oldP){ alert('Current password is incorrect.'); return; } rec.password=newP; await saveUsersCloud(users); alert('Password updated.'); switchView('settings'); }
-async function createAdditional(e){ e.preventDefault(); const name=document.getElementById('caName').value.trim(); const email=(document.getElementById('caUser').value.trim().toLowerCase()); const pass=document.getElementById('caPass').value; if(!email.includes('@')){ alert('Enter a full email address.'); return; } const users=await fetchUsersCloud(); if(users.some(x=>(x.email||'').toLowerCase()===email)){ alert('That email already exists.'); return; } const u=currentUser(); users.push({username:email.split('@')[0], email, password:pass, fullName:name||email, role:'user', companyId:u.companyId, companyName:u.companyName, registered:new Date().toISOString(), status:'active', modules:[]}); await saveUsersCloud(users); alert('Account created: '+email); switchView('settings'); }
-async function deleteAccount(email){ if(!confirm('Delete '+email+'?')) return; const users=(await fetchUsersCloud()).filter(x=>x.email!==email); await saveUsersCloud(users); localStorage.removeItem(DATA_KEY_PREFIX+email); switchView('settings'); }
-function clearMyData(){ if(!confirm('Clear all mail, events and AI chat?')) return; store={mails:[],events:[],aiChat:[]}; saveStore(); switchView(currentView); }
 
+function openMail(){ 
+  mmTo.value=''; mmCc.value=''; mmBcc.value=''; mmSubject.value=''; 
+  currentAttachments = [];
+  renderAttachmentChips();
+  mmBody.value= '\n\n' + getSettings().signature; 
+  mailModal.classList.remove('hidden'); 
+}
 
-function initials(n){ return (n||'?').split(/\s+/).filter(Boolean).map(s=>s[0]).slice(0,2).join('').toUpperCase(); }
-function avatarColor(n){ const c=['#0f5fd1','#0d9488','#7c3aed','#db2777','#f59e0b','#059669','#ea580c','#4f46e5']; let h=0; for(const ch of (n||'')) h=(h*31+ch.charCodeAt(0))>>>0; return c[h%c.length]; }
-function timeAgo(t){ const s=(Date.now()-t)/1000; if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
-function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function emptyState(title,sub){ return `<div class="p-10 text-center text-slate-400 text-sm"><div class="font-semibold text-slate-500">${title}</div><div class="mt-1">${sub}</div></div>`; }
-function emptyPane(title,sub){ return `<div class="flex-1 flex flex-col items-center justify-center text-slate-400"><svg class="w-16 h-16 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg><div class="font-semibold">${title}</div><div class="text-sm mt-1">${sub}</div></div>`; }
+function closeMail(){ mailModal.classList.add('hidden'); }
 
-document.addEventListener('input',(e)=>{ if(e.target.id==='searchInput' && currentView==='mail') renderList(); });
+async function addRow(){
+  const m = MODULES.find(x=>x.id===active);
+  const subject = prompt("Subject / Title:");
+  if(!subject) return;
+  const sender = prompt("Sender / Creator Email:");
+  const body = prompt("Content:");
+  
+  const rec = { subject, from: sender, body, preview: body.slice(0, 50), time: Date.now(), read: true };
+  store[m?.id || 'inbox'] = [...(store[m?.id || 'inbox'] || []), rec];
+  if(await pushOne(m || MODULES[0])) renderView();
+  updateRightSidebarWidgets();
+}
 
-
-bootApp();
+function boot(){
+  const u=currentUser();
+  if(!u){authScreen.classList.remove('hidden');app.classList.add('hidden');return}
+  authScreen.classList.add('hidden');app.classList.remove('hidden');app.classList.add('flex');
+  userAvatar.textContent=initials(u.companyName||u.name||u.email);
+  renderNav(); renderView(); pullAll();
+}
+boot();
 </script>
 </body>
 </html>
