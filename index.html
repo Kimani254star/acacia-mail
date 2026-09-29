@@ -513,7 +513,7 @@ async function startSync(){
   if(!sb||!CURRENT) return;
   setSync("syncing…");
   await syncFromServer();
-  await ensureCompany(); await pullInbox();
+  await ensureCompany(); await pullInbox(); pullBooksDrafts();
   render();                                   /* pushes a migrated/offline local copy if needed */
   if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
   const id=CURRENT.accountId;
@@ -566,6 +566,29 @@ async function pullInbox(){
   if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));   /* only after it is safely saved */
   renderRail(); render();
 }
+/* ===== Books -> Mail Hub bridge: drafts queued by Acacia Books for the same company ===== */
+const BOOKS_QUEUE_KEY="acacia_books_to_mail";
+const coSlug=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function pullBooksDrafts(){
+  if(!CURRENT) return;
+  let q=[]; try{ q=JSON.parse(localStorage.getItem(BOOKS_QUEUE_KEY)||"[]")||[]; }catch(e){ return; }
+  if(!q.length) return;
+  const mine=coSlug(CURRENT.company), keep=[]; let added=0;
+  q.forEach(x=>{
+    if(!x||coSlug(x.company||x.slug)!==mine){ keep.push(x); return; }   /* other company: leave for them */
+    if(messages.some(m=>m.bid===x.bid)) return;                         /* already imported */
+    const html=esc(x.body||"").replace(/\n/g,"<br>");
+    messages.push(M({from:x.fromName||x.fromEmail||"Acacia Books",addr:x.fromEmail||"",to:x.to||"(no recipient)",cc:x.cc||"",
+      subject:x.subject||"(no subject)",preview:String(x.body||"").replace(/\s+/g," ").slice(0,90),
+      body:"<p>"+html+"</p>",date:new Date(x.time||Date.now()).toISOString(),folder:"drafts",read:false,bid:x.bid}));
+    added++;
+  });
+  localStorage.setItem(BOOKS_QUEUE_KEY,JSON.stringify(keep));
+  if(added){ saveMailbox(); renderRail(); render(); toast(added+" draft"+(added>1?"s":"")+" from Acacia Books"); }
+}
+window.addEventListener("storage",e=>{ if(e.key===BOOKS_QUEUE_KEY) pullBooksDrafts(); });
+try{ new BroadcastChannel("acacia_books_mail").onmessage=()=>pullBooksDrafts(); }catch(e){}
+window.addEventListener("focus",pullBooksDrafts);
 window.addEventListener("online",()=>{ dirty=true; pushMailbox(); syncFromServer(); });
 const M=o=>Object.assign({id:seq++,read:false,starred:false,labels:[],attachments:[],cc:"",folder:"inbox"},o);
 
