@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acacia Mail</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --forest:#16302A; --forest-2:#1E4238; --forest-3:#295A4C;
@@ -15,15 +13,24 @@
     --sky:#3E6B79; --good:#2F6B45; --bad:#93412C;
     --radius:6px; --shadow:0 1px 2px rgba(28,27,22,0.06);
   }
+  body.dark{
+    --paper:#181A16; --paper-2:#20231D; --card:#20231D;
+    --ink:#E7E4D6; --ink-soft:#9FA394; --line:#33362C;
+    --forest:#0F211C; --forest-2:#16302A; --forest-3:#1E4238;
+  }
+  body.dark #sidebar{color:#D6D2C0}
+  body.dark .row:hover,body.dark .navitem:hover{background:rgba(255,255,255,.04)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%}
-  body{font-family:'IBM Plex Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
-  h1,h2,h3,.brand{font-family:'Fraunces',serif}
+  html{zoom:1.15}
+  body{font-family:'Cambria',serif;background:var(--paper);color:var(--ink);font-size:13px;line-height:1.65;letter-spacing:.02em}
+  h1,h2,h3,.brand{font-family:'Cambria',serif}
   button{font-family:inherit;font-size:inherit;cursor:pointer;background:none;border:0;color:inherit}
   input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 
   /* ===== Auth ===== */
-  #authScreen{position:fixed;inset:0;z-index:500;background:var(--forest);display:flex;align-items:stretch;justify-content:center;overflow-y:auto}
+  #authScreen{position:fixed;inset:0;z-index:500;background:var(--forest);display:flex;flex-direction:column;overflow-y:auto}
+  .authScreen-body{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
   .auth-wrap{display:flex;width:100%;max-width:920px;margin:auto;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);min-height:520px}
   @media(max-width:760px){.auth-wrap{flex-direction:column;min-height:0;max-width:440px}}
   .auth-side{flex:1;background:linear-gradient(160deg,var(--forest) 0%,var(--forest-2) 60%,var(--forest-3) 100%);color:#EFE9D3;padding:44px 36px;display:flex;flex-direction:column;justify-content:space-between}
@@ -32,6 +39,10 @@
   .auth-side .pitch{font-size:13.5px;line-height:1.7;color:#CBD9CF;margin-top:20px;max-width:280px}
   .auth-side .pitch-list{margin-top:18px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#DCE7DE}
   .auth-side .foot{font-size:11px;color:#8AA093}
+  .authScreen-foot{text-align:center;color:#9FB3A9;font-size:11.5px;padding:16px 0 6px;flex:none}
+  .authScreen-foot a{color:#CBD9CF;margin:0 8px;cursor:pointer}
+  .authScreen-foot a:hover{color:#F4E9C9;text-decoration:underline}
+  .authScreen-foot .sep{color:#4C6459}
   .auth-form-panel{flex:1;padding:44px 40px;display:flex;flex-direction:column;justify-content:center}
   @media(max-width:760px){.auth-form-panel{padding:30px 28px}}
   .auth-tabs{display:flex;gap:4px;margin-bottom:22px;background:var(--paper);border-radius:8px;padding:4px}
@@ -65,7 +76,7 @@
   #app{display:none;flex-direction:column;height:100vh}
   #app.ready{display:flex}
   #topbar{height:60px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:14px;flex:none}
-  .brandbar{display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--forest)}
+  .brandbar{display:flex;align-items:center;gap:8px;font-family:'Cambria',serif;font-size:18px;font-weight:600;color:var(--forest)}
   .search{flex:1;max-width:560px;position:relative}
   .search input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
   .search input:focus{outline:2px solid var(--gold);outline-offset:-1px;background:var(--card)}
@@ -106,7 +117,7 @@
   /* List */
   .list{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--card)}
   .listbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .listbar .title{font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin-right:4px}
+  .listbar .title{font-family:'Cambria',serif;font-weight:600;font-size:15px;margin-right:4px}
   .rows{flex:1;overflow:auto}
   .row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
   .row:hover{background:var(--paper)}
@@ -125,7 +136,7 @@
   /* Reader */
   .reader{flex:1;min-width:0;overflow:auto;background:var(--card);padding:20px 26px}
   .rhead{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
-  .rsubj{font-family:'Fraunces',serif;font-size:21px;font-weight:600;margin:10px 0}
+  .rsubj{font-family:'Cambria',serif;font-size:21px;font-weight:600;margin:10px 0}
   .who{display:flex;align-items:center;gap:10px}
   .attach{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:6px 8px 0 0;background:var(--paper)}
   .actions{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap}
@@ -151,7 +162,7 @@
   .overlay.open{display:block}
   .composer{position:fixed;right:22px;bottom:0;width:600px;max-width:96vw;background:var(--card);border-radius:10px 10px 0 0;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:70;display:none;flex-direction:column;max-height:88vh}
   .composer.open{display:flex}
-  .chead{background:var(--forest);color:#F4E9C9;padding:10px 14px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif}
+  .chead{background:var(--forest);color:#F4E9C9;padding:10px 14px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px;font-family:'Cambria',serif}
   .chead .iconbtn{color:#CBD9CF}
   .chead .iconbtn:hover{background:rgba(255,255,255,.12);border-color:transparent;color:#fff}
   .field{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:8px 14px}
@@ -174,6 +185,7 @@
 
 <!-- ============ AUTH ============ -->
 <div id="authScreen">
+  <div class="authScreen-body">
   <div class="auth-wrap">
     <div class="auth-side">
       <div>
@@ -218,6 +230,10 @@
       </div>
     </div>
   </div>
+  </div>
+  <div class="authScreen-foot">
+    © 2026 Acacia Mail <span class="sep">·</span> <a>Privacy</a> <span class="sep">·</span> <a>Terms</a> <span class="sep">·</span> <a>Help</a>
+  </div>
 </div>
 
 <!-- ============ APP ============ -->
@@ -240,6 +256,7 @@
     <button class="iconbtn" id="refresh" title="Refresh">⟳</button>
     <button class="iconbtn" id="notifBtn" title="Unread">🔔<span class="badge" id="notifCount" style="display:none"></span></button>
     <button class="iconbtn" id="railToggle" title="Side panel">▤</button>
+    <button class="iconbtn" id="darkToggle" title="Toggle dark mode">🌙</button>
     <button class="iconbtn" title="Settings">⚙</button>
     <div class="userchip" onclick="toggleUserMenu(event)">
       <div class="avatar" id="userAvatar">–</div>
@@ -326,9 +343,21 @@
 
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="undoBtn">Undo</button></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ================= Storage keys ================= */
 const USERS_KEY="acacia_mail_users", SESSION_KEY="acacia_mail_session", MBOX_KEY="acacia_mailbox_";
+
+/* ================= Supabase =================
+   Same project as Acacia Books, but its own table (mail_mailboxes) and its own
+   Supabase Auth users, so nothing touches app_accounts / company_state / app_state. */
+const SUPA_URL="https://xglsampckermarjpczdf.supabase.co", SUPA_KEY="sb_publishable_x-dPR7pzhvJgag9soW0I8w_yfKTmi6A";
+const sb=(window.supabase&&window.supabase.createClient)
+  ? window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storageKey:"acacia-mail-auth",persistSession:true,autoRefreshToken:true}})
+  : null;
+const toUser=u=>({accountId:u.id,email:u.email,
+  name:(u.user_metadata&&u.user_metadata.name)||u.email.split("@")[0],
+  company:(u.user_metadata&&u.user_metadata.company)||""});
 const $=s=>document.querySelector(s);
 const uid=p=>p+"_"+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -349,25 +378,41 @@ function switchAuthTab(w){
 }
 function showAuthError(id,msg){const e=$("#"+id); e.textContent=msg; e.classList.add("show");}
 
-function handleRegister(){
+async function handleRegister(){
   const company=$("#regCompany").value.trim(), name=$("#regName").value.trim();
   const email=$("#regEmail").value.trim().toLowerCase(), password=$("#regPassword").value;
   if(!company||!name||!email||!password) return showAuthError("registerError","Please fill in every field.");
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showAuthError("registerError","Enter a valid email address.");
   if(password.length<6) return showAuthError("registerError","Password must be at least 6 characters.");
-  const users=getUsers();
-  if(users.some(u=>u.email===email)) return showAuthError("registerError","An account with that email already exists.");
-  const user={accountId:uid("acc"),company,name,email,password};
-  users.push(user); saveUsers(users); setSession(user); enterApp(user);
+  if(!sb) return showAuthError("registerError","Could not load Supabase. Check your internet connection.");
+  const {data,error}=await sb.auth.signUp({email,password,options:{data:{name,company}}});
+  if(error) return showAuthError("registerError",/already/i.test(error.message)?"An account with that email already exists.":error.message);
+  if(!data.session) return showAuthError("registerError","Account created. Confirm the email Supabase sent you, then sign in.");
+  enterApp(toUser(data.user));
 }
-function handleLogin(){
+async function handleLogin(){
   const email=$("#loginEmail").value.trim().toLowerCase(), password=$("#loginPassword").value;
   if(!email||!password) return showAuthError("loginError","Please enter your email and password.");
-  const user=getUsers().find(u=>u.email===email&&u.password===password);
-  if(!user) return showAuthError("loginError","That email and password combination was not found.");
-  setSession(user); enterApp(user);
+  if(!sb) return showAuthError("loginError","Could not load Supabase. Check your internet connection.");
+  let {data,error}=await sb.auth.signInWithPassword({email,password});
+  let legacy=null;
+  if(error){
+    /* Old local-only account: create it in Supabase and carry its mailbox across. */
+    legacy=getUsers().find(u=>u.email===email&&u.password===password)||null;
+    if(legacy){
+      const r=await sb.auth.signUp({email,password,options:{data:{name:legacy.name,company:legacy.company}}});
+      if(r.data&&r.data.session){data=r.data; error=null;} else legacy=null;
+    }
+  }
+  if(error||!data||!data.session)
+    return showAuthError("loginError",error&&/confirm/i.test(error.message)?"Please confirm your email first.":"That email and password combination was not found.");
+  const user=toUser(data.user);
+  if(legacy){ const old=localStorage.getItem(MBOX_KEY+legacy.accountId);
+    if(old) localStorage.setItem(MBOX_KEY+user.accountId,old); }
+  enterApp(user);
 }
-function handleLogout(){
+async function handleLogout(){
+  await stopSync();
   clearSession(); CURRENT=null; messages=[]; contacts=[]; tasks=[]; notes=[];
   $("#app").classList.remove("ready"); $("#authScreen").style.display="flex";
   $("#loginEmail").value=""; $("#loginPassword").value=""; $("#userMenuPanel").classList.remove("open");
@@ -391,16 +436,101 @@ const LABELS=[
 ];
 
 let CURRENT=null, messages=[], contacts=[], tasks=[], notes=[], seq=1;
+let rev=0, lastStr="", dirty=false, pushing=false, pushTimer=null, rtChannel=null;
 let state={folder:"inbox",label:null,open:null,selected:new Set(),query:"",rail:"calendar"};
 let undoStack=null, toastTimer=null, attachments=[];
 
 function mboxKey(){return MBOX_KEY+CURRENT.accountId}
-function saveMailbox(){ if(CURRENT) localStorage.setItem(mboxKey(),JSON.stringify({seq,messages,contacts,tasks,notes})); }
+const snapStr=()=>JSON.stringify({seq,messages,contacts,tasks,notes});
+function setSync(t){ const b=$("#refresh"); if(b) b.title="Refresh — "+t; if(/error|offline/i.test(t)) console.warn("[acacia-mail sync]",t); }
+
+/* Local cache (instant load, works offline) + Supabase copy (source of truth). */
+function saveMailbox(){
+  if(!CURRENT) return;
+  const str=snapStr(), unsynced=str!==lastStr;
+  localStorage.setItem(mboxKey(),JSON.stringify({seq,messages,contacts,tasks,notes,rev,unsynced}));
+  if(unsynced){ dirty=true; clearTimeout(pushTimer); pushTimer=setTimeout(pushMailbox,800); }
+}
 function loadMailbox(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(mboxKey())||"null"); }catch(e){}
-  d=d||{seq:1,messages:[],contacts:[],tasks:[],notes:[]};
-  seq=d.seq||1; messages=d.messages||[]; contacts=d.contacts||[]; tasks=d.tasks||[]; notes=d.notes||[];
+  const c=d||{seq:1,messages:[],contacts:[],tasks:[],notes:[]};
+  seq=c.seq||1; messages=c.messages||[]; contacts=c.contacts||[]; tasks=c.tasks||[]; notes=c.notes||[];
+  rev=c.rev||0; dirty=false;
+  lastStr=(d&&d.unsynced!==false)?"":snapStr();   /* old caches count as not-yet-synced */
 }
+function applyRemote(d){ seq=d.seq||1; messages=d.messages||[]; contacts=d.contacts||[]; tasks=d.tasks||[]; notes=d.notes||[]; }
+/* Merge: keep everything from both sides. Same message -> local copy wins. */
+function mergeRemote(rm){
+  const key=m=>m.id+"|"+m.date+"|"+m.subject;
+  const have=new Set(messages.map(key)), ids=new Set(messages.map(m=>m.id));
+  let mx=Math.max(seq,rm.seq||1);
+  (rm.messages||[]).forEach(m=>{
+    if(have.has(key(m))) return;
+    if(ids.has(m.id)) m.id=mx++;          /* same id, different message (two devices) */
+    ids.add(m.id); messages.push(m);
+  });
+  (rm.contacts||[]).forEach(c=>{ if(!contacts.some(x=>x.e===c.e)) contacts.push(c); });
+  (rm.tasks||[]).forEach(t=>{ if(!tasks.some(x=>x.t===t.t)) tasks.push(t); });
+  (rm.notes||[]).forEach(n=>{ if(!notes.some(x=>x.t===n.t&&x.b===n.b)) notes.push(n); });
+  seq=Math.max(mx,...messages.map(m=>(+m.id||0)+1));
+}
+async function pushMailbox(){
+  if(!sb||!CURRENT||pushing||!dirty) return;
+  pushing=true; dirty=false;
+  const id=CURRENT.accountId, str=snapStr(), snap={seq,messages,contacts,tasks,notes};
+  let retry=0;
+  try{
+    let r;
+    if(rev===0) r=await sb.from("mail_mailboxes").insert({user_id:id,data:snap,rev:1}).select("rev");
+    else r=await sb.from("mail_mailboxes").update({data:snap,rev:rev+1,updated_at:new Date().toISOString()})
+                    .eq("user_id",id).eq("rev",rev).select("rev");
+    if(CURRENT&&CURRENT.accountId!==id){ pushing=false; return; }
+    if(!r.error&&r.data&&r.data.length){ rev=r.data[0].rev; lastStr=str; setSync("synced"); }
+    else if(r.error&&r.error.code!=="23505"){ throw r.error; }
+    else{                                   /* someone else saved first: fetch, merge, retry */
+      const g=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
+      if(g.data){ mergeRemote(g.data.data||{}); rev=g.data.rev; renderRail(); render(); }
+      dirty=true; retry=300;
+    }
+  }catch(e){ dirty=true; retry=10000; setSync("sync error: "+(e.message||e)); }
+  pushing=false;
+  if(dirty) pushTimer=setTimeout(pushMailbox,retry||800);
+}
+async function syncFromServer(){
+  if(!sb||!CURRENT||pushing) return;
+  const id=CURRENT.accountId;
+  try{
+    const r=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
+    if(r.error) throw r.error;
+    if(!CURRENT||CURRENT.accountId!==id||!r.data||r.data.rev===rev) return;
+    if(snapStr()!==lastStr) mergeRemote(r.data.data||{});      /* local unsaved changes: merge */
+    else{ applyRemote(r.data.data||{}); lastStr=snapStr(); }   /* clean: just take the server copy */
+    rev=r.data.rev; renderRail(); render(); setSync("synced");
+  }catch(e){ setSync("offline / sync error: "+(e.message||e)); }
+}
+async function startSync(){
+  if(!sb||!CURRENT) return;
+  setSync("syncing…");
+  await syncFromServer();
+  render();                                   /* pushes a migrated/offline local copy if needed */
+  if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
+  const id=CURRENT.accountId;
+  rtChannel=sb.channel("mbox-"+id)
+    .on("postgres_changes",{event:"*",schema:"public",table:"mail_mailboxes",filter:"user_id=eq."+id},
+        p=>{ if(!p.new||p.new.rev>rev) syncFromServer(); })
+    .subscribe();
+}
+async function stopSync(){
+  clearTimeout(pushTimer);
+  if(sb){
+    try{ if(dirty) await pushMailbox(); }catch(e){}
+    if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
+    try{ await sb.auth.signOut(); }catch(e){}
+  }
+  rev=0; lastStr=""; dirty=false;
+}
+window.addEventListener("focus",()=>syncFromServer());
+window.addEventListener("online",()=>{ dirty=true; pushMailbox(); syncFromServer(); });
 const M=o=>Object.assign({id:seq++,read:false,starred:false,labels:[],attachments:[],cc:"",folder:"inbox"},o);
 
 function enterApp(user){
@@ -412,6 +542,7 @@ function enterApp(user){
   $("#userAvatar").textContent=user.name.split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase();
   state={folder:"inbox",label:null,open:null,selected:new Set(),query:"",rail:"calendar"};
   $("#q").value=""; renderRail(); render();
+  startSync();
 }
 
 /* ================= Helpers ================= */
@@ -684,6 +815,10 @@ $("#discardBtn").onclick=()=>{if(editingDraft) messages=messages.filter(m=>m.id!
 $("#toggleSidebar").onclick=()=>$("#sidebar").classList.toggle("collapsed");
 $("#railToggle").onclick=()=>$("#rail").classList.toggle("hidden");
 $("#refresh").onclick=()=>{render(); toast("Mailbox refreshed");};
+$("#darkToggle").onclick=()=>{
+  document.body.classList.toggle("dark");
+  $("#darkToggle").textContent=document.body.classList.contains("dark")?"☀":"🌙";
+};
 $("#notifBtn").onclick=()=>{state.folder="inbox"; state.label=null; state.query="is:unread"; $("#q").value="is:unread"; state.open=null; render();};
 $("#q").oninput=e=>{state.query=e.target.value; state.open=null; render();};
 document.addEventListener("keydown",e=>{
@@ -704,9 +839,11 @@ function render(){
 }
 
 /* ================= Boot ================= */
-(function boot(){
-  const s=getSession();
-  if(s){ const u=getUsers().find(x=>x.email===s.email); if(u){enterApp(u); return;} }
+(async function boot(){
+  if(sb){
+    try{ const {data}=await sb.auth.getSession();
+      if(data&&data.session){ enterApp(toUser(data.session.user)); return; } }catch(e){}
+  }
   $("#authScreen").style.display="flex";
 })();
 </script>
