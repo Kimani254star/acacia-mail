@@ -222,6 +222,7 @@
         <div class="sub">Set up Acacia Mail for your company.</div>
         <div class="auth-error" id="registerError"></div>
         <div class="auth-field"><label>Company name</label><input id="regCompany" placeholder="e.g. Baraka Traders Ltd"></div>
+        <div class="auth-field"><label>Company code (only if joining an existing company)</label><input id="regCode" placeholder="Leave blank to create a new company"></div>
         <div class="auth-field"><label>Your name</label><input id="regName" placeholder="e.g. Wanjiru Kariuki"></div>
         <div class="auth-field"><label>Email address</label><input id="regEmail" type="email" autocomplete="username" placeholder="you@company.co.ke"></div>
         <div class="auth-field"><label>Password</label><input id="regPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
@@ -357,7 +358,7 @@ const sb=(window.supabase&&window.supabase.createClient)
   : null;
 const toUser=u=>({accountId:u.id,email:u.email,
   name:(u.user_metadata&&u.user_metadata.name)||u.email.split("@")[0],
-  company:(u.user_metadata&&u.user_metadata.company)||""});
+  company:(u.user_metadata&&u.user_metadata.company)||"",code:(u.user_metadata&&u.user_metadata.join_code)||""});
 const $=s=>document.querySelector(s);
 const uid=p=>p+"_"+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -385,7 +386,7 @@ async function handleRegister(){
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showAuthError("registerError","Enter a valid email address.");
   if(password.length<6) return showAuthError("registerError","Password must be at least 6 characters.");
   if(!sb) return showAuthError("registerError","Could not load Supabase. Check your internet connection.");
-  const {data,error}=await sb.auth.signUp({email,password,options:{data:{name,company}}});
+  const {data,error}=await sb.auth.signUp({email,password,options:{data:{name,company,join_code:$("#regCode").value.trim()}}});
   if(error) return showAuthError("registerError",/already/i.test(error.message)?"An account with that email already exists.":error.message);
   if(!data.session) return showAuthError("registerError","Account created. Confirm the email Supabase sent you, then sign in.");
   enterApp(toUser(data.user));
@@ -512,12 +513,14 @@ async function startSync(){
   if(!sb||!CURRENT) return;
   setSync("syncing…");
   await syncFromServer();
+  await ensureCompany(); await pullInbox();
   render();                                   /* pushes a migrated/offline local copy if needed */
   if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
   const id=CURRENT.accountId;
   rtChannel=sb.channel("mbox-"+id)
     .on("postgres_changes",{event:"*",schema:"public",table:"mail_mailboxes",filter:"user_id=eq."+id},
         p=>{ if(!p.new||p.new.rev>rev) syncFromServer(); })
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"mail_inbox",filter:"to_user=eq."+id},()=>pullInbox())
     .subscribe();
 }
 async function stopSync(){
@@ -529,7 +532,40 @@ async function stopSync(){
   }
   rev=0; lastStr=""; dirty=false;
 }
-window.addEventListener("focus",()=>syncFromServer());
+window.addEventListener("focus",()=>{syncFromServer(); pullInbox();});
+/* ===== Company layer: join/create company, team directory, internal delivery ===== */
+async function ensureCompany(){
+  if(!sb||!CURRENT) return;
+  try{
+    const r=await sb.rpc("mail_join",{p_name:CURRENT.company,p_code:CURRENT.code||""});
+    if(r.error) throw r.error;
+    CURRENT.companyId=r.data.company_id; CURRENT.company=r.data.name; CURRENT.joinCode=r.data.join_code;
+    $("#menuCompany").textContent=CURRENT.company+" · code "+CURRENT.joinCode;
+    const m=await sb.from("mail_members").select("user_id,email,name");
+    (m.data||[]).forEach(x=>{ if(x.user_id!==CURRENT.accountId&&!contacts.some(c=>c.e===x.email)) contacts.push({n:x.name,e:x.email}); });
+  }catch(e){ setSync("company error: "+(e.message||e)); toast("Company: "+(e.message||e)); }
+}
+async function deliverInternal(m){
+  if(!sb||!CURRENT||!CURRENT.companyId) return;
+  try{
+    const mem=(await sb.from("mail_members").select("user_id,email")).data||[];
+    const rc=new Set(((m.to||"")+","+(m.cc||"")).split(/[,;\s]+/).map(x=>x.trim().toLowerCase()).filter(Boolean));
+    for(const e of rc){
+      const t=mem.find(x=>x.email===e&&x.user_id!==CURRENT.accountId); if(!t) continue;
+      const copy=Object.assign({},m,{folder:"inbox",read:false,starred:false,labels:[]}); delete copy.id;
+      await sb.from("mail_inbox").insert({company_id:CURRENT.companyId,to_user:t.user_id,from_user:CURRENT.accountId,message:copy});
+    }
+  }catch(e){ setSync("delivery error: "+(e.message||e)); }
+}
+async function pullInbox(){
+  if(!sb||!CURRENT) return; const id=CURRENT.accountId;
+  const r=await sb.from("mail_inbox").select("id,message").eq("to_user",id).order("id");
+  if(r.error||!r.data||!r.data.length||!CURRENT||CURRENT.accountId!==id) return;
+  r.data.forEach(x=>{ if(!messages.some(m=>m.qid===x.id)) messages.push(M(Object.assign({},x.message,{qid:x.id}))); });
+  saveMailbox(); clearTimeout(pushTimer); await pushMailbox();
+  if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));   /* only after it is safely saved */
+  renderRail(); render();
+}
 window.addEventListener("online",()=>{ dirty=true; pushMailbox(); syncFromServer(); });
 const M=o=>Object.assign({id:seq++,read:false,starred:false,labels:[],attachments:[],cc:"",folder:"inbox"},o);
 
@@ -802,7 +838,7 @@ $("#fileInput").onchange=e=>{[...e.target.files].forEach(f=>attachments.push({na
 $("#sendBtn").onclick=()=>{
   const m=commit("outbox"); closeComposer(); render();
   toast("Sending…",()=>{messages=messages.filter(x=>x.id!==m.id); render();});
-  setTimeout(()=>{m.folder="sent"; render();},2000);
+  setTimeout(()=>{m.folder="sent"; render(); deliverInternal(m);},2000);
 };
 $("#scheduleBtn").onclick=()=>{
   const when=prompt("Send at (YYYY-MM-DD HH:MM)"); if(!when) return;
