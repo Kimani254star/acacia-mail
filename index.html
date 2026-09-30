@@ -898,7 +898,45 @@ function render(){
 }
 
 /* ================= Boot ================= */
+function fromBooksSession(){
+  try{
+    var u=JSON.parse(localStorage.getItem("loggedInUser")||"null");
+    if(!u||!u.companyId) return null;
+    return { accountId:String(u.email||u.username||u.companyId).toLowerCase(), email:u.email||"", name:u.fullName||u.username||u.email||"Team member", company:u.companyName||"", companyId:String(u.companyId) };
+  }catch(e){ return null; }
+}
+async function pullMailQueueFromCloud(){
+  if(!CURRENT||!CURRENT.companyId) return;
+  try{
+    const r=await fetch(SUPA_URL+"/rest/v1/acacia_mail_queue?select=*&company_id=eq."+encodeURIComponent(CURRENT.companyId),
+      { headers:{ apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY } });
+    if(!r.ok) return;
+    const rows=await r.json();
+    if(!rows.length) return;
+    let added=0;
+    rows.forEach(x=>{
+      if(messages.some(m=>m.bid===x.bid)) return;
+      const html=esc(x.body||"").replace(/\n/g,"<br>");
+      messages.push(M({from:x.from_name||x.from_email||"Acacia Books",addr:x.from_email||"",to:x.to||"(no recipient)",cc:x.cc||"",
+        subject:x.subject||"(no subject)",preview:String(x.body||"").replace(/\s+/g," ").slice(0,90),
+        body:"<p>"+html+"</p>",date:new Date(x.created_at||Date.now()).toISOString(),folder:"drafts",read:false,bid:x.bid}));
+      added++;
+    });
+    if(added){ saveMailbox(); renderRail(); render(); toast(added+" draft"+(added>1?"s":"")+" from Acacia Books"); }
+    const ids=rows.map(x=>x.id);
+    if(ids.length) await fetch(SUPA_URL+"/rest/v1/acacia_mail_queue?id=in.("+ids.join(",")+")",
+      { method:"DELETE", headers:{ apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY } });
+  }catch(e){ console.warn("[mail cloud]", e); }
+}
 (async function boot(){
+  const bk=fromBooksSession();
+  if(bk){
+    setSession(bk); CURRENT=bk; loadMailbox();
+    pullBooksDrafts(); pullMailQueueFromCloud();
+    setInterval(pullMailQueueFromCloud, 45000);
+    window.addEventListener("focus", pullMailQueueFromCloud);
+    return;
+  }
   if(sb){
     try{ const {data}=await sb.auth.getSession();
       if(data&&data.session){ enterApp(toUser(data.session.user)); return; } }catch(e){}
