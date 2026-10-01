@@ -991,7 +991,7 @@ function hpContact(e){
       </div>
       <div id="loginPane">
         <h2>Welcome back</h2>
-        <div class="sub">Log in to your Acacia Mail account.</div>
+        <div class="sub">Log in to your Acacia Mail account. Registered on Acacia Books? Use the same email and password.</div>
         <div class="auth-error" id="loginError"></div>
         <div class="auth-field"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" placeholder="you@company.co.ke"></div>
         <div class="auth-field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••"></div>
@@ -1139,7 +1139,8 @@ const sb=(window.supabase&&window.supabase.createClient)
   : null;
 const toUser=u=>({accountId:u.id,email:u.email,
   name:(u.user_metadata&&u.user_metadata.name)||u.email.split("@")[0],
-  company:(u.user_metadata&&u.user_metadata.company)||"",code:(u.user_metadata&&u.user_metadata.join_code)||""});
+  company:(u.user_metadata&&u.user_metadata.company)||"",code:(u.user_metadata&&u.user_metadata.join_code)||"",
+  booksCompanyId:(u.user_metadata&&u.user_metadata.books_company_id)||""});
 const $=s=>document.querySelector(s);
 const uid=p=>p+"_"+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -1390,7 +1391,20 @@ function enterApp(user,opts){
   state={folder:"inbox",label:null,open:null,selected:new Set(),query:"",rail:"calendar"};
   $("#q").value=""; renderRail(); render();
   if(!opts.noSync) startSync();
+  mailHeartbeat();
   setTimeout(runDeepLink,150);
+}
+/* Tell the Support Hub this Books company uses Mail (shows on its Apps page). Only for accounts created from Books. */
+function mailHeartbeat(){
+  try{
+    const u=CURRENT; if(!u||!u.booksCompanyId) return;
+    const k="acx_hb_"+u.booksCompanyId+"_Mail_"+u.email;
+    if(Date.now()-Number(localStorage.getItem(k)||0)<300000) return;
+    localStorage.setItem(k,String(Date.now()));
+    fetch(SUPA_URL+"/rest/v1/rpc/acx_heartbeat",{method:"POST",keepalive:true,
+      headers:{"Content-Type":"application/json",apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY},
+      body:JSON.stringify({p_company:u.booksCompanyId,p_app:"Mail",p_user:u.email,p_role:""})});
+  }catch(e){}
 }
 
 /* ================= Helpers ================= */
