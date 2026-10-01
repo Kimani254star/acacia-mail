@@ -28,7 +28,7 @@
   button{font-family:inherit;font-size:inherit;cursor:pointer;background:none;border:0;color:inherit}
   input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 
-  /* ===== Auth ===== */
+  
   #authScreen{position:fixed;inset:0;z-index:500;background:var(--forest);display:flex;flex-direction:column;overflow-y:auto}
   .authScreen-body{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
   .auth-wrap{display:flex;width:100%;max-width:920px;margin:auto;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);min-height:520px}
@@ -61,7 +61,7 @@
   .auth-switch a{color:var(--forest-2);font-weight:600;cursor:pointer}
   .auth-switch a:hover{text-decoration:underline}
 
-  /* ===== Buttons ===== */
+  
   .btn{padding:8px 14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px}
   .btn:hover{border-color:#c7c2ac}
   .btn-primary{background:var(--forest);color:#F4E9C9;border-color:var(--forest)}
@@ -72,7 +72,7 @@
   .btn-ghost:hover{background:var(--paper)}
   .btn-sm{padding:5px 10px;font-size:12px}
 
-  /* ===== App shell ===== */
+  
   #app{display:none;flex-direction:column;height:100vh}
   #app.ready{display:flex}
   #topbar{height:60px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:14px;flex:none}
@@ -97,7 +97,7 @@
 
   .body{flex:1;display:flex;min-height:0}
 
-  /* Sidebar */
+  
   #sidebar{width:230px;flex:none;background:var(--forest);color:#E7E4D6;overflow-y:auto;padding-bottom:20px}
   #sidebar.collapsed{display:none}
   #sidebar::-webkit-scrollbar{width:6px}
@@ -114,7 +114,7 @@
   .bar{height:6px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;margin-bottom:5px}
   .bar span{display:block;height:100%;background:var(--gold)}
 
-  /* List */
+  
   .list{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--card)}
   .listbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
   .listbar .title{font-family:'Cambria',serif;font-weight:600;font-size:15px;margin-right:4px}
@@ -133,7 +133,7 @@
   .empty{padding:70px 24px;text-align:center;color:var(--ink-soft)}
   .empty h3{font-size:17px;margin:0 0 6px;color:var(--ink)}
 
-  /* Reader */
+  
   .reader{flex:1;min-width:0;overflow:auto;background:var(--card);padding:20px 26px}
   .rhead{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
   .rsubj{font-family:'Cambria',serif;font-size:21px;font-weight:600;margin:10px 0}
@@ -141,7 +141,7 @@
   .attach{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:6px 8px 0 0;background:var(--paper)}
   .actions{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap}
 
-  /* Rail */
+  
   .rail{width:290px;flex:none;border-left:1px solid var(--line);background:var(--paper);display:flex;flex-direction:column}
   .rail.hidden{display:none}
   .tabs{display:flex;border-bottom:1px solid var(--line)}
@@ -157,7 +157,7 @@
   .task.done span{text-decoration:line-through;color:var(--ink-soft)}
   .muted{color:var(--ink-soft);font-size:12.5px}
 
-  /* Composer */
+  
   .overlay{position:fixed;inset:0;background:rgba(22,48,42,.35);display:none;z-index:60}
   .overlay.open{display:block}
   .composer{position:fixed;right:22px;bottom:0;width:600px;max-width:96vw;background:var(--card);border-radius:10px 10px 0 0;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:70;display:none;flex-direction:column;max-height:88vh}
@@ -179,7 +179,7 @@
   .toast button{color:var(--gold);font-weight:700}
   @media(max-width:1100px){.rail{display:none}}
   @media(max-width:760px){#sidebar{position:absolute;z-index:50;height:calc(100% - 60px);box-shadow:0 10px 30px rgba(0,0,0,.3)}.from{width:120px}.prev{display:none}}
-/* ==== Home page (Books-style) ======================================= */
+
 #homePage{--hp-bg:#fff;--hp-alt:#f8fafc;--hp-card:#fff;--hp-line:#e2e8f0;--hp-soft:#f1f5f9;--hp-ink:#0f172a;--hp-text:#475569;--hp-muted:#64748b;--hp-accent:#2563eb;--hp-accent-d:#1d4ed8;--hp-accent-soft:#dbeafe;--hp-accent-faint:#eff6ff;--hp-accent-light:#60a5fa;--hp-head:rgba(255,255,255,.9);--hp-input:#f8fafc;background:var(--hp-bg);color:var(--hp-text);line-height:1.5;overflow-x:hidden;}
 body.dark #homePage{--hp-bg:#0b1220;--hp-alt:#0f172a;--hp-card:#111a2e;--hp-line:#1e293b;--hp-soft:#1e293b;--hp-ink:#f1f5f9;--hp-text:#cbd5e1;--hp-muted:#94a3b8;--hp-accent-soft:rgba(37,99,235,.22);--hp-accent-faint:rgba(37,99,235,.14);--hp-head:rgba(11,18,32,.9);--hp-input:#0b1220;}
 #homePage *{box-sizing:border-box;}
@@ -188,12 +188,12 @@ body.dark #homePage{--hp-bg:#0b1220;--hp-alt:#0f172a;--hp-card:#111a2e;--hp-line
 #homePage h1,#homePage h2,#homePage h3,#homePage h4,#homePage p{margin:0;}
 #homePage button{cursor:pointer;font:inherit;}
 #homePage :focus-visible{outline:3px solid var(--hp-accent-light);outline-offset:3px;border-radius:6px;}
-/* Font Awesome needs its own font-family; the hub forces Cambria on everything */
+
 #homePage i.fa-solid,#homePage i.fa-regular{font-family:"Font Awesome 6 Free" !important;}
 #homePage i.fa-solid{font-weight:900;}
 #homePage i.fa-regular{font-weight:400;}
 
-/* Header */
+
 #homePage .hp-header{position:fixed;top:0;left:0;width:100%;height:80px;background:var(--hp-head);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 5%;z-index:1000;border-bottom:1px solid var(--hp-soft);}
 #homePage .hp-logo{display:flex;align-items:center;gap:12px;}
 #homePage .hp-logo-mark{width:44px;height:44px;border-radius:10px;background:var(--hp-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;}
@@ -214,7 +214,7 @@ body.dark #homePage .hp-theme .hp-moon{display:none;}
 #homePage .hp-getstarted:hover{background:var(--hp-accent-d);transform:translateY(-1px);}
 #homePage .hp-burger{display:none;background:none;border:1px solid var(--hp-line);color:var(--hp-ink);width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;}
 
-/* Hero */
+
 #homePage .hp-hero{margin-top:80px;min-height:85vh;display:flex;align-items:center;justify-content:space-between;padding:80px 5%;position:relative;overflow:hidden;background:#0f172a;}
 #homePage .hp-slides{position:absolute;inset:0;z-index:1;}
 #homePage .hp-slide{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1.2s ease-in-out;}
@@ -241,7 +241,7 @@ body.dark #homePage .hp-theme .hp-moon{display:none;}
 #homePage .hp-float1{left:-20px;top:60px;}
 #homePage .hp-float2{right:-20px;bottom:60px;}
 
-/* Sections */
+
 #homePage .hp-section{padding:100px 5%;scroll-margin-top:80px;}
 #homePage .hp-section-alt{padding:100px 5%;background:var(--hp-alt);border-top:1px solid var(--hp-soft);border-bottom:1px solid var(--hp-soft);scroll-margin-top:80px;}
 #homePage .hp-title{text-align:center;margin-bottom:60px;}
@@ -258,7 +258,7 @@ body.dark #homePage .hp-title span,body.dark #homePage .hp-pill{color:#93c5fd;}
 #homePage .hp-card p{font-size:15px;line-height:1.6;color:var(--hp-muted);}
 #homePage .hp-icon{width:48px;height:48px;background:var(--hp-accent-faint);color:var(--hp-accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;}
 
-/* Two-column text blocks */
+
 #homePage .hp-two{max-width:1200px;margin:auto;display:grid;grid-template-columns:1.15fr 1fr;gap:64px;align-items:center;}
 #homePage .hp-text p{font-size:16px;line-height:1.7;color:var(--hp-muted);margin-bottom:20px;}
 #homePage .hp-actions-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;}
@@ -275,7 +275,7 @@ body.dark #homePage .hp-quote{background:#111a2e;border:1px solid var(--hp-line)
 #homePage .hp-quote i{color:#60a5fa;font-size:20px;margin-bottom:10px;display:block;}
 #homePage .hp-quote p{font-size:16px;line-height:1.7;}
 
-/* Steps */
+
 #homePage .hp-steps{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
 #homePage .hp-step{background:var(--hp-card);border:1px solid var(--hp-line);border-radius:12px;padding:32px 26px;transition:.3s;}
 #homePage .hp-step:hover{border-color:var(--hp-accent);transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.05);}
@@ -283,7 +283,7 @@ body.dark #homePage .hp-quote{background:#111a2e;border:1px solid var(--hp-line)
 #homePage .hp-step h3{font-size:20px;font-weight:700;color:var(--hp-ink);margin-bottom:10px;}
 #homePage .hp-step p{font-size:15px;line-height:1.6;color:var(--hp-muted);}
 
-/* Work / modules */
+
 #homePage .hp-feature{max-width:1200px;margin:0 auto 30px;display:grid;grid-template-columns:1fr 1.4fr;gap:0;border-radius:16px;overflow:hidden;background:#0f172a;color:#cbd5e1;}
 #homePage .hp-feature-main{padding:40px;display:flex;flex-direction:column;justify-content:center;}
 #homePage .hp-feature-main h3{font-size:30px;font-weight:800;color:#fff;margin-bottom:14px;}
@@ -313,7 +313,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-learn i{font-size:14px;color:var(--hp-muted);transition:transform .2s;}
 #homePage .hp-module:hover .hp-learn i{transform:translateX(4px);color:var(--hp-accent);}
 
-/* Pricing */
+
 #homePage .hp-tiers{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
 #homePage .hp-tier{background:var(--hp-card);border-radius:16px;padding:40px 32px;border:1px solid var(--hp-line);position:relative;transition:all .3s;}
 #homePage .hp-tier:hover{transform:translateY(-4px);box-shadow:0 20px 30px rgba(0,0,0,.04);}
@@ -326,14 +326,14 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-tier-note{text-align:center;margin-top:28px;font-size:14px;color:var(--hp-muted);}
 #homePage .hp-tier-cta{text-align:center;margin-top:20px;}
 
-/* FAQ */
+
 #homePage .hp-faq{max-width:860px;margin:auto;display:flex;flex-direction:column;gap:14px;}
 #homePage .hp-faq details{background:var(--hp-card);border:1px solid var(--hp-line);border-radius:10px;padding:18px 24px;}
 #homePage .hp-faq summary{cursor:pointer;font-weight:700;color:var(--hp-ink);font-size:16px;}
 #homePage .hp-faq details[open]{border-color:var(--hp-accent);}
 #homePage .hp-faq details p{margin-top:12px;font-size:15px;line-height:1.6;color:var(--hp-muted);}
 
-/* Contact form */
+
 #homePage .hp-form-card{background:var(--hp-card);border:1px solid var(--hp-line);border-radius:16px;padding:32px;box-shadow:0 4px 6px -1px rgba(0,0,0,.02);}
 #homePage .hp-form{display:grid;gap:16px;}
 #homePage .hp-form label{font-size:14px;font-weight:600;color:var(--hp-ink);display:grid;gap:6px;}
@@ -346,7 +346,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-contact-list div{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--hp-text);}
 #homePage .hp-contact-list i{width:36px;height:36px;border-radius:8px;background:var(--hp-accent-faint);color:var(--hp-accent);display:inline-flex;align-items:center;justify-content:center;font-size:14px;}
 
-/* CTA band */
+
 #homePage .hp-cta{padding:100px 5%;background:#0f172a;color:#fff;position:relative;overflow:hidden;}
 #homePage .hp-ctabox{max-width:1200px;margin:auto;display:grid;grid-template-columns:1.5fr 1fr;gap:80px;align-items:center;}
 #homePage .hp-cta h2{font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:20px;color:#fff;line-height:1.15;}
@@ -359,7 +359,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-cta-item{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px;color:#cbd5e1;}
 #homePage .hp-cta-item:last-child{border:none;}
 
-/* Footer */
+
 #homePage .hp-footer{background:#020617;color:#94a3b8;padding:80px 5% 30px;border-top:1px solid #0f172a;}
 #homePage .hp-footgrid{max-width:1200px;margin:0 auto 60px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;}
 #homePage .hp-footlogo h2{font-size:24px;font-weight:800;color:#fff;margin-bottom:16px;}
@@ -370,7 +370,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-footcol a:hover,#homePage .hp-footcol button:hover{color:#fff;}
 #homePage .hp-bottom{max-width:1200px;margin:0 auto;border-top:1px solid #0f172a;padding-top:30px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;}
 
-/* Responsive */
+
 @media(max-width:1100px){
 #homePage .hp-nav ul{gap:20px;}
 }
@@ -403,7 +403,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 #homePage .hp-preview,#homePage .hp-form-card,#homePage .hp-feature-main,#homePage .hp-feature-side{padding:24px;}
 }
 
-/* single-view navigation: only the chosen page shows */
+
 #homePage .hp-page{display:none;}
 #homePage .hp-page.hp-active{display:block;animation:hpFade .35s ease;}
 #homePage .hp-hero.hp-active{display:flex;}
@@ -412,7 +412,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 @keyframes hpFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
 
-/* ==== Acacia Mail public home: same look as the Support site home ==== */
+
 #homePage{display:none;position:fixed;inset:0;z-index:600;overflow-y:auto;zoom:.8696;inset:0;letter-spacing:normal;}
 #homePage,#homePage *:not(i):not(svg):not(svg *){font-family:Cambria,Georgia,'Times New Roman',serif !important;font-size:.875rem !important;line-height:1.25rem !important;letter-spacing:normal;}
 #homePage i.fa-solid,#homePage i.fa-regular{font-family:"Font Awesome 6 Free" !important;}
@@ -469,7 +469,7 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
 </head>
 <body>
 
-<!-- ============ PUBLIC HOME PAGE ============ -->
+
 <div id="homePage">
 
   <header class="hp-header">
@@ -891,10 +891,10 @@ body.dark #homePage .hp-mi{background:rgba(255,255,255,.06);}
     </div>
   </footer>
 </div>
-<!-- ============ END PUBLIC HOME PAGE ============ -->
+
 
 <script>
-/* Public home page: single-view navigation, same behaviour as the Support site */
+
   function hpMore(btn){
     var card=btn.closest('.hp-tier');
     var open=card.classList.toggle('hp-open');
@@ -963,7 +963,7 @@ function hpContact(e){
 }
 </script>
 
-<!-- ============ AUTH ============ -->
+
 <div id="authScreen">
   <div class="authScreen-body">
   <div class="auth-wrap">
@@ -1018,7 +1018,7 @@ function hpContact(e){
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+
 <div id="app">
   <header id="topbar">
     <button class="iconbtn" id="toggleSidebar" title="Toggle sidebar">☰</button>
@@ -1127,12 +1127,12 @@ function hpContact(e){
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ================= Storage keys ================= */
+
 const USERS_KEY="acacia_mail_users", SESSION_KEY="acacia_mail_session", MBOX_KEY="acacia_mailbox_";
 
-/* ================= Supabase =================
-   Same project as Acacia Books, but its own table (mail_mailboxes) and its own
-   Supabase Auth users, so nothing touches app_accounts / company_state / app_state. */
+
+
+
 const SUPA_URL="https://xglsampckermarjpczdf.supabase.co", SUPA_KEY="sb_publishable_x-dPR7pzhvJgag9soW0I8w_yfKTmi6A";
 const sb=(window.supabase&&window.supabase.createClient)
   ? window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storageKey:"acacia-mail-auth",persistSession:true,autoRefreshToken:true}})
@@ -1145,7 +1145,7 @@ const $=s=>document.querySelector(s);
 const uid=p=>p+"_"+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-/* ================= Auth ================= */
+
 function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||"[]")}catch(e){return[]}}
 function saveUsers(l){localStorage.setItem(USERS_KEY,JSON.stringify(l))}
 function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch(e){return null}}
@@ -1180,7 +1180,7 @@ async function handleLogin(){
   let {data,error}=await sb.auth.signInWithPassword({email,password});
   let legacy=null;
   if(error){
-    /* Old local-only account: create it in Supabase and carry its mailbox across. */
+    
     legacy=getUsers().find(u=>u.email===email&&u.password===password)||null;
     if(legacy){
       const r=await sb.auth.signUp({email,password,options:{data:{name:legacy.name,company:legacy.company}}});
@@ -1204,8 +1204,8 @@ async function handleLogout(){
 function toggleUserMenu(e){e.stopPropagation(); $("#userMenuPanel").classList.toggle("open");}
 document.addEventListener("click",()=>$("#userMenuPanel").classList.remove("open"));
 
-/* ================= Mailbox model =================
-   Account → Folders/Labels → Messages → Attachments   */
+
+
 const FOLDERS=[
   {id:"inbox",name:"Inbox",icon:"📥"},{id:"starred",name:"Starred",icon:"★"},
   {id:"sent",name:"Sent",icon:"📤"},{id:"drafts",name:"Drafts",icon:"✎"},
@@ -1227,7 +1227,7 @@ function mboxKey(){return MBOX_KEY+CURRENT.accountId}
 const snapStr=()=>JSON.stringify({seq,messages,contacts,tasks,notes});
 function setSync(t){ const b=$("#refresh"); if(b) b.title="Refresh — "+t; if(/error|offline/i.test(t)) console.warn("[acacia-mail sync]",t); }
 
-/* Local cache (instant load, works offline) + Supabase copy (source of truth). */
+
 function saveMailbox(){
   if(!CURRENT) return;
   const str=snapStr(), unsynced=str!==lastStr;
@@ -1239,17 +1239,17 @@ function loadMailbox(){
   const c=d||{seq:1,messages:[],contacts:[],tasks:[],notes:[]};
   seq=c.seq||1; messages=c.messages||[]; contacts=c.contacts||[]; tasks=c.tasks||[]; notes=c.notes||[];
   rev=c.rev||0; dirty=false;
-  lastStr=(d&&d.unsynced!==false)?"":snapStr();   /* old caches count as not-yet-synced */
+  lastStr=(d&&d.unsynced!==false)?"":snapStr();   
 }
 function applyRemote(d){ seq=d.seq||1; messages=d.messages||[]; contacts=d.contacts||[]; tasks=d.tasks||[]; notes=d.notes||[]; }
-/* Merge: keep everything from both sides. Same message -> local copy wins. */
+
 function mergeRemote(rm){
   const key=m=>m.id+"|"+m.date+"|"+m.subject;
   const have=new Set(messages.map(key)), ids=new Set(messages.map(m=>m.id));
   let mx=Math.max(seq,rm.seq||1);
   (rm.messages||[]).forEach(m=>{
     if(have.has(key(m))) return;
-    if(ids.has(m.id)) m.id=mx++;          /* same id, different message (two devices) */
+    if(ids.has(m.id)) m.id=mx++;          
     ids.add(m.id); messages.push(m);
   });
   (rm.contacts||[]).forEach(c=>{ if(!contacts.some(x=>x.e===c.e)) contacts.push(c); });
@@ -1270,7 +1270,7 @@ async function pushMailbox(){
     if(CURRENT&&CURRENT.accountId!==id){ pushing=false; return; }
     if(!r.error&&r.data&&r.data.length){ rev=r.data[0].rev; lastStr=str; setSync("synced"); }
     else if(r.error&&r.error.code!=="23505"){ throw r.error; }
-    else{                                   /* someone else saved first: fetch, merge, retry */
+    else{                                   
       const g=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
       if(g.data){ mergeRemote(g.data.data||{}); rev=g.data.rev; renderRail(); render(); }
       dirty=true; retry=300;
@@ -1286,8 +1286,8 @@ async function syncFromServer(){
     const r=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
     if(r.error) throw r.error;
     if(!CURRENT||CURRENT.accountId!==id||!r.data||r.data.rev===rev) return;
-    if(snapStr()!==lastStr) mergeRemote(r.data.data||{});      /* local unsaved changes: merge */
-    else{ applyRemote(r.data.data||{}); lastStr=snapStr(); }   /* clean: just take the server copy */
+    if(snapStr()!==lastStr) mergeRemote(r.data.data||{});      
+    else{ applyRemote(r.data.data||{}); lastStr=snapStr(); }   
     rev=r.data.rev; renderRail(); render(); setSync("synced");
   }catch(e){ setSync("offline / sync error: "+(e.message||e)); }
 }
@@ -1296,7 +1296,7 @@ async function startSync(){
   setSync("syncing…");
   await syncFromServer();
   await ensureCompany(); await pullInbox(); pullBooksDrafts();
-  render();                                   /* pushes a migrated/offline local copy if needed */
+  render();                                   
   if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
   const id=CURRENT.accountId;
   rtChannel=sb.channel("mbox-"+id)
@@ -1315,7 +1315,7 @@ async function stopSync(){
   rev=0; lastStr=""; dirty=false;
 }
 window.addEventListener("focus",()=>{syncFromServer(); pullInbox();});
-/* ===== Company layer: join/create company, team directory, internal delivery ===== */
+
 async function ensureCompany(){
   if(!sb||!CURRENT) return;
   try{
@@ -1345,17 +1345,17 @@ async function pullInbox(){
   if(r.error||!r.data||!r.data.length||!CURRENT||CURRENT.accountId!==id) return;
   r.data.forEach(x=>{ if(!messages.some(m=>m.qid===x.id)) messages.push(M(Object.assign({},x.message,{qid:x.id}))); });
   saveMailbox(); clearTimeout(pushTimer); await pushMailbox();
-  if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));   /* only after it is safely saved */
+  if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));   
   renderRail(); render();
 }
-/* Plain text (from Books / Support) -> clean mail HTML: paragraphs, line breaks, clickable links, signature. */
+
 function fmtBody(t){
   t=String(t||"").replace(/\r\n?/g,"\n").trim();
   const link=x=>x.replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)"'])/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
   const html=t?t.split(/\n{2,}/).map(par=>'<p style="margin:0 0 12px">'+link(esc(par)).replace(/\n/g,"<br>")+'</p>').join(""):"<p><br></p>";
   return html+(typeof signature==="function"?signature():"");
 }
-/* ===== Books -> Mail Hub bridge: drafts queued by Acacia Books for the same company ===== */
+
 const BOOKS_QUEUE_KEY="acacia_books_to_mail";
 const coSlug=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function pullBooksDrafts(){
@@ -1364,8 +1364,8 @@ function pullBooksDrafts(){
   if(!q.length) return;
   const mine=coSlug(CURRENT.company), keep=[]; let added=0;
   q.forEach(x=>{
-    if(!x||coSlug(x.company||x.slug)!==mine){ keep.push(x); return; }   /* other company: leave for them */
-    if(messages.some(m=>m.bid===x.bid)) return;                         /* already imported */
+    if(!x||coSlug(x.company||x.slug)!==mine){ keep.push(x); return; }   
+    if(messages.some(m=>m.bid===x.bid)) return;                         
     messages.push(M({from:x.fromName||x.fromEmail||"Acacia Books",addr:x.fromEmail||"",to:x.to||"",cc:x.cc||"",bcc:x.bcc||"",
       subject:x.subject||"(no subject)",preview:String(x.body||"").replace(/\s+/g," ").slice(0,90),
       body:fmtBody(x.body),date:new Date(x.time||Date.now()).toISOString(),folder:"drafts",read:true,bid:x.bid}));
@@ -1394,7 +1394,7 @@ function enterApp(user,opts){
   mailHeartbeat();
   setTimeout(runDeepLink,150);
 }
-/* Tell the Support Hub this Books company uses Mail (shows on its Apps page). Only for accounts created from Books. */
+
 function mailHeartbeat(){
   try{
     const u=CURRENT; if(!u||!u.booksCompanyId) return;
@@ -1407,7 +1407,7 @@ function mailHeartbeat(){
   }catch(e){}
 }
 
-/* ================= Helpers ================= */
+
 const fmt=d=>{const t=new Date(d),n=new Date();
   return t.toDateString()===n.toDateString()
     ? t.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
@@ -1455,7 +1455,7 @@ function toast(msg,undo){
 const snap=()=>JSON.parse(JSON.stringify(messages));
 function withUndo(msg,fn){const before=snap(); fn(); render(); toast(msg,()=>{messages=before; render();});}
 
-/* ================= Sidebar ================= */
+
 function renderSidebar(){
   $("#folders").innerHTML=FOLDERS.map(f=>{
     const set=messages.filter(m=>f.id==="starred"?(m.starred&&m.folder!=="trash")
@@ -1480,7 +1480,7 @@ function renderSidebar(){
     state.label=b.dataset.label; state.open=null; state.selected.clear(); render();});
 }
 
-/* ================= List ================= */
+
 function renderList(){
   const items=visible();
   const viewName=state.label?"Label: "+labelOf(state.label).name:FOLDERS.find(f=>f.id===state.folder).name;
@@ -1509,7 +1509,7 @@ function renderList(){
     e.stopPropagation(); const m=messages.find(x=>x.id===+s.dataset.star); m.starred=!m.starred; render();});
 }
 
-/* ================= Reader ================= */
+
 function openMail(id){const m=messages.find(x=>x.id===id); if(!m) return;
   if(m.folder==="drafts"){ openComposer({to:m.to,cc:m.cc,bcc:m.bcc,subject:m.subject,body:m.body,draftId:m.id}); return; }
   m.read=true; state.open=id; render();}
@@ -1563,7 +1563,7 @@ function renderReader(){
   $("#rLabel").onchange=e=>{if(e.target.value&&!m.labels.includes(e.target.value)) m.labels.push(e.target.value); render();};
 }
 
-/* ================= Bulk ================= */
+
 document.querySelectorAll("[data-bulk]").forEach(b=>b.onclick=()=>{
   if(!state.selected.size) return toast("Select messages first");
   const a=b.dataset.bulk, ids=[...state.selected];
@@ -1585,7 +1585,7 @@ $("#moveTo").onchange=e=>{
 $("#selAll").onchange=e=>{state.selected=e.target.checked?new Set(visible().map(m=>m.id)):new Set(); render();};
 $("#undoBtn").onclick=()=>{if(undoStack){undoStack(); undoStack=null;} $("#toast").classList.remove("show");};
 
-/* ================= Rail ================= */
+
 function renderRail(){
   const b=$("#railBody"); const now=new Date();
   if(state.rail==="calendar"){
@@ -1623,7 +1623,7 @@ document.querySelectorAll("[data-rail]").forEach(t=>t.onclick=()=>{
   document.querySelectorAll("[data-rail]").forEach(x=>x.classList.toggle("active",x===t));
   renderRail();});
 
-/* ================= Composer ================= */
+
 let editingDraft=null;
 const signature=()=>CURRENT?`<p style="color:#5B5A4E;font-size:13px">—<br><b>${esc(CURRENT.name)}</b><br>${esc(CURRENT.company)}<br>${esc(CURRENT.email)}</p>`:"";
 function openComposer(pre={}){
@@ -1665,7 +1665,7 @@ $("#fileInput").onchange=e=>{[...e.target.files].forEach(f=>attachments.push({na
 $("#sendBtn").onclick=()=>{
   const m=commit("outbox"); closeComposer(); render();
   toast("Sending…",()=>{messages=messages.filter(x=>x.id!==m.id); render();});
-  setTimeout(()=>{ if(!messages.some(x=>x.id===m.id)) return;   /* undone during the 2s window */
+  setTimeout(()=>{ if(!messages.some(x=>x.id===m.id)) return;   
     m.folder="sent"; render(); deliverInternal(m); logCompanySent(m); },2000);
 };
 $("#scheduleBtn").onclick=()=>{
@@ -1675,7 +1675,7 @@ $("#scheduleBtn").onclick=()=>{
 $("#draftBtn").onclick=()=>{commit("drafts"); closeComposer(); render(); toast("Draft saved");};
 $("#discardBtn").onclick=()=>{if(editingDraft) messages=messages.filter(m=>m.id!==editingDraft); closeComposer(); render(); toast("Draft discarded");};
 
-/* ================= Chrome ================= */
+
 $("#toggleSidebar").onclick=()=>$("#sidebar").classList.toggle("collapsed");
 $("#railToggle").onclick=()=>$("#rail").classList.toggle("hidden");
 $("#refresh").onclick=()=>{render(); toast("Mailbox refreshed");};
@@ -1703,9 +1703,9 @@ function render(){
 }
 
 
-/* ===== Super admin: company-wide Sent log =====
-   Every message a team member sends is also recorded in public.acacia_mail_sent under the company.
-   The company admin (Books role "admin") gets a "Company Sent" view showing everyone's sent mail. */
+
+
+
 const isAdmin=()=>!!CURRENT && /^(admin|administrator|owner|super ?admin)$/i.test(String(CURRENT.role||"").trim());
 const SENT_PENDING="acacia_mail_sent_pending";
 const sbHeaders=()=>({apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"});
@@ -1783,7 +1783,7 @@ function renderCoSent(){
 }
 function openCoSent(){ ensureCoPanel().style.display="flex"; coFilter=""; coQuery=""; coOpen=null; $("#coQ").value=""; loadCoSent(); }
 
-/* ===== Deep link: ?bid=<draft id> (from Books) or ?to=&subject=&body=&cc=&bcc=&uid= (from Support) opens the draft in the composer ===== */
+
 const DEEP=(function(){ try{ const q=new URLSearchParams(location.search); if(!(q.get("bid")||q.get("to")||q.get("subject")||q.get("body"))) return null;
   return {bid:q.get("bid"),uid:q.get("uid")||("u"+Date.now()),to:q.get("to")||"",cc:q.get("cc")||"",bcc:q.get("bcc")||"",subject:q.get("subject")||"",body:q.get("body")||""}; }catch(e){ return null; } })();
 function runDeepLink(){
@@ -1798,7 +1798,7 @@ function runDeepLink(){
   state.folder="drafts"; render();
   openComposer({to:m.to==="(no recipient)"?"":m.to,cc:m.cc,bcc:m.bcc,subject:m.subject,body:m.body,draftId:m.id});
 }
-/* ================= Boot ================= */
+
 function fromBooksSession(){
   try{
     var u=JSON.parse(localStorage.getItem("loggedInUser")||"null");
