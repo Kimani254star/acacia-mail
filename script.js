@@ -175,6 +175,7 @@ async function booksLogin(company,email,password){
     if(r.error){
       const status=(r.error.context&&r.error.context.status)||0; let msg="";
       try{ const j=await r.error.context.json(); msg=(j&&j.error)||""; }catch(e){}
+      if(!msg&&(!status||status===404||/failed to send/i.test(r.error.message||""))) msg="Company sign-in is not set up yet: the books-login function is not deployed in Supabase (see SETUP_COMPANY_LOGIN.md).";
       if(!msg) msg=status===404?"Company sign-in is not set up yet (deploy the books-login function, see SETUP_SEND_MAIL.md).":(r.error.message||"Sign-in failed.");
       return {ok:false,error:msg,status};
     }
