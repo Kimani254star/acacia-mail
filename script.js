@@ -210,7 +210,14 @@ async function handleLogin(){
       if(!session){
         const f=await booksLogin(company,email,password);
         if(f.ok){ const r2=await sb.auth.signInWithPassword({email,password}); if(!r2.error&&r2.data&&r2.data.session) session=r2.data; else errMsg=r2.error&&/confirm/i.test(r2.error.message)?"Please confirm your email first.":"Could not sign in. Try again."; }
-        else errMsg=f.error;
+        else{
+          errMsg=f.error;
+          // function not deployed: show why the normal sign-in failed instead
+          if(/not deployed|not set up/i.test(f.error)&&error){
+            if(/confirm/i.test(error.message)) errMsg="Your email is not confirmed yet. In Supabase turn off Authentication > Sign In / Providers > Email > Confirm email, then confirm this user (Authentication > Users).";
+            else errMsg="Wrong company, email or password. (If this account was made on Books, the books-login function must be deployed in Supabase.)";
+          }
+        }
       }
     }
     if(!session) return showAuthError("loginError",errMsg||"That company, email and password combination was not found.");
