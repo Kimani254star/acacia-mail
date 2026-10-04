@@ -6,7 +6,7 @@
 <title>Acacia Mail</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<script>(function(){try{var a=JSON.parse(localStorage.getItem("acacia_mail_settings")||"{}"),r=document.documentElement.style;if(a.sbBg)r.setProperty("--sb-bg",a.sbBg);if(a.sbText)r.setProperty("--sb-text",a.sbText);if(a.accent){r.setProperty("--gold",a.accent);r.setProperty("--gold-deep",a.accent);}if(a.font)r.setProperty("--app-font",a.font);if(a.fs)r.setProperty("--app-fs",a.fs);}catch(e){}})();</script>
+<script>(function(){try{var a=JSON.parse(localStorage.getItem("acacia_mail_settings")||"{}"),r=document.documentElement.style;if(a.sbBg)r.setProperty("--sb-bg",a.sbBg);if(a.sbText)r.setProperty("--sb-text",a.sbText);if(a.accent){r.setProperty("--gold",a.accent);r.setProperty("--gold-deep",a.accent);}if(a.font)r.setProperty("--app-font",a.font);var z=a.zoom||(a.fs==="11.5px"?"1":a.fs==="14.5px"?"1.3":a.fs==="16px"?"1.45":"");if(z)r.setProperty("--app-zoom",z);}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Nunito:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;600&family=Lora:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -465,16 +465,17 @@
       </div>
       <div id="loginPane">
         <h2>Welcome back</h2>
-        <div class="sub">Log in to your Acacia Mail account. Registered on Acacia Books? Use the same email and password.</div>
+        <div class="sub">Log in with your company name, email and password. Registered on Acacia Books? Use the same company name, email and password.</div>
         <div class="auth-error" id="loginError"></div>
+        <div class="auth-field"><label>Company name</label><input id="loginCompany" autocomplete="organization" placeholder="e.g. Baraka Traders Ltd"></div>
         <div class="auth-field"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" placeholder="you@company.co.ke"></div>
         <div class="auth-field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••"></div>
-        <button class="btn btn-primary auth-submit" onclick="handleLogin()">Log In</button>
+        <button class="btn btn-primary auth-submit" id="loginBtn" onclick="handleLogin()">Log In</button>
         <div class="auth-switch">Don't have an account? <a onclick="switchAuthTab('register')">Create one</a></div>
       </div>
       <div id="registerPane" style="display:none">
         <h2>Create your mailbox</h2>
-        <div class="sub">Set up Acacia Mail for your company.</div>
+        <div class="sub">Set up Acacia Mail for your company. New companies are sent to Acacia Support for approval before you can sign in.</div>
         <div class="auth-error" id="registerError"></div>
         <div class="auth-field"><label>Company name</label><input id="regCompany" placeholder="e.g. Baraka Traders Ltd"></div>
         <div class="auth-field"><label>Company code (only if joining an existing company)</label><input id="regCode" placeholder="Leave blank to create a new company"></div>
@@ -618,7 +619,7 @@
         <label class="lb">Font</label>
         <select id="stFont" onchange="setMailSetting('font',this.value)"><option value="'Cambria', Georgia, serif">Cambria (default)</option><option value="'Inter', sans-serif">Inter</option><option value="'Roboto', sans-serif">Roboto</option><option value="'Open Sans', sans-serif">Open Sans</option><option value="'Lato', sans-serif">Lato</option><option value="'Poppins', sans-serif">Poppins</option><option value="'Montserrat', sans-serif">Montserrat</option><option value="'Nunito', sans-serif">Nunito</option><option value="'DM Sans', sans-serif">DM Sans</option><option value="'Merriweather', serif">Merriweather</option><option value="'Playfair Display', serif">Playfair Display</option><option value="'Lora', serif">Lora</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', Times, serif">Times New Roman</option><option value="'Trebuchet MS', sans-serif">Trebuchet MS</option><option value="'Segoe UI', Roboto, sans-serif">Segoe UI</option><option value="Verdana, sans-serif">Verdana</option><option value="'JetBrains Mono', monospace">JetBrains Mono</option><option value="'Courier New', monospace">Courier New</option><option value="system-ui, sans-serif">System default</option></select>
         <label class="lb">Font size</label>
-        <select id="stFs" onchange="setMailSetting('fs',this.value)"><option value="11.5px">Small</option><option value="13px">Medium (default)</option><option value="14.5px">Large</option><option value="16px">Extra large</option></select>
+        <select id="stFs" onchange="setMailSetting('zoom',this.value)"><option value="1">Small</option><option value="1.15">Medium (default)</option><option value="1.3">Large</option><option value="1.45">Extra large</option></select>
         <div style="margin-top:12px"><button class="btn btn-sm" onclick="resetMailAppearance()">Reset appearance</button></div>
       </div>
       <div class="st-card">

@@ -15,8 +15,8 @@
   body.dark .row:hover,body.dark .navitem:hover{background:rgba(255,255,255,.04)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%}
-  html{zoom:1.15}
-  body{font-family:var(--app-font,'Cambria',serif);background:var(--paper);color:var(--ink);font-size:var(--app-fs,13px);line-height:1.65;letter-spacing:.02em}
+  html{zoom:var(--app-zoom,1.15)}
+  body{font-family:var(--app-font,'Cambria',serif);background:var(--paper);color:var(--ink);font-size:13px;line-height:1.65;letter-spacing:.02em}
   h1,h2,h3,.brand{font-family:var(--app-font,'Cambria',serif)}
   button{font-family:inherit;font-size:inherit;cursor:pointer;background:none;border:0;color:inherit}
   input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
@@ -69,7 +69,7 @@
   #app{display:none;flex-direction:column;height:100vh}
   #app.ready{display:flex}
   #topbar{height:60px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:14px;flex:none}
-  .brandbar{display:flex;align-items:center;gap:8px;font-family:'Cambria',serif;font-size:18px;font-weight:600;color:var(--forest)}
+  .brandbar{display:flex;align-items:center;gap:8px;font-family:var(--app-font,'Cambria',serif);font-size:18px;font-weight:600;color:var(--forest)}
   .search{flex:1;max-width:560px;position:relative}
   .search input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
   .search input:focus{outline:2px solid var(--gold);outline-offset:-1px;background:var(--card)}
@@ -97,20 +97,20 @@
   #sidebar::-webkit-scrollbar-thumb{background:var(--forest-3);border-radius:3px}
   .composewrap{padding:16px 16px 6px}
   .compose{width:100%;justify-content:center;padding:11px 0}
-  .navgroup-label{font-size:11px;color:#7E9689;padding:14px 20px 6px;letter-spacing:.4px;text-transform:uppercase}
+  .navgroup-label{font-size:11px;color:color-mix(in srgb,var(--sb-text,#9FB3A9) 62%,transparent);padding:14px 20px 6px;letter-spacing:.4px;text-transform:uppercase}
   .navitem{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13.5px;color:var(--sb-text,#D6D2C0);width:100%;text-align:left;border-left:3px solid transparent}
   .navitem:hover{background:color-mix(in srgb,var(--sb-text,#fff) 8%,transparent)}
   .navitem.active{background:color-mix(in srgb,var(--sb-text,#fff) 14%,transparent);border-left-color:var(--gold);color:var(--sb-text,#F7EFD8);font-weight:600}
-  .navitem .count{margin-left:auto;font-size:11.5px;color:#9FB3A9}
+  .navitem .count{margin-left:auto;font-size:11.5px;color:color-mix(in srgb,var(--sb-text,#9FB3A9) 75%,transparent)}
   .navitem .dot{width:8px;height:8px;border-radius:50%;flex:none}
-  .storage{padding:10px 20px;color:#9FB3A9;font-size:11px}
+  .storage{padding:10px 20px;color:color-mix(in srgb,var(--sb-text,#9FB3A9) 75%,transparent);font-size:11px}
   .bar{height:6px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;margin-bottom:5px}
   .bar span{display:block;height:100%;background:var(--gold)}
 
   
   .list{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--card)}
   .listbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .listbar .title{font-family:'Cambria',serif;font-weight:600;font-size:15px;margin-right:4px}
+  .listbar .title{font-family:var(--app-font,'Cambria',serif);font-weight:600;font-size:15px;margin-right:4px}
   .rows{flex:1;overflow:auto}
   .row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
   .row:hover{background:var(--paper)}
@@ -129,7 +129,7 @@
   
   .reader{flex:1;min-width:0;overflow:auto;background:var(--card);padding:20px 26px}
   .rhead{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
-  .rsubj{font-family:'Cambria',serif;font-size:21px;font-weight:600;margin:10px 0}
+  .rsubj{font-family:var(--app-font,'Cambria',serif);font-size:21px;font-weight:600;margin:10px 0}
   .who{display:flex;align-items:center;gap:10px}
   .attach{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:6px 8px 0 0;background:var(--paper)}
   .actions{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap}
@@ -155,7 +155,7 @@
   .overlay.open{display:block}
   .composer{position:fixed;right:22px;bottom:0;width:600px;max-width:96vw;background:var(--card);border-radius:10px 10px 0 0;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:70;display:none;flex-direction:column;max-height:88vh}
   .composer.open{display:flex}
-  .chead{background:var(--forest);color:#F4E9C9;padding:10px 14px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px;font-family:'Cambria',serif}
+  .chead{background:var(--forest);color:#F4E9C9;padding:10px 14px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px;font-family:var(--app-font,'Cambria',serif)}
   .chead .iconbtn{color:#CBD9CF}
   .chead .iconbtn:hover{background:rgba(255,255,255,.12);border-color:transparent;color:#fff}
   .field{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:8px 14px}

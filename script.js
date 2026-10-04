@@ -103,44 +103,129 @@ function switchAuthTab(w){
 }
 function showAuthError(id,msg){const e=$("#"+id); e.textContent=msg; e.classList.add("show");}
 
+/* ===== Acacia Support link: approval gate + company registration (same tables Books uses) ===== */
+const GATE_MSG={
+  pending:"Your company is waiting for approval by Acacia Support. You will be able to sign in as soon as it is approved.",
+  expired:"This company's subscription has expired. Renew it to get access again.",
+  suspended:"This company has been deactivated. Please contact Acacia Support.",
+  rejected:"This registration was not approved. Please contact Acacia Support."
+};
+const restH=()=>({apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"});
+async function fetchCompanyStatus(by,val){
+  try{
+    const r=await fetch(SUPA_URL+"/rest/v1/acacia_company_status?select=company_id,company_name,status,paid_until&"+by+"="+val,{headers:restH()});
+    if(!r.ok) return null; const a=await r.json(); return a;
+  }catch(e){ return null; }
+}
+/* "" = allowed, otherwise the reason (pending / expired / suspended / rejected). Companies Support has never heard of are allowed. */
+async function companyGate(cid){
+  if(!cid) return "";
+  const a=await fetchCompanyStatus("company_id","eq."+encodeURIComponent(cid)); const row=a&&a[0];
+  if(!row) return "";
+  let st=row.status; if(st==="active"&&row.paid_until&&new Date(row.paid_until)<new Date()) st="expired";
+  return st==="active"?"":(st||"pending");
+}
+async function findCompanyByName(name){
+  const a=await fetchCompanyStatus("company_name","ilike."+encodeURIComponent(name.replace(/[*%_,()]/g,"")));
+  return (a||[]).find(r=>coSlug(r.company_name)===coSlug(name))||null;
+}
+async function createPendingCompany(id,company,owner,email){
+  const row={company_id:id,company_name:company,owner_name:owner,email:email,plan:"Free",price:0,status:"pending"};
+  const ext={billing:"Monthly",all_apps:false,apps:"Mail",amount_due:0};
+  const H=Object.assign({Prefer:"resolution=ignore-duplicates,return=minimal"},restH());
+  let r=await fetch(SUPA_URL+"/rest/v1/acacia_company_status",{method:"POST",headers:H,body:JSON.stringify(Object.assign({},row,ext))});
+  if(!r.ok) r=await fetch(SUPA_URL+"/rest/v1/acacia_company_status",{method:"POST",headers:H,body:JSON.stringify(row)});
+  return r.ok;
+}
+async function blockedBy(st){
+  try{ await sb.auth.signOut(); }catch(e){}
+  switchAuthTab("login"); showAuthError("loginError",GATE_MSG[st]||GATE_MSG.suspended);
+}
+
 async function handleRegister(){
-  const company=$("#regCompany").value.trim(), name=$("#regName").value.trim();
+  const company=$("#regCompany").value.trim(), name=$("#regName").value.trim(), code=$("#regCode").value.trim();
   const email=$("#regEmail").value.trim().toLowerCase(), password=$("#regPassword").value;
   if(!company||!name||!email||!password) return showAuthError("registerError","Please fill in every field.");
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showAuthError("registerError","Enter a valid email address.");
   if(password.length<6) return showAuthError("registerError","Password must be at least 6 characters.");
   if(!sb) return showAuthError("registerError","Could not load Supabase. Check your internet connection.");
-  const {data,error}=await sb.auth.signUp({email,password,options:{data:{name,company,join_code:$("#regCode").value.trim()}}});
-  if(error) return showAuthError("registerError",/already/i.test(error.message)?"An account with that email already exists.":error.message);
-  if(!data.session) return showAuthError("registerError","Account created. Confirm the email Supabase sent you, then sign in.");
+
+  // Is this company already known to Acacia Support (registered in Books or Mail)?
+  const known=await findCompanyByName(company);
+  let cid="", isNew=false;
+  if(known){
+    if(!code) return showAuthError("registerError","\""+known.company_name+"\" is already registered. Log in with your company name, email and password, or ask your administrator to add you (or to give you the company code).");
+    cid=known.company_id;
+  }else if(!code){
+    cid="mail_"+coSlug(company).slice(0,24)+"_"+Math.random().toString(36).slice(2,8); isNew=true;
+  }
+  const {data,error}=await sb.auth.signUp({email,password,options:{data:{name,company,join_code:code,source:"mail",books_company_id:cid}}});
+  if(error) return showAuthError("registerError",/already/i.test(error.message)?"An account with that email already exists. Use Log In with your company name, email and password.":error.message);
+  if(isNew){ const ok=await createPendingCompany(cid,company,name,email); if(!ok) console.warn("[acacia-mail] could not register company with Support"); }
+  if(!data.session) return showAuthError("registerError","Account created. Email confirmation is still switched on in Supabase (Authentication > Providers > Email > Confirm email) - turn it off, then log in.");
+  const st=isNew?"pending":await companyGate(cid);
+  if(st) return blockedBy(st==="pending"&&isNew?"pending":st);
   enterApp(toUser(data.user));
 }
-async function handleLogin(){
-  const email=$("#loginEmail").value.trim().toLowerCase(), password=$("#loginPassword").value;
-  if(!email||!password) return showAuthError("loginError","Please enter your email and password.");
-  if(!sb) return showAuthError("loginError","Could not load Supabase. Check your internet connection.");
-  let {data,error}=await sb.auth.signInWithPassword({email,password});
-  let legacy=null;
-  if(error){
-    
-    legacy=getUsers().find(u=>u.email===email&&u.password===password)||null;
-    if(legacy){
-      const r=await sb.auth.signUp({email,password,options:{data:{name:legacy.name,company:legacy.company}}});
-      if(r.data&&r.data.session){data=r.data; error=null;} else legacy=null;
+
+/* Server-side check of the Books/Mail company + email + password; creates or repairs the Mail login so a normal sign-in works afterwards. */
+async function booksLogin(company,email,password){
+  try{
+    const r=await sb.functions.invoke("books-login",{body:{company,email,password}});
+    if(r.error){
+      const status=(r.error.context&&r.error.context.status)||0; let msg="";
+      try{ const j=await r.error.context.json(); msg=(j&&j.error)||""; }catch(e){}
+      if(!msg) msg=status===404?"Company sign-in is not set up yet (deploy the books-login function, see SETUP_SEND_MAIL.md).":(r.error.message||"Sign-in failed.");
+      return {ok:false,error:msg,status};
     }
-  }
-  if(error||!data||!data.session)
-    return showAuthError("loginError",error&&/confirm/i.test(error.message)?"Please confirm your email first.":"That email and password combination was not found.");
-  const user=toUser(data.user);
-  if(legacy){ const old=localStorage.getItem(MBOX_KEY+legacy.accountId);
-    if(old) localStorage.setItem(MBOX_KEY+user.accountId,old); }
-  enterApp(user);
+    if(r.data&&r.data.error) return {ok:false,error:r.data.error};
+    return {ok:true};
+  }catch(e){ return {ok:false,error:String((e&&e.message)||e)}; }
+}
+const sameCompany=(u,typed)=>{ const t=coSlug(typed); return !!t&&(coSlug(u.company)===t||coSlug(u.booksCompanyId)===t); };
+
+async function handleLogin(){
+  const company=$("#loginCompany").value.trim();
+  const email=$("#loginEmail").value.trim().toLowerCase(), password=$("#loginPassword").value;
+  if(!company||!email||!password) return showAuthError("loginError","Please enter your company name, email and password.");
+  if(!sb) return showAuthError("loginError","Could not load Supabase. Check your internet connection.");
+  const btn=$("#loginBtn"); if(btn){ btn.disabled=true; btn.textContent="Signing in..."; }
+  try{
+    let session=null, errMsg="", legacy=null;
+    let {data,error}=await sb.auth.signInWithPassword({email,password});
+    if(!error&&data&&data.session){
+      if(sameCompany(toUser(data.user),company)) session=data;
+      else{                                   // signed in, but typed another company: confirm it against Books before switching
+        const f=await booksLogin(company,email,password);
+        if(f.ok){ const r2=await sb.auth.signInWithPassword({email,password}); if(!r2.error&&r2.data&&r2.data.session) session=r2.data; }
+        else{ await sb.auth.signOut(); errMsg=/couldn.t find|not found/i.test(f.error)?"That company name does not match this email.":f.error; }
+      }
+    }else{
+      legacy=getUsers().find(u=>u.email===email&&u.password===password)||null;
+      if(legacy){
+        const r=await sb.auth.signUp({email,password,options:{data:{name:legacy.name,company:legacy.company}}});
+        if(r.data&&r.data.session){ session=r.data; } else legacy=null;
+      }
+      if(!session){
+        const f=await booksLogin(company,email,password);
+        if(f.ok){ const r2=await sb.auth.signInWithPassword({email,password}); if(!r2.error&&r2.data&&r2.data.session) session=r2.data; else errMsg=r2.error&&/confirm/i.test(r2.error.message)?"Please confirm your email first.":"Could not sign in. Try again."; }
+        else errMsg=f.error;
+      }
+    }
+    if(!session) return showAuthError("loginError",errMsg||"That company, email and password combination was not found.");
+    const user=toUser(session.user);
+    const st=await companyGate(user.booksCompanyId);
+    if(st) return blockedBy(st);
+    if(legacy){ const old=localStorage.getItem(MBOX_KEY+legacy.accountId); if(old) localStorage.setItem(MBOX_KEY+user.accountId,old); }
+    try{ localStorage.setItem("acacia_mail_last_company",company); }catch(e){}
+    enterApp(user);
+  }finally{ if(btn){ btn.disabled=false; btn.textContent="Log In"; } }
 }
 async function handleLogout(){
   await stopSync();
   clearSession(); CURRENT=null; messages=[]; contacts=[]; tasks=[]; notes=[];
   $("#app").classList.remove("ready"); $("#authScreen").style.display="flex";
-  $("#loginEmail").value=""; $("#loginPassword").value=""; $("#userMenuPanel").classList.remove("open");
+  $("#loginEmail").value=""; $("#loginPassword").value=""; try{ $("#loginCompany").value=localStorage.getItem("acacia_mail_last_company")||""; }catch(e){} $("#userMenuPanel").classList.remove("open");
   switchAuthTab("login");
 }
 function toggleUserMenu(e){e.stopPropagation(); $("#userMenuPanel").classList.toggle("open");}
@@ -265,6 +350,7 @@ async function ensureCompany(){
     const r=await sb.rpc("mail_join",{p_name:CURRENT.company,p_code:CURRENT.code||""});
     if(r.error) throw r.error;
     CURRENT.companyId=r.data.company_id; CURRENT.company=r.data.name; CURRENT.joinCode=r.data.join_code;
+    if(!CURRENT.code&&CURRENT.joinCode){ CURRENT.code=CURRENT.joinCode; try{ sb.auth.updateUser({data:{join_code:CURRENT.joinCode}}); }catch(e){} }
     $("#menuCompany").textContent=CURRENT.company+" · code "+CURRENT.joinCode;
     const m=await sb.from("mail_members").select("user_id,email,name");
     (m.data||[]).forEach(x=>{ if(x.user_id!==CURRENT.accountId&&!contacts.some(c=>c.e===x.email)) contacts.push({n:x.name,e:x.email}); });
@@ -791,7 +877,7 @@ function fromBooksSession(){
   try{
     var u=JSON.parse(localStorage.getItem("loggedInUser")||"null");
     if(!u||!u.companyId) return null;
-    return { accountId:String(u.email||u.username||u.companyId).toLowerCase(), email:u.email||"", name:u.fullName||u.username||u.email||"Team member", company:u.companyName||"", companyId:String(u.companyId), role:String(u.role||"") };
+    return { accountId:String(u.email||u.username||u.companyId).toLowerCase(), email:u.email||"", name:u.fullName||u.username||u.email||"Team member", company:u.companyName||"", companyId:String(u.companyId), booksCompanyId:String(u.companyId), role:String(u.role||"") };
   }catch(e){ return null; }
 }
 const mailCoKey=()=>String((CURRENT&&(CURRENT.booksCompanyId||CURRENT.companyId))||"");
@@ -825,6 +911,7 @@ function startQueuePolling(){
   queueTimer=setInterval(pullMailQueueFromCloud,30000);
   window.addEventListener("focus",pullMailQueueFromCloud);
 }
+try{ const lc=$("#loginCompany"); if(lc) lc.value=localStorage.getItem("acacia_mail_last_company")||""; }catch(e){}
 (async function boot(){
   const bk=fromBooksSession();
   if(bk){
@@ -834,7 +921,10 @@ function startQueuePolling(){
   }
   if(sb){
     try{ const {data}=await sb.auth.getSession();
-      if(data&&data.session){ enterApp(toUser(data.session.user)); return; } }catch(e){}
+      if(data&&data.session){
+        const u=toUser(data.session.user), st=await companyGate(u.booksCompanyId);
+        if(st){ hpHideHome(); $("#authScreen").style.display="flex"; await blockedBy(st); return; }
+        enterApp(u); return; } }catch(e){}
   }
   hpShowHome();
 })();
@@ -851,7 +941,8 @@ function applyMailTheme(mode){
 }
 function applyMailSettings(){
   const a=getMailSettings(), st=document.documentElement.style;
-  const map={sbBg:"--sb-bg",sbText:"--sb-text",font:"--app-font",fs:"--app-fs"};
+  const map={sbBg:"--sb-bg",sbText:"--sb-text",font:"--app-font",zoom:"--app-zoom"};
+  if(a.fs&&!a.zoom){ a.zoom={"11.5px":"1","13px":"1.15","14.5px":"1.3","16px":"1.45"}[a.fs]||"1.15"; }
   Object.keys(map).forEach(k=>{ if(a[k]) st.setProperty(map[k],a[k]); else st.removeProperty(map[k]); });
   if(a.accent){ st.setProperty("--gold",a.accent); st.setProperty("--gold-deep",a.accent); } else { st.removeProperty("--gold"); st.removeProperty("--gold-deep"); }
   applyMailTheme(a.theme||(document.body.classList.contains("dark")?"Dark":"Light"));
@@ -862,7 +953,7 @@ function applyMailSettings(){
   const rl=document.getElementById("rail"); if(rl&&a.rail!==undefined) rl.classList.toggle("hidden",!a.rail);
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!==undefined&&v!=="") el.value=v; };
   set("stSbBg",a.sbBg||"#16302a"); set("stSbText",a.sbText||"#e7e4d6"); set("stAccent",a.accent||"#b98a2e");
-  set("stFont",a.font||"'Cambria', Georgia, serif"); set("stFs",a.fs||"13px");
+  set("stFont",a.font||"'Cambria', Georgia, serif"); set("stFs",a.zoom||"1.15");
   set("stTheme",a.theme||"Light"); set("stDensity",a.density||"normal"); set("stSig",a.sigText||""); set("stCc",a.defCc||"");
   const chk=(id,v)=>{ const el=document.getElementById(id); if(el) el.checked=!!v; };
   chk("stRail",a.rail!==undefined?a.rail:!(document.getElementById("rail")||{classList:{contains:()=>false}}).classList.contains("hidden"));
@@ -873,7 +964,7 @@ function applyMailSettings(){
   const v3=document.getElementById("stAccentVal"); if(v3) v3.textContent=a.accent||"default";
 }
 function setMailSetting(k,v){ const a=getMailSettings(); a[k]=v; saveMailSettings(a); applyMailSettings(); }
-function resetMailAppearance(){ const a=getMailSettings(); ["sbBg","sbText","accent","font","fs"].forEach(k=>delete a[k]); saveMailSettings(a); applyMailSettings(); }
+function resetMailAppearance(){ const a=getMailSettings(); ["sbBg","sbText","accent","font","fs","zoom"].forEach(k=>delete a[k]); saveMailSettings(a); applyMailSettings(); }
 function resetMailSettings(){ if(!confirm("Reset all Mail settings to their defaults?")) return; localStorage.removeItem(MAIL_SET_KEY); applyMailSettings(); }
 function exportMailSettings(){
   const blob=new Blob([JSON.stringify(getMailSettings(),null,2)],{type:"application/json"});
