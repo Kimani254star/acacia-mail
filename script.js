@@ -1,4 +1,4 @@
-/* ===== home page ===== */
+
 
   function hpMore(btn){
     var card=btn.closest('.hp-tier');
@@ -68,12 +68,7 @@ function hpContact(e){
   return false;
 }
 
-/* ===== main app ===== */
-
 const USERS_KEY="acacia_mail_users", SESSION_KEY="acacia_mail_session", MBOX_KEY="acacia_mailbox_";
-
-
-
 
 const SUPA_URL="https://xglsampckermarjpczdf.supabase.co", SUPA_KEY="sb_publishable_x-dPR7pzhvJgag9soW0I8w_yfKTmi6A";
 const sb=(window.supabase&&window.supabase.createClient)
@@ -86,7 +81,6 @@ const toUser=u=>({accountId:u.id,email:u.email,
 const $=s=>document.querySelector(s);
 const uid=p=>p+"_"+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-
 
 function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||"[]")}catch(e){return[]}}
 function saveUsers(l){localStorage.setItem(USERS_KEY,JSON.stringify(l))}
@@ -103,7 +97,6 @@ function switchAuthTab(w){
 }
 function showAuthError(id,msg){const e=$("#"+id); e.textContent=msg; e.classList.add("show");}
 
-/* ===== Acacia Support link: approval gate + company registration (same tables Books uses) ===== */
 const GATE_MSG={
   pending:"Your company is waiting for approval by Acacia Support. You will be able to sign in as soon as it is approved.",
   expired:"This company's subscription has expired. Renew it to get access again.",
@@ -117,7 +110,7 @@ async function fetchCompanyStatus(by,val){
     if(!r.ok) return null; const a=await r.json(); return a;
   }catch(e){ return null; }
 }
-/* "" = allowed, otherwise the reason (pending / expired / suspended / rejected). Companies Support has never heard of are allowed. */
+
 async function companyGate(cid){
   if(!cid) return "";
   const a=await fetchCompanyStatus("company_id","eq."+encodeURIComponent(cid)); const row=a&&a[0];
@@ -150,7 +143,6 @@ async function handleRegister(){
   if(password.length<6) return showAuthError("registerError","Password must be at least 6 characters.");
   if(!sb) return showAuthError("registerError","Could not load Supabase. Check your internet connection.");
 
-  // Is this company already known to Acacia Support (registered in Books or Mail)?
   const known=await findCompanyByName(company);
   let cid="", isNew=false;
   if(known){
@@ -168,7 +160,6 @@ async function handleRegister(){
   enterApp(toUser(data.user));
 }
 
-/* Server-side check of the Books/Mail company + email + password; creates or repairs the Mail login so a normal sign-in works afterwards. */
 async function booksLogin(company,email,password){
   try{
     const r=await sb.functions.invoke("books-login",{body:{company,email,password}});
@@ -196,7 +187,7 @@ async function handleLogin(){
     let {data,error}=await sb.auth.signInWithPassword({email,password});
     if(!error&&data&&data.session){
       if(sameCompany(toUser(data.user),company)) session=data;
-      else{                                   // signed in, but typed another company: confirm it against Books before switching
+      else{
         const f=await booksLogin(company,email,password);
         if(f.ok){ const r2=await sb.auth.signInWithPassword({email,password}); if(!r2.error&&r2.data&&r2.data.session) session=r2.data; }
         else{ await sb.auth.signOut(); errMsg=/couldn.t find|not found/i.test(f.error)?"That company name does not match this email.":f.error; }
@@ -212,7 +203,7 @@ async function handleLogin(){
         if(f.ok){ const r2=await sb.auth.signInWithPassword({email,password}); if(!r2.error&&r2.data&&r2.data.session) session=r2.data; else errMsg=r2.error&&/confirm/i.test(r2.error.message)?"Please confirm your email first.":"Could not sign in. Try again."; }
         else{
           errMsg=f.error;
-          // function not deployed: show why the normal sign-in failed instead
+
           if(/not deployed|not set up/i.test(f.error)&&error){
             if(/confirm/i.test(error.message)) errMsg="Your email is not confirmed yet. In Supabase turn off Authentication > Sign In / Providers > Email > Confirm email, then confirm this user (Authentication > Users).";
             else errMsg="Wrong company, email or password. (If this account was made on Books, the books-login function must be deployed in Supabase.)";
@@ -239,8 +230,6 @@ async function handleLogout(){
 function toggleUserMenu(e){e.stopPropagation(); $("#userMenuPanel").classList.toggle("open");}
 document.addEventListener("click",()=>$("#userMenuPanel").classList.remove("open"));
 
-
-
 const FOLDERS=[
   {id:"inbox",name:"Inbox",icon:"📥"},{id:"starred",name:"Starred",icon:"★"},
   {id:"sent",name:"Sent",icon:"📤"},{id:"drafts",name:"Drafts",icon:"✎"},
@@ -262,7 +251,6 @@ function mboxKey(){return MBOX_KEY+CURRENT.accountId}
 const snapStr=()=>JSON.stringify({seq,messages,contacts,tasks,notes,events});
 function setSync(t){ const b=$("#refresh"); if(b) b.title="Refresh — "+t; if(/error|offline/i.test(t)) console.warn("[acacia-mail sync]",t); }
 
-
 function saveMailbox(){
   if(!CURRENT) return;
   const str=snapStr(), unsynced=str!==lastStr;
@@ -274,7 +262,7 @@ function loadMailbox(){
   const c=d||{seq:1,messages:[],contacts:[],tasks:[],notes:[]};
   seq=c.seq||1; messages=c.messages||[]; contacts=c.contacts||[]; tasks=c.tasks||[]; notes=c.notes||[]; events=(c.events||[]).filter(e=>!(e.del&&Date.now()-(e.upd||0)>60*864e5));
   rev=c.rev||0; dirty=false;
-  lastStr=(d&&d.unsynced!==false)?"":snapStr();   
+  lastStr=(d&&d.unsynced!==false)?"":snapStr();
 }
 function applyRemote(d){ seq=d.seq||1; messages=d.messages||[]; contacts=d.contacts||[]; tasks=d.tasks||[]; notes=d.notes||[]; events=d.events||[]; }
 
@@ -284,7 +272,7 @@ function mergeRemote(rm){
   let mx=Math.max(seq,rm.seq||1);
   (rm.messages||[]).forEach(m=>{
     if(have.has(key(m))) return;
-    if(ids.has(m.id)) m.id=mx++;          
+    if(ids.has(m.id)) m.id=mx++;
     ids.add(m.id); messages.push(m);
   });
   (rm.contacts||[]).forEach(c=>{ if(!contacts.some(x=>x.e===c.e)) contacts.push(c); });
@@ -306,7 +294,7 @@ async function pushMailbox(){
     if(CURRENT&&CURRENT.accountId!==id){ pushing=false; return; }
     if(!r.error&&r.data&&r.data.length){ rev=r.data[0].rev; lastStr=str; setSync("synced"); }
     else if(r.error&&r.error.code!=="23505"){ throw r.error; }
-    else{                                   
+    else{
       const g=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
       if(g.data){ mergeRemote(g.data.data||{}); rev=g.data.rev; renderRail(); render(); }
       dirty=true; retry=300;
@@ -322,8 +310,8 @@ async function syncFromServer(){
     const r=await sb.from("mail_mailboxes").select("data,rev").eq("user_id",id).maybeSingle();
     if(r.error) throw r.error;
     if(!CURRENT||CURRENT.accountId!==id||!r.data||r.data.rev===rev) return;
-    if(snapStr()!==lastStr) mergeRemote(r.data.data||{});      
-    else{ applyRemote(r.data.data||{}); lastStr=snapStr(); }   
+    if(snapStr()!==lastStr) mergeRemote(r.data.data||{});
+    else{ applyRemote(r.data.data||{}); lastStr=snapStr(); }
     rev=r.data.rev; renderRail(); render(); setSync("synced");
   }catch(e){ setSync("offline / sync error: "+(e.message||e)); }
 }
@@ -332,7 +320,7 @@ async function startSync(){
   setSync("syncing…");
   await syncFromServer();
   await ensureCompany(); await pullInbox(); pullBooksDrafts();
-  render();                                   
+  render();
   if(rtChannel){ sb.removeChannel(rtChannel); rtChannel=null; }
   const id=CURRENT.accountId;
   rtChannel=sb.channel("mbox-"+id)
@@ -381,7 +369,7 @@ async function deliverInternal(m){
 }
 const MAIL_RE=/^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]{2,}$/;
 const addrList=v=>String(v||"").split(/[,;\s]+/).map(x=>x.trim().toLowerCase()).filter(x=>MAIL_RE.test(x));
-/* Everyone who is not an Acacia Mail teammate gets a real email through the send-mail Edge Function. Returns "" on success or a reason. */
+
 async function deliverExternal(m,internal){
   const ext=[...new Set([...addrList(m.to),...addrList(m.cc),...addrList(m.bcc)])].filter(e=>!internal.has(e)&&e!==String(CURRENT.email||"").toLowerCase());
   if(!ext.length) return "";
@@ -416,7 +404,7 @@ async function pullInbox(){
   if(r.error||!r.data||!r.data.length||!CURRENT||CURRENT.accountId!==id) return;
   r.data.forEach(x=>{ if(!messages.some(m=>m.qid===x.id)) messages.push(M(Object.assign({},x.message,{qid:x.id}))); });
   saveMailbox(); clearTimeout(pushTimer); await pushMailbox();
-  if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));   
+  if(!dirty) await sb.from("mail_inbox").delete().in("id",r.data.map(x=>x.id));
   renderRail(); render();
 }
 
@@ -435,8 +423,8 @@ function pullBooksDrafts(){
   if(!q.length) return;
   const mine=coSlug(CURRENT.company), keep=[]; let added=0;
   q.forEach(x=>{
-    if(!x||coSlug(x.company||x.slug)!==mine){ keep.push(x); return; }   
-    if(messages.some(m=>m.bid===x.bid)) return;                         
+    if(!x||coSlug(x.company||x.slug)!==mine){ keep.push(x); return; }
+    if(messages.some(m=>m.bid===x.bid)) return;
     messages.push(M({from:x.fromName||x.fromEmail||"Acacia Books",addr:x.fromEmail||"",to:x.to||"",cc:x.cc||"",bcc:x.bcc||"",
       subject:x.subject||"(no subject)",preview:String(x.body||"").replace(/\s+/g," ").slice(0,90),
       body:fmtBody(x.body),date:new Date(x.time||Date.now()).toISOString(),folder:"drafts",read:true,bid:x.bid}));
@@ -478,7 +466,6 @@ function mailHeartbeat(){
       body:JSON.stringify({p_company:u.booksCompanyId,p_app:"Mail",p_user:u.email,p_role:""})});
   }catch(e){}
 }
-
 
 const fmt=d=>{const t=new Date(d),n=new Date();
   return t.toDateString()===n.toDateString()
@@ -528,7 +515,6 @@ function toast(msg,undo){
 const snap=()=>JSON.parse(JSON.stringify(messages));
 function withUndo(msg,fn){const before=snap(); fn(); render(); toast(msg,()=>{messages=before; render();});}
 
-
 function renderSidebar(){
   $("#folders").innerHTML=FOLDERS.map(f=>{
     const set=messages.filter(m=>f.id==="starred"?(m.starred&&m.folder!=="trash")
@@ -552,7 +538,6 @@ function renderSidebar(){
   $("#labels").querySelectorAll("[data-label]").forEach(b=>b.onclick=()=>{
     state.label=b.dataset.label; state.open=null; state.selected.clear(); render();});
 }
-
 
 function renderList(){
   const items=visible();
@@ -581,7 +566,6 @@ function renderList(){
   $("#rows").querySelectorAll("[data-star]").forEach(s=>s.onclick=e=>{
     e.stopPropagation(); const m=messages.find(x=>x.id===+s.dataset.star); m.starred=!m.starred; render();});
 }
-
 
 function openMail(id){const m=messages.find(x=>x.id===id); if(!m) return;
   if(m.folder==="drafts"){ openComposer({to:m.to,cc:m.cc,bcc:m.bcc,subject:m.subject,body:m.body,draftId:m.id}); return; }
@@ -640,7 +624,6 @@ function renderReader(){
   $("#rLabel").onchange=e=>{if(e.target.value&&!m.labels.includes(e.target.value)) m.labels.push(e.target.value); render();};
 }
 
-
 document.querySelectorAll("[data-bulk]").forEach(b=>b.onclick=()=>{
   if(!state.selected.size) return toast("Select messages first");
   const a=b.dataset.bulk, ids=[...state.selected];
@@ -661,7 +644,6 @@ $("#moveTo").onchange=e=>{
 };
 $("#selAll").onchange=e=>{state.selected=e.target.checked?new Set(visible().map(m=>m.id)):new Set(); render();};
 $("#undoBtn").onclick=()=>{if(undoStack){undoStack(); undoStack=null;} $("#toast").classList.remove("show");};
-
 
 function renderRail(){
   const b=$("#railBody"); const now=new Date();
@@ -693,7 +675,6 @@ document.querySelectorAll("[data-rail]").forEach(t=>t.onclick=()=>{
   state.rail=t.dataset.rail;
   document.querySelectorAll("[data-rail]").forEach(x=>x.classList.toggle("active",x===t));
   renderRail();});
-
 
 let editingDraft=null;
 const signature=()=>{
@@ -750,7 +731,7 @@ $("#fileInput").onchange=e=>{
 $("#sendBtn").onclick=()=>{
   const m=commit("outbox"); closeComposer(); render();
   toast("Sending…",()=>{messages=messages.filter(x=>x.id!==m.id); render();});
-  setTimeout(()=>{ if(!messages.some(x=>x.id===m.id)) return;   
+  setTimeout(()=>{ if(!messages.some(x=>x.id===m.id)) return;
     sendOut(m); },2000);
 };
 $("#scheduleBtn").onclick=()=>{
@@ -759,7 +740,6 @@ $("#scheduleBtn").onclick=()=>{
 };
 $("#draftBtn").onclick=()=>{commit("drafts"); closeComposer(); render(); toast("Draft saved");};
 $("#discardBtn").onclick=()=>{if(editingDraft) messages=messages.filter(m=>m.id!==editingDraft); closeComposer(); render(); toast("Draft discarded");};
-
 
 $("#toggleSidebar").onclick=()=>$("#sidebar").classList.toggle("collapsed");
 $("#railToggle").onclick=()=>$("#rail").classList.toggle("hidden");
@@ -783,10 +763,6 @@ function render(){
   const badge=$("#notifCount"); badge.textContent=unread; badge.style.display=unread?"flex":"none";
   saveMailbox();
 }
-
-
-
-
 
 const isAdmin=()=>!!CURRENT && /^(admin|administrator|owner|super ?admin)$/i.test(String(CURRENT.role||"").trim());
 const SENT_PENDING="acacia_mail_sent_pending";
@@ -865,7 +841,6 @@ function renderCoSent(){
 }
 function openCoSent(){ ensureCoPanel().style.display="flex"; coFilter=""; coQuery=""; coOpen=null; $("#coQ").value=""; loadCoSent(); }
 
-
 const DEEP=(function(){ try{ const q=new URLSearchParams(location.search); if(!(q.get("bid")||q.get("to")||q.get("subject")||q.get("body"))) return null;
   return {bid:q.get("bid"),uid:q.get("uid")||("u"+Date.now()),to:q.get("to")||"",cc:q.get("cc")||"",bcc:q.get("bcc")||"",subject:q.get("subject")||"",body:q.get("body")||""}; }catch(e){ return null; } })();
 function runDeepLink(){
@@ -898,7 +873,7 @@ async function pullMailQueueFromCloud(){
       { headers:{ apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY } });
     if(!r.ok) return;
     const rows=await r.json(); if(!rows.length) return;
-    // Drafts are shared by the whole company: rows stay in the cloud, each mailbox remembers what it already took.
+
     const seen=seenBids(); let added=0;
     rows.forEach(x=>{
       if(seen.has(x.bid)) return; seen.add(x.bid);
@@ -937,7 +912,6 @@ try{ const lc=$("#loginCompany"); if(lc) lc.value=localStorage.getItem("acacia_m
   hpShowHome();
 })();
 
-/* ===== Mail settings (mirrors Support: sidebar colours, font, size, theme, plus mail options) ===== */
 const MAIL_SET_KEY="acacia_mail_settings";
 const MAIL_SB_PRESETS=["#16302A","#0A1615","#22615D","#1e3a8a","#4c1d95","#7f1d1d","#374151","#ffffff"];
 function getMailSettings(){ try{ return JSON.parse(localStorage.getItem(MAIL_SET_KEY)||"{}")||{}; }catch(e){ return {}; } }
@@ -990,7 +964,6 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeMailSettings(
   if(mq&&mq.addEventListener) mq.addEventListener("change",()=>{ if(getMailSettings().theme==="System") applyMailSettings(); });
 })();
 
-/* ===== Calendar: events, attachments (files + emails), reminders, synced through the mailbox ===== */
 const CAL_MAX_FILE=500*1024, CAL_MAX_FILES=5;
 let calView=(()=>{const n=new Date(); return {y:n.getFullYear(),m:n.getMonth(),sel:ymd(n)};})();
 function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -1097,7 +1070,6 @@ function askNotifyPermission(){ try{ if("Notification" in window&&Notification.p
   $("#eventModal").onclick=e=>{ if(e.target.id==="eventModal") closeEventModal(); };
 })();
 
-/* ---- reminders: checked every 20 s while Mail is open; the events themselves sync, so every device you are signed in on reminds you ---- */
 const remFiredKey=()=>"acx_rem_fired_"+(CURRENT?CURRENT.accountId:"");
 const remSnoozeKey=()=>"acx_rem_snooze_"+(CURRENT?CURRENT.accountId:"");
 const lsJ=(k,d)=>{ try{ return JSON.parse(localStorage.getItem(k)||"null")||d; }catch(e){ return d; } };
@@ -1129,7 +1101,7 @@ function checkReminders(){
       if(snooze[key]){ if(now>=snooze[key]){ delete snooze[key]; changed=true; showReminder(ev,Math.max(0,Math.round((start-now)/60000)),key); fired[key]=now; } return; }
       if(fired[key]) return;
       if(now>=at&&now<=start+60*60000){ fired[key]=now; changed=true; showReminder(ev,mins,key); }
-      else if(now>start+60*60000){ fired[key]=now; changed=true; }   // too old: mark done silently
+      else if(now>start+60*60000){ fired[key]=now; changed=true; }
     });
   });
   if(changed){ try{ localStorage.setItem(remFiredKey(),JSON.stringify(fired)); localStorage.setItem(remSnoozeKey(),JSON.stringify(snooze)); }catch(e){} }
@@ -1138,7 +1110,6 @@ setInterval(checkReminders,20000);
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) checkReminders(); });
 setTimeout(checkReminders,2500);
 
-/* ---- scheduled messages are sent automatically at their time while Mail is open ---- */
 let schedBusy=false;
 async function runScheduled(){
   if(schedBusy||!CURRENT) return; schedBusy=true;
