@@ -505,6 +505,7 @@
     <div class="search">
       <input id="q" placeholder="Search mail — from:  subject:  has:attachment  is:unread" autocomplete="off">
       <span class="mag">⌕</span>
+      <button type="button" id="voiceBtn" class="vbtn" title="Voice search" aria-label="Voice search">🎤</button>
       <div class="hint">
         <code>from:</code><code>to:</code><code>subject:</code><code>has:attachment</code><code>is:unread</code><code>is:starred</code><code>before:2026-09-01</code><code>after:2026-08-01</code><code>label:finance</code>
         <div style="margin-top:4px">Combine freely — e.g. <b>from:john has:attachment is:unread</b></div>
@@ -603,9 +604,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
-<script>window.ACACIA_APPEARANCE={sidebar:"#acxNoLeftBar",items:"#acxNoLeftBar a",rightbar:"#acxsbBar",rightitems:"#acxsbBar button"};</script>
 <script src="acacia-mail-bridge.js"></script>
-<script src="acacia-appearance.js"></script>
 <script src="acacia-support.js"></script>
 <script src="acacia-sidebar.js"></script>
 
@@ -613,7 +612,6 @@
   <div class="st-box">
     <div class="st-head"><b>⚙ Mail settings</b><button class="btn btn-sm" onclick="closeMailSettings()">✕ Close</button></div>
     <div class="st-grid">
-      <div class="st-card"><h4>🎨 Right bar appearance <span>Acacia tools</span></h4><div data-acacia-appearance></div></div>
       
       <div class="st-card">
         <h4>🎨 Appearance <span>Theme</span></h4>

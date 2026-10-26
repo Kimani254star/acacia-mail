@@ -1121,3 +1121,25 @@ async function runScheduled(){
 }
 setInterval(runScheduled,30000); setTimeout(runScheduled,4000);
 async function retrySend(id){ const m=messages.find(x=>x.id===id); if(!m) return; toast("Sending…"); const ok=await sendOut(m); if(ok) toast("Sent"); }
+
+
+/* ---- voice search: speak into the search box (Chrome, Edge, Safari) ---- */
+(function(){
+  const btn=document.getElementById("voiceBtn"), q=document.getElementById("q"); if(!btn||!q) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ btn.title="Voice search is not supported in this browser"; btn.style.opacity=".4"; btn.onclick=()=>alert("Voice search is not supported in this browser. Try Chrome or Edge."); return; }
+  let rec=null;
+  btn.onclick=e=>{
+    e.preventDefault(); e.stopPropagation();
+    if(rec){ rec.stop(); return; }
+    rec=new SR(); rec.lang=navigator.language||"en-US"; rec.interimResults=true; rec.maxAlternatives=1;
+    rec.onstart=()=>btn.classList.add("listening");
+    rec.onresult=ev=>{
+      let t=""; for(let i=0;i<ev.results.length;i++) t+=ev.results[i][0].transcript;
+      q.value=t.trim(); q.dispatchEvent(new Event("input",{bubbles:true}));
+    };
+    rec.onerror=ev=>{ if(ev.error==="not-allowed"||ev.error==="service-not-allowed") alert("Allow microphone access for this page to use voice search."); };
+    rec.onend=()=>{ btn.classList.remove("listening"); rec=null; };
+    try{ rec.start(); }catch(x){ rec=null; }
+  };
+})();
