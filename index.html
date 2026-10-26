@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acacia Mail</title>
+<link rel="icon" href="acaciabooks-logo.png">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <script>(function(){try{var a=JSON.parse(localStorage.getItem("acacia_mail_settings")||"{}"),r=document.documentElement.style;if(a.sbBg)r.setProperty("--sb-bg",a.sbBg);if(a.sbText)r.setProperty("--sb-text",a.sbText);if(a.accent){r.setProperty("--gold",a.accent);r.setProperty("--gold-deep",a.accent);}if(a.font)r.setProperty("--app-font",a.font);var z=a.zoom||(a.fs==="11.5px"?"1":a.fs==="14.5px"?"1.3":a.fs==="16px"?"1.45":"");if(z)r.setProperty("--app-zoom",z);}catch(e){}})();</script>
@@ -498,7 +499,7 @@
   <header id="topbar">
     <button class="iconbtn" id="toggleSidebar" title="Toggle sidebar">☰</button>
     <div class="brandbar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 8 5 8 9C8 11 9 12 9 12C6 12 3 14 2 18C4 17 6 17 7 17.5C5.5 19 4.5 21 4.5 22C7 21 9.5 19.5 10.5 18C10.2 20 10 21 10 22H14C14 21 13.8 20 13.5 18C14.5 19.5 17 21 19.5 22C19.5 21 18.5 19 17 17.5C18 17 20 17 22 18C21 14 18 12 15 12C15 12 16 11 16 9C16 5 12 2 12 2Z" fill="#B98A2E"/></svg>
+      <img src="acaciabooks-logo.png" alt="Acacia" style="height:26px;width:auto;border-radius:4px" onerror="this.style.display='none';this.nextElementSibling.style.display=''"><svg style="display:none" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 8 5 8 9C8 11 9 12 9 12C6 12 3 14 2 18C4 17 6 17 7 17.5C5.5 19 4.5 21 4.5 22C7 21 9.5 19.5 10.5 18C10.2 20 10 21 10 22H14C14 21 13.8 20 13.5 18C14.5 19.5 17 21 19.5 22C19.5 21 18.5 19 17 17.5C18 17 20 17 22 18C21 14 18 12 15 12C15 12 16 11 16 9C16 5 12 2 12 2Z" fill="#B98A2E"/></svg>
       Acacia Mail
     </div>
     <div class="search">
@@ -602,11 +603,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
+<script>window.ACACIA_APPEARANCE={sidebar:"#acxNoLeftBar",items:"#acxNoLeftBar a",rightbar:"#acxsbBar",rightitems:"#acxsbBar button"};</script>
+<script src="acacia-mail-bridge.js"></script>
+<script src="acacia-appearance.js"></script>
+<script src="acacia-support.js"></script>
+<script src="acacia-sidebar.js"></script>
 
 <div id="settingsModal" onclick="if(event.target===this)closeMailSettings()">
   <div class="st-box">
     <div class="st-head"><b>⚙ Mail settings</b><button class="btn btn-sm" onclick="closeMailSettings()">✕ Close</button></div>
     <div class="st-grid">
+      <div class="st-card"><h4>🎨 Right bar appearance <span>Acacia tools</span></h4><div data-acacia-appearance></div></div>
+      
       <div class="st-card">
         <h4>🎨 Appearance <span>Theme</span></h4>
         <label class="lb">Sidebar colour</label>
