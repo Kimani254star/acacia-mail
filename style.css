@@ -483,11 +483,6 @@ body.density-comfy .navitem{padding-top:11px;padding-bottom:11px}
 .remcard{background:var(--forest);color:#F4E9C9;border-left:4px solid var(--gold);border-radius:8px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .remcard .btn{padding:4px 9px;font-size:12px}
 
-/* right tools bar follows Mail's Appearance settings (sidebar colour, text colour, font) like the folder sidebar */
-#acxsbBar{background:var(--sb-bg,#000)!important;color:var(--sb-text,#fff)!important}
-#acxsbBar button:not(:hover):not(.on){color:var(--sb-text,#fff)!important}
-#acxsbBar,#acxsbBar button{font-family:var(--app-font,'Cambria',serif)!important}
-#acxsbBar .sep{background:var(--sb-text,#fff);opacity:.25}
 /* voice search */
 .search .vbtn{position:absolute;right:6px;top:3px;border:0;background:transparent;cursor:pointer;font-size:15px;padding:3px 6px;border-radius:50%;line-height:1}
 .search .vbtn:hover{background:rgba(128,128,128,.18)}

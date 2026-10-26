@@ -604,6 +604,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
+<script>window.ACACIA_APPEARANCE={sidebar:"#sidebar",items:"#sidebar .navitem, #sidebar button, #sidebar a"};</script>
+<script src="acacia-appearance.js"></script>
 <script src="acacia-mail-bridge.js"></script>
 <script src="acacia-support.js"></script>
 <script src="acacia-sidebar.js"></script>
@@ -613,21 +615,7 @@
     <div class="st-head"><b>⚙ Mail settings</b><button class="btn btn-sm" onclick="closeMailSettings()">✕ Close</button></div>
     <div class="st-grid">
       
-      <div class="st-card">
-        <h4>🎨 Appearance <span>Theme</span></h4>
-        <label class="lb">Sidebar colour</label>
-        <div class="st-row"><input type="color" id="stSbBg" value="#16302a" oninput="setMailSetting('sbBg',this.value)"><span class="val" id="stSbBgVal"></span></div>
-        <div class="st-sw" id="stPresets"></div>
-        <label class="lb">Sidebar text colour</label>
-        <div class="st-row"><input type="color" id="stSbText" value="#e7e4d6" oninput="setMailSetting('sbText',this.value)"><span class="val" id="stSbTextVal"></span></div>
-        <label class="lb">Accent colour (buttons, highlights)</label>
-        <div class="st-row"><input type="color" id="stAccent" value="#b98a2e" oninput="setMailSetting('accent',this.value)"><span class="val" id="stAccentVal"></span></div>
-        <label class="lb">Font</label>
-        <select id="stFont" onchange="setMailSetting('font',this.value)"><option value="'Cambria', Georgia, serif">Cambria (default)</option><option value="'Inter', sans-serif">Inter</option><option value="'Roboto', sans-serif">Roboto</option><option value="'Open Sans', sans-serif">Open Sans</option><option value="'Lato', sans-serif">Lato</option><option value="'Poppins', sans-serif">Poppins</option><option value="'Montserrat', sans-serif">Montserrat</option><option value="'Nunito', sans-serif">Nunito</option><option value="'DM Sans', sans-serif">DM Sans</option><option value="'Merriweather', serif">Merriweather</option><option value="'Playfair Display', serif">Playfair Display</option><option value="'Lora', serif">Lora</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', Times, serif">Times New Roman</option><option value="'Trebuchet MS', sans-serif">Trebuchet MS</option><option value="'Segoe UI', Roboto, sans-serif">Segoe UI</option><option value="Verdana, sans-serif">Verdana</option><option value="'JetBrains Mono', monospace">JetBrains Mono</option><option value="'Courier New', monospace">Courier New</option><option value="system-ui, sans-serif">System default</option></select>
-        <label class="lb">Font size</label>
-        <select id="stFs" onchange="setMailSetting('zoom',this.value)"><option value="1">Small</option><option value="1.15">Medium (default)</option><option value="1.3">Large</option><option value="1.45">Extra large</option></select>
-        <div style="margin-top:12px"><button class="btn btn-sm" onclick="resetMailAppearance()">Reset appearance</button></div>
-      </div>
+      <div class="st-card" style="padding:0;border:0;background:transparent"><div data-acacia-appearance></div></div>
       <div class="st-card">
         <h4>🖥 Preferences <span>Display</span></h4>
         <label class="lb">Interface theme</label>
