@@ -213,6 +213,7 @@ async function handleLogin(){
     }
     if(!session) return showAuthError("loginError",errMsg||"That company, email and password combination was not found.");
     const user=toUser(session.user);
+    try{ if(window.AcxSession) await window.AcxSession.start(email,password,company); }catch(e){}   /* server session token for row-level security */
     const st=await companyGate(user.booksCompanyId);
     if(st) return blockedBy(st);
     if(legacy){ const old=localStorage.getItem(MBOX_KEY+legacy.accountId); if(old) localStorage.setItem(MBOX_KEY+user.accountId,old); }
@@ -221,6 +222,7 @@ async function handleLogin(){
   }finally{ if(btn){ btn.disabled=false; btn.textContent="Log In"; } }
 }
 async function handleLogout(){
+  try{ if(window.AcxSession) window.AcxSession.clear(true); }catch(e){}
   await stopSync();
   clearSession(); CURRENT=null; messages=[]; contacts=[]; tasks=[]; notes=[];
   $("#app").classList.remove("ready"); $("#authScreen").style.display="flex";
